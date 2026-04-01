@@ -15,6 +15,14 @@ export const errorHandler = (
 ): void => {
   void next;
   const appError = err instanceof AppError ? err : new AppError('Internal server error');
+  const originalError =
+    err instanceof AppError
+      ? undefined
+      : {
+          name: err.name,
+          message: err.message,
+          stack: err.stack,
+        };
 
   logger.error(appError.message, {
     correlationId: req.correlationId,
@@ -22,6 +30,7 @@ export const errorHandler = (
       code: appError.code,
       statusCode: appError.statusCode,
       stack: env.isProduction ? undefined : appError.stack,
+      originalError: env.isProduction ? undefined : originalError,
       path: req.originalUrl,
       method: req.method,
     },

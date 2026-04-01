@@ -12,7 +12,7 @@ Professional backend boilerplate with Clean Architecture using TypeScript, Expre
 6. Open Swagger at `http://localhost:3000/api-docs`
 
 Default admin seed credentials:
-- Email: `admin@boilerplate.local`
+- Email: `admin@boilerplate.com`
 - Password: `Admin123!`
 
 Detailed documentation will be added under `docs/`.

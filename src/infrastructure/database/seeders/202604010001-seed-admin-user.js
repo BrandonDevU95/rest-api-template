@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 module.exports = {
   async up(queryInterface, Sequelize) {
     const now = new Date();
-    const email = process.env.ADMIN_EMAIL || 'admin@boilerplate.local';
+    const email = process.env.ADMIN_EMAIL || 'admin@boilerplate.com';
     const plainPassword = process.env.ADMIN_PASSWORD || 'Admin123!';
     const passwordHash = await bcrypt.hash(plainPassword, 12);
 
@@ -24,7 +24,7 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    const email = process.env.ADMIN_EMAIL || 'admin@boilerplate.local';
+    const email = process.env.ADMIN_EMAIL || 'admin@boilerplate.com';
     await queryInterface.bulkDelete('users', { email });
   },
 };
