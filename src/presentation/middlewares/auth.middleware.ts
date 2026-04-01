@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { passport } from '../../infrastructure/auth/passport';
 import { ForbiddenError, UnauthorizedError } from '../../shared/errors/AppError';
+import { getCurrentUser } from './currentUser.middleware';
 
 export const authenticateJwt = passport.authenticate('jwt', { session: false });
 
 export const authorizeRoles = (...roles: Array<'admin' | 'user'>) => {
   return (req: Request, _res: Response, next: NextFunction): void => {
-    const role = (req.user as { role?: string } | undefined)?.role;
+    const role = getCurrentUser(req).role;
     if (!role) {
       throw new UnauthorizedError('Authentication required');
     }
@@ -17,4 +18,16 @@ export const authorizeRoles = (...roles: Array<'admin' | 'user'>) => {
 
     next();
   };
+};
+
+export const authorizeAdminOrSelf = (req: Request, _res: Response, next: NextFunction): void => {
+  const currentUser = getCurrentUser(req);
+  const targetUserId = String(req.params.id);
+
+  if (currentUser.role === 'admin' || currentUser.id === targetUserId) {
+    next();
+    return;
+  }
+
+  throw new ForbiddenError('Insufficient permissions');
 };

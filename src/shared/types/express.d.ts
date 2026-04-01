@@ -1,10 +1,13 @@
-import type { JwtPayload } from '../../application/dto/auth.dto';
-
 declare global {
   namespace Express {
+    interface User {
+      id: string;
+      email: string;
+      role: 'admin' | 'user';
+    }
+
     interface Request {
       correlationId?: string;
-      user?: JwtPayload;
     }
   }
 }

@@ -5,6 +5,7 @@ import { RefreshTokenUseCase } from '../../application/use-cases/auth/RefreshTok
 import { UserRepository } from '../../infrastructure/database/repositories/UserRepository';
 import { HashService } from '../../application/services/HashService';
 import { UnauthorizedError } from '../../shared/errors/AppError';
+import { getCurrentUser } from '../middlewares/currentUser.middleware';
 
 const userRepository = new UserRepository();
 const hashService = new HashService();
@@ -20,7 +21,7 @@ export class AuthController {
   }
 
   static async login(req: Request, res: Response): Promise<void> {
-    const user = req.user as { id: string; email: string; role: 'admin' | 'user' } | undefined;
+    const user = req.user;
 
     if (!user) {
       throw new UnauthorizedError('Invalid credentials');
@@ -41,7 +42,7 @@ export class AuthController {
   }
 
   static async profile(req: Request, res: Response): Promise<void> {
-    const user = req.user as { id: string; email: string; role: 'admin' | 'user' };
+    const user = getCurrentUser(req);
     res.status(200).json({
       id: user.id,
       email: user.email,

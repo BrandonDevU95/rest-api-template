@@ -1,4 +1,8 @@
-import { CreateUserInput, IUserRepository } from '../../../domain/interfaces/IUserRepository';
+import {
+  CreateUserInput,
+  IUserRepository,
+  UpdateUserInput,
+} from '../../../domain/interfaces/IUserRepository';
 import { User } from '../../../domain/entities/User';
 import { UserModel } from '../models/UserModel';
 
@@ -26,6 +30,16 @@ export class UserRepository implements IUserRepository {
 
   async create(input: CreateUserInput): Promise<User> {
     const user = await UserModel.create(input);
+    return this.mapToDomain(user);
+  }
+
+  async updateById(id: string, input: UpdateUserInput): Promise<User | null> {
+    const user = await UserModel.findByPk(id);
+    if (!user) {
+      return null;
+    }
+
+    await user.update(input);
     return this.mapToDomain(user);
   }
 

@@ -6,7 +6,6 @@ import './infrastructure/database/models/UserModel';
 
 const bootstrap = async (): Promise<void> => {
   await sequelize.authenticate();
-  await sequelize.sync();
 
   app.listen(env.app.port, () => {
     logger.info(`${env.app.name} running on port ${env.app.port} (${env.nodeEnv})`);

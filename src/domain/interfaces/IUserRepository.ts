@@ -6,10 +6,16 @@ export interface CreateUserInput {
   role: 'admin' | 'user';
 }
 
+export interface UpdateUserInput {
+  email?: string;
+  role?: 'admin' | 'user';
+}
+
 export interface IUserRepository {
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
   create(input: CreateUserInput): Promise<User>;
+  updateById(id: string, input: UpdateUserInput): Promise<User | null>;
   list(): Promise<User[]>;
   deleteById(id: string): Promise<boolean>;
 }
