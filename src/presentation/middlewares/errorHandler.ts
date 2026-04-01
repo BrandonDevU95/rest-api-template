@@ -1,0 +1,37 @@
+import { NextFunction, Request, Response } from 'express';
+import { env } from '../../config/environment';
+import { logger } from '../../infrastructure/logger/logger';
+import { AppError } from '../../shared/errors/AppError';
+
+export const notFoundHandler = (req: Request, _res: Response, next: NextFunction): void => {
+  next(new AppError(`Route ${req.originalUrl} not found`, 404, 'NOT_FOUND'));
+};
+
+export const errorHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void => {
+  void next;
+  const appError = err instanceof AppError ? err : new AppError('Internal server error');
+
+  logger.error(appError.message, {
+    correlationId: req.correlationId,
+    meta: {
+      code: appError.code,
+      statusCode: appError.statusCode,
+      stack: env.isProduction ? undefined : appError.stack,
+      path: req.originalUrl,
+      method: req.method,
+    },
+  });
+
+  res.status(appError.statusCode).json({
+    code: appError.code,
+    message: appError.message,
+    details: appError.details,
+    correlationId: req.correlationId,
+    timestamp: new Date().toISOString(),
+  });
+};

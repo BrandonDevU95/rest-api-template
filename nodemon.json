@@ -1,0 +1,6 @@
+{
+  "watch": ["src"],
+  "ext": "ts",
+  "ignore": ["dist", "logs", "coverage"],
+  "exec": "ts-node ./src/main.ts"
+}
