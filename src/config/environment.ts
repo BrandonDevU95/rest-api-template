@@ -4,33 +4,33 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const envSchema = Joi.object({
-  NODE_ENV: Joi.string().valid('development', 'test', 'production').default('development'),
-  PORT: Joi.number().default(3000),
-  API_PREFIX: Joi.string().default('/api/v1'),
-  APP_NAME: Joi.string().default('rest-api-boilerplate'),
+  NODE_ENV: Joi.string().valid('development', 'test', 'production').required(),
+  PORT: Joi.number().required(),
+  API_PREFIX: Joi.string().required(),
+  APP_NAME: Joi.string().required(),
 
   DB_HOST: Joi.string().required(),
-  DB_PORT: Joi.number().default(3306),
+  DB_PORT: Joi.number().required(),
   DB_NAME: Joi.string().required(),
   DB_USER: Joi.string().required(),
   DB_PASSWORD: Joi.string().required(),
-  DB_LOGGING: Joi.boolean().default(false),
+  DB_LOGGING: Joi.boolean().required(),
 
   JWT_ACCESS_SECRET: Joi.string().min(16).required(),
-  JWT_ACCESS_EXPIRES_IN: Joi.string().default('15m'),
+  JWT_ACCESS_EXPIRES_IN: Joi.string().required(),
   JWT_REFRESH_SECRET: Joi.string().min(16).required(),
-  JWT_REFRESH_EXPIRES_IN: Joi.string().default('7d'),
+  JWT_REFRESH_EXPIRES_IN: Joi.string().required(),
 
-  BCRYPT_SALT_ROUNDS: Joi.number().min(8).max(15).default(12),
+  BCRYPT_SALT_ROUNDS: Joi.number().min(8).max(15).required(),
 
   CORS_ORIGIN: Joi.string().required(),
 
-  LOG_LEVEL: Joi.string().valid('error', 'warn', 'info', 'http', 'debug').default('info'),
-  LOG_DIR: Joi.string().default('logs'),
+  LOG_LEVEL: Joi.string().valid('error', 'warn', 'info', 'http', 'debug').required(),
+  LOG_DIR: Joi.string().required(),
 
-  RATE_LIMIT_WINDOW_MS: Joi.number().default(15 * 60 * 1000),
-  RATE_LIMIT_MAX_REQUESTS: Joi.number().default(100),
-  RATE_LIMIT_LOGIN_MAX_REQUESTS: Joi.number().default(10),
+  RATE_LIMIT_WINDOW_MS: Joi.number().required(),
+  RATE_LIMIT_MAX_REQUESTS: Joi.number().required(),
+  RATE_LIMIT_LOGIN_MAX_REQUESTS: Joi.number().required(),
 }).unknown();
 
 const { value, error } = envSchema.validate(process.env, {

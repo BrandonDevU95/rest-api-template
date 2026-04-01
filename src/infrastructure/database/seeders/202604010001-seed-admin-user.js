@@ -1,14 +1,21 @@
 'use strict';
 
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 
 /** @type {import('sequelize-cli').Seeder} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     const now = new Date();
-    const email = process.env.ADMIN_EMAIL || 'admin@boilerplate.com';
-    const plainPassword = process.env.ADMIN_PASSWORD || 'Admin123!';
+    const email = process.env.ADMIN_EMAIL;
+    const plainPassword = process.env.ADMIN_PASSWORD;
+
+    if (!email || !plainPassword) {
+      throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD must be defined in .env');
+    }
+
     const passwordHash = await bcrypt.hash(plainPassword, 12);
 
     await queryInterface.bulkInsert('users', [
@@ -24,7 +31,12 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    const email = process.env.ADMIN_EMAIL || 'admin@boilerplate.com';
+    const email = process.env.ADMIN_EMAIL;
+
+    if (!email) {
+      throw new Error('ADMIN_EMAIL must be defined in .env');
+    }
+
     await queryInterface.bulkDelete('users', { email });
   },
 };
