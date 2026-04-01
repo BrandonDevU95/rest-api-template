@@ -8,8 +8,8 @@ Professional backend boilerplate with Clean Architecture using TypeScript, Expre
 2. Copy `.env.example` to `.env`
 3. Fill every required variable in `.env` before starting the app; startup now fails if any mandatory value is missing
 4. Start with Docker: `docker compose up --build`
-5. Run migrations: `npm run db:migrate`
-6. Seed admin user: `npm run db:seed`
+5. Run migrations inside the API container: `docker compose exec api npm run db:migrate`
+6. Seed admin user inside the API container: `docker compose exec api npm run db:seed`
 7. Open Swagger at `http://localhost:3000/api-docs`
 
 The `.env.example` file is only a template. The API, database containers, and Sequelize CLI all read from `.env`, so the file must contain the full configuration before booting the project.
@@ -34,9 +34,11 @@ Use `docker compose up --build` again only when you change:
 
 #### Database Workflow
 
-- Run `npm run db:migrate` when you create a new migration or start from a fresh database.
-- Run `npm run db:seed` when you need to load initial data again, such as after recreating the database or adding a new seed.
+- Run database commands from inside the `api` container because `.env` uses `DB_HOST=mysql`, which only resolves inside the Docker network.
+- Use `docker compose exec api npm run db:migrate` when you create a new migration or start from a fresh database.
+- Use `docker compose exec api npm run db:seed` when you need to load initial data again, such as after recreating the database or adding a new seed.
 - You do not need to run them on every start; Sequelize tracks applied migrations, and seeds are only for initial or repeatable data loads.
+- If you run `npm run db:migrate` from your host shell with `DB_HOST=mysql`, you will get `getaddrinfo ENOTFOUND mysql`.
 
 ### Required Environment Variables
 
