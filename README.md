@@ -92,4 +92,8 @@ Default admin seed credentials:
 - Email: `admin@boilerplate.com`
 - Password: `Admin123!`
 
-Detailed documentation will be added under `docs/`.
+### Documentation Map
+
+- `README.md`: quick onboarding, development flow, and required environment variables.
+- `docs/INSTALLATION.md`: detailed installation and command execution for Docker and local modes.
+- `docs/ARCHITECTURE.md`: layered architecture, dependency rule, and technical design strategy.

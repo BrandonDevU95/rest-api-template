@@ -1,5 +1,8 @@
 # Architecture
 
+This document describes system design and layer responsibilities.
+For setup and runtime commands, see `docs/INSTALLATION.md`.
+
 This project follows a layered Clean Architecture style:
 
 1. Domain: business entities and repository contracts.
