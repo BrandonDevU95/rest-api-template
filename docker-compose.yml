@@ -34,7 +34,7 @@ services:
       NODE_ENV: development
       PORT: 3000
       API_PREFIX: /api/v1
-      APP_NAME: api-backend-boilerplate
+      APP_NAME: rest-api-boilerplate
       DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: boilerplate_db

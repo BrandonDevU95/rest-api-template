@@ -1,5 +1,5 @@
 {
-  "name": "api-backend-boilerplate",
+  "name": "rest-api-boilerplate",
   "version": "1.0.0",
   "description": "Backend API boilerplate with Clean Architecture using Express, TypeScript, Sequelize, MySQL, Passport, JWT, Joi, Winston, and Swagger.",
   "main": "dist/main.js",

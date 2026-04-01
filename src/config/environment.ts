@@ -1,5 +1,5 @@
-import dotenv from 'dotenv';
 import Joi from 'joi';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -7,7 +7,7 @@ const envSchema = Joi.object({
   NODE_ENV: Joi.string().valid('development', 'test', 'production').default('development'),
   PORT: Joi.number().default(3000),
   API_PREFIX: Joi.string().default('/api/v1'),
-  APP_NAME: Joi.string().default('api-backend-boilerplate'),
+  APP_NAME: Joi.string().default('rest-api-boilerplate'),
 
   DB_HOST: Joi.string().required(),
   DB_PORT: Joi.number().default(3306),
