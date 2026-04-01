@@ -1,11 +1,11 @@
-import swaggerJsdoc from 'swagger-jsdoc';
 import { env } from './environment';
+import swaggerJsdoc from 'swagger-jsdoc';
 
 export const swaggerSpec = swaggerJsdoc({
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'API Backend Boilerplate',
+      title: 'REST API Boilerplate',
       version: '1.0.0',
       description: 'Clean Architecture API boilerplate with Passport Local + JWT',
     },
