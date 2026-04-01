@@ -14,6 +14,30 @@ Professional backend boilerplate with Clean Architecture using TypeScript, Expre
 
 The `.env.example` file is only a template. The API, database containers, and Sequelize CLI all read from `.env`, so the file must contain the full configuration before booting the project.
 
+### Development Flow
+
+#### First Time Setup
+
+Use `docker compose up --build` the first time you clone the project or whenever you change `package.json` or `Dockerfile`. The `--build` flag rebuilds the image so Docker can pick up dependency or image-level changes, but it does not mean the app is running in production.
+
+#### Daily Development
+
+For normal day-to-day work, use `docker compose up` after the containers already exist. With the current setup, the API runs in development mode inside the container and reloads through `npm run dev`, so code changes do not require a rebuild.
+
+#### When to Rebuild
+
+Use `docker compose up --build` again only when you change:
+- `package.json`
+- `Dockerfile`
+- dependencies
+- image-level setup
+
+#### Database Workflow
+
+- Run `npm run db:migrate` when you create a new migration or start from a fresh database.
+- Run `npm run db:seed` when you need to load initial data again, such as after recreating the database or adding a new seed.
+- You do not need to run them on every start; Sequelize tracks applied migrations, and seeds are only for initial or repeatable data loads.
+
 ### Required Environment Variables
 
 #### Application
