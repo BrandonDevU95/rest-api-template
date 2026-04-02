@@ -37,6 +37,7 @@ const envSchema = Joi.object({
   RATE_LIMIT_WINDOW_MS: Joi.number().required(),
   RATE_LIMIT_MAX_REQUESTS: Joi.number().required(),
   RATE_LIMIT_LOGIN_MAX_REQUESTS: Joi.number().required(),
+  ALLOW_NON_STANDARD_TLDS: Joi.boolean().default(true),
 }).unknown();
 
 const { value, error } = envSchema.validate(process.env, {
@@ -95,6 +96,7 @@ export const env = {
     rateLimitWindowMs: value.RATE_LIMIT_WINDOW_MS as number,
     rateLimitMaxRequests: value.RATE_LIMIT_MAX_REQUESTS as number,
     rateLimitLoginMaxRequests: value.RATE_LIMIT_LOGIN_MAX_REQUESTS as number,
+    allowNonStandardTlds: value.ALLOW_NON_STANDARD_TLDS as boolean,
   },
 
   log: {

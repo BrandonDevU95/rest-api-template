@@ -78,6 +78,7 @@ Vuelve a usar `docker compose up --build` solo cuando cambies:
 | `RATE_LIMIT_WINDOW_MS`          | Ventana de tiempo para rate limiting.                                |
 | `RATE_LIMIT_MAX_REQUESTS`       | Maximo de solicitudes por ventana para trafico general.              |
 | `RATE_LIMIT_LOGIN_MAX_REQUESTS` | Maximo de solicitudes por ventana para intentos de login.            |
+| `ALLOW_NON_STANDARD_TLDS`       | Permite correos con dominios internos como `.local` cuando vale `true`. |
 
 #### Base De Datos Y Docker
 

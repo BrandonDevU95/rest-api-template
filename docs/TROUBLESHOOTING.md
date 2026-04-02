@@ -59,7 +59,20 @@ La base de datos aun no esta saludable, las credenciales son incorrectas o el ho
 2. Verifica `ADMIN_EMAIL` y `ADMIN_PASSWORD` en `.env`.
 3. Revisa el registro en la tabla `users`.
 
-## 5) Requests bloqueados por CORS
+## 5) El login retorna 400 por validacion de email
+
+### Sintoma
+`POST /auth/login` o `POST /auth/register` devuelve `VALIDATION_ERROR` indicando que el email no es valido, especialmente con correos como `admin@template.local`.
+
+### Causa
+La validacion de Joi esta en modo estricto para TLD publicos cuando `ALLOW_NON_STANDARD_TLDS=false`.
+
+### Solucion
+1. Para entornos locales con correos internos, define `ALLOW_NON_STANDARD_TLDS=true` en `.env`.
+2. Reinicia la aplicacion o reconstruye el contenedor para que lea la variable nueva.
+3. Si deseas volver al comportamiento estandar de Joi, cambia la variable a `false`.
+
+## 6) Requests bloqueados por CORS
 
 ### Sintoma
 Las solicitudes desde el navegador fallan con error CORS.
@@ -70,7 +83,7 @@ El origen no esta permitido por la configuracion `CORS_ORIGIN`.
 ### Solucion
 Agrega el origen de tu frontend a `CORS_ORIGIN` en `.env` y reinicia la API.
 
-## 6) Too many requests (429)
+## 7) Too many requests (429)
 
 ### Sintoma
 Las respuestas retornan 429 para llamadas repetidas.
@@ -84,7 +97,7 @@ Ajusta variables de entorno de rate limit para tu entorno:
 - `RATE_LIMIT_MAX_REQUESTS`
 - `RATE_LIMIT_LOGIN_MAX_REQUESTS`
 
-## 7) Swagger no disponible
+## 8) Swagger no disponible
 
 ### Sintoma
 `/api-docs` retorna 404.
@@ -98,7 +111,7 @@ Ajusta variables de entorno de rate limit para tu entorno:
 2. Confirma que la URL esperada combina prefijo y ruta de docs.
 3. Revisa logs de arranque para errores de inicializacion de Swagger.
 
-## 8) Logs sin correlation id
+## 9) Logs sin correlation id
 
 ### Sintoma
 Es dificil trazar una request entre logs.
@@ -110,7 +123,7 @@ El cliente no envio `x-correlation-id`, o el orden de middlewares cambio.
 1. Mantener `requestContextMiddleware` antes del middleware de request logging.
 2. Opcionalmente, enviar `x-correlation-id` desde clientes.
 
-## 9) Quiero reiniciar todo desde cero
+## 10) Quiero reiniciar todo desde cero
 
 ### Sintoma
 Necesitas eliminar contenedores y tambien borrar los datos persistidos (por ejemplo la base de datos MySQL).
