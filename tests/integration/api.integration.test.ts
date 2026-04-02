@@ -2,7 +2,6 @@ import { User, UserRole } from '../../src/domain/entities/User';
 
 import { HashService } from '../../src/application/services/HashService';
 import { TokenService } from '../../src/application/services/TokenService';
-import { app } from '../../src/app';
 import request from 'supertest';
 
 const mockUserRepository = {
@@ -17,6 +16,9 @@ const mockUserRepository = {
 jest.mock('../../src/infrastructure/database/repositories/UserRepository', () => ({
   UserRepository: jest.fn().mockImplementation(() => mockUserRepository),
 }));
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { app } = require('../../src/app');
 
 
 
