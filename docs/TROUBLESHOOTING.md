@@ -109,3 +109,25 @@ El cliente no envio `x-correlation-id`, o el orden de middlewares cambio.
 ### Solucion
 1. Mantener `requestContextMiddleware` antes del middleware de request logging.
 2. Opcionalmente, enviar `x-correlation-id` desde clientes.
+
+## 9) Quiero reiniciar todo desde cero
+
+### Sintoma
+Necesitas eliminar contenedores y tambien borrar los datos persistidos (por ejemplo la base de datos MySQL).
+
+### Causa
+`docker compose down` por si solo no elimina volumenes nombrados.
+
+### Solucion
+1. Bajar contenedores y eliminar volumenes del proyecto:
+   - `docker compose down -v`
+2. Si quieres incluir tambien contenedores huerfanos:
+   - `docker compose down -v --remove-orphans`
+3. Levantar nuevamente desde cero:
+   - `docker compose up --build`
+4. Volver a aplicar estructura de datos inicial:
+   - `docker compose exec api npm run db:migrate`
+   - `docker compose exec api npm run db:seed`
+
+### Advertencia
+La bandera `-v` elimina volumenes nombrados del compose, por lo tanto se pierde toda la data persistida.

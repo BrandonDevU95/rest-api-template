@@ -34,6 +34,28 @@ Cuando ejecutarlos:
 - Ejecuta seeds cuando necesites datos iniciales nuevamente, por ejemplo despues de recrear la base de datos.
 - No los ejecutes en cada inicio. Sequelize registra las migraciones aplicadas.
 
+## Reinicio Limpio Del Proyecto
+
+Si quieres destruir contenedores y eliminar tambien los datos persistidos (incluyendo MySQL), usa:
+
+- `docker compose down -v`
+
+Si ademas quieres remover contenedores huerfanos del compose actual:
+
+- `docker compose down -v --remove-orphans`
+
+Despues de eso, levanta de nuevo el stack:
+
+- `docker compose up --build`
+
+Y luego ejecuta migraciones y seed segun corresponda:
+
+- `docker compose exec api npm run db:migrate`
+- `docker compose exec api npm run db:seed`
+
+Advertencia:
+- `-v` elimina volumenes nombrados del proyecto (por ejemplo el volumen de MySQL), por lo tanto se pierde toda la data persistida.
+
 ## Arranque Local Con Node (Sin Docker)
 
 Usa este modo solo si ejecutas MySQL fuera de Docker y apuntas `.env` a ese host (por ejemplo `DB_HOST=localhost`).

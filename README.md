@@ -53,6 +53,7 @@ Vuelve a usar `docker compose up --build` solo cuando cambies:
 - Usa `docker compose exec api npm run db:seed` cuando necesites cargar datos iniciales nuevamente, por ejemplo al recrear la base de datos o agregar un nuevo seed.
 - No necesitas ejecutarlos en cada arranque; Sequelize registra las migraciones aplicadas, y los seeds son para cargas iniciales o repetibles.
 - Si ejecutas `npm run db:migrate` desde tu host con `DB_HOST=mysql`, obtendras `getaddrinfo ENOTFOUND mysql`.
+- Para reiniciar todo desde cero (incluyendo volumen de MySQL), usa `docker compose down -v` y luego `docker compose up --build`.
 
 ### Variables De Entorno Requeridas
 
