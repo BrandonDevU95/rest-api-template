@@ -1,0 +1,90 @@
+@baseUrl = {{baseUrl}}
+@apiPrefix = {{apiPrefix}}
+
+### Health check
+GET {{baseUrl}}{{apiPrefix}}/health
+
+### Register user (optional; can return 409 if already exists)
+# @name registerUser
+POST {{baseUrl}}{{apiPrefix}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{newUserEmail}}",
+  "password": "{{newUserPassword}}"
+}
+
+### Login admin
+# @name loginAdmin
+POST {{baseUrl}}{{apiPrefix}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+### Profile (admin)
+GET {{baseUrl}}{{apiPrefix}}/auth/profile
+Authorization: Bearer {{loginAdmin.response.body.$.accessToken}}
+
+### Refresh token (admin)
+# @name refreshAdmin
+POST {{baseUrl}}{{apiPrefix}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{loginAdmin.response.body.$.refreshToken}}"
+}
+
+### Create user (admin)
+# @name createUser
+POST {{baseUrl}}{{apiPrefix}}/users
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.$.accessToken}}
+
+{
+  "email": "{{newUserEmail}}",
+  "password": "{{newUserPassword}}",
+  "role": "user"
+}
+
+### List users (admin)
+GET {{baseUrl}}{{apiPrefix}}/users
+Authorization: Bearer {{loginAdmin.response.body.$.accessToken}}
+
+### Get user by id (admin)
+GET {{baseUrl}}{{apiPrefix}}/users/{{createUser.response.body.$.id}}
+Authorization: Bearer {{loginAdmin.response.body.$.accessToken}}
+
+### Update user by id (admin)
+# @name updateUser
+PUT {{baseUrl}}{{apiPrefix}}/users/{{createUser.response.body.$.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.$.accessToken}}
+
+{
+  "email": "{{updatedUserEmail}}",
+  "role": "user"
+}
+
+### Delete user by id (admin)
+DELETE {{baseUrl}}{{apiPrefix}}/users/{{createUser.response.body.$.id}}
+Authorization: Bearer {{loginAdmin.response.body.$.accessToken}}
+
+### Negative test: profile without token (should be 401)
+GET {{baseUrl}}{{apiPrefix}}/auth/profile
+
+### Negative test: list users with user token (should be 403)
+# Run this after registerUser/loginUser block to validate role restrictions.
+# @name loginUser
+POST {{baseUrl}}{{apiPrefix}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{newUserEmail}}",
+  "password": "{{newUserPassword}}"
+}
+
+GET {{baseUrl}}{{apiPrefix}}/users
+Authorization: Bearer {{loginUser.response.body.$.accessToken}}
