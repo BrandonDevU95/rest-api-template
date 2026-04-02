@@ -13,7 +13,7 @@ const envSchema = Joi.object({
   NODE_ENV: Joi.string().valid('development', 'test', 'production').required(),
   PORT: Joi.number().required(),
   API_PREFIX: Joi.string().required(),
-  APP_NAME: Joi.string().required(),
+  PROJECT_SLUG: Joi.string().pattern(/^[a-z0-9]+(?:[-_][a-z0-9]+)*$/).required(),
 
   DB_HOST: Joi.string().required(),
   DB_PORT: Joi.number().required(),
@@ -49,13 +49,26 @@ if (error) {
   throw new Error(`Environment validation error: ${error.message}`);
 }
 
+const projectSlug = value.PROJECT_SLUG as string;
+const toTitleFromSlug = (slug: string): string =>
+  slug
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
+    .join(' ');
+
+const appName = toTitleFromSlug(projectSlug);
+const appDescription = `${appName} API`;
+
 export const env = {
   nodeEnv: value.NODE_ENV as 'development' | 'test' | 'production',
   isProduction: value.NODE_ENV === 'production',
   isDevelopment: value.NODE_ENV === 'development',
 
   app: {
-    name: value.APP_NAME as string,
+    slug: projectSlug,
+    name: appName,
+    description: appDescription,
     port: value.PORT as number,
     apiPrefix: value.API_PREFIX as string,
   },

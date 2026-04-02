@@ -1,18 +1,32 @@
-# API Backend Boilerplate
+# REST API Template
 
-Professional backend boilerplate with Clean Architecture using TypeScript, Express, Sequelize, MySQL, Passport-Local, JWT, Joi, Winston/Morgan, and Swagger.
+Professional backend template with Clean Architecture using TypeScript, Express, Sequelize, MySQL, Passport-Local, JWT, Joi, Winston/Morgan, and Swagger.
 
 ## Quick Start
 
 1. Install dependencies
 2. Copy `.env.example` to `.env`
 3. Fill every required variable in `.env` before starting the app; startup now fails if any mandatory value is missing
-4. Start with Docker: `docker compose up --build`
-5. Run migrations inside the API container: `docker compose exec api npm run db:migrate`
-6. Seed admin user inside the API container: `docker compose exec api npm run db:seed`
-7. Open Swagger at `http://localhost:3000/api-docs`
+4. Sync project metadata from `PROJECT_SLUG`: `npm run naming:sync`
+5. Start with Docker: `docker compose up --build`
+6. Run migrations inside the API container: `docker compose exec api npm run db:migrate`
+7. Seed admin user inside the API container: `docker compose exec api npm run db:seed`
+8. Open Swagger at `http://localhost:3000/api-docs`
 
 The `.env.example` file is only a template. The API, database containers, and Sequelize CLI all read from `.env`, so the file must contain the full configuration before booting the project.
+
+## Project Naming Customization (Centralized)
+
+To fully personalize the project name without searching folder-by-folder, update only these files:
+
+1. `.env` (single source through `PROJECT_SLUG`)
+2. Run `npm run naming:sync` to update package metadata from `PROJECT_SLUG`
+
+Main naming variables in `.env`:
+
+| Variable | Purpose |
+| --- | --- |
+| `PROJECT_SLUG` | Master variable. Derives Docker project name, container names, network name, app name in logs/Swagger title, and Swagger description. |
 
 ### Development Flow
 
@@ -49,7 +63,7 @@ Use `docker compose up --build` again only when you change:
 | `NODE_ENV` | Defines the runtime mode used by the app and error handling. |
 | `PORT` | Port where the API listens. |
 | `API_PREFIX` | Base path for all API routes. |
-| `APP_NAME` | Application name used in logs and metadata. |
+| `PROJECT_SLUG` | Master naming value used to derive app and Docker names. |
 | `JWT_ACCESS_SECRET` | Secret used to sign and verify access tokens. |
 | `JWT_ACCESS_EXPIRES_IN` | Expiration for access tokens. |
 | `JWT_REFRESH_SECRET` | Secret used to sign and verify refresh tokens. |
@@ -89,7 +103,7 @@ Use `docker compose up --build` again only when you change:
 | `ADMIN_PASSWORD` | Password used by the admin seed script. |
 
 Default admin seed credentials:
-- Email: `admin@boilerplate.com`
+- Email: `admin@template.local`
 - Password: `Admin123!`
 
 ### Documentation Map
@@ -98,6 +112,7 @@ Default admin seed credentials:
 - `docs/INSTALLATION.md`: detailed installation and command execution for Docker and local modes.
 - `docs/ARCHITECTURE.md`: layered architecture, dependency rule, and technical design strategy.
 - `docs/FILES_REFERENCE.md`: file-by-file guide with purpose, update expectations, and documentation checklist.
+- `docs/PROJECT_CUSTOMIZATION.md`: quick rename guide for project, containers, and Docker network.
 - `docs/REQUEST_FLOWS.md`: request pipeline and endpoint behavior by route group.
 - `docs/TROUBLESHOOTING.md`: common setup/runtime failures and remediations.
 

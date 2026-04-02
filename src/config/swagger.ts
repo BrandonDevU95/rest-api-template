@@ -11,9 +11,9 @@ export const swaggerSpec = swaggerJsdoc({
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'REST API Boilerplate',
+      title: env.app.name,
       version: '1.0.0',
-      description: 'Clean Architecture API boilerplate with Passport Local + JWT',
+      description: env.app.description,
     },
     servers: [
       {

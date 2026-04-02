@@ -1,9 +1,10 @@
 {
-  "name": "rest-api-boilerplate",
+  "name": "rest-api-template",
   "version": "1.0.0",
-  "description": "Backend API boilerplate with Clean Architecture using Express, TypeScript, Sequelize, MySQL, Passport, JWT, Joi, Winston, and Swagger.",
+  "description": "Rest Api Template API template with Clean Architecture using Express, TypeScript, Sequelize, MySQL, Passport, JWT, Joi, Winston, and Swagger.",
   "main": "dist/main.js",
   "scripts": {
+    "naming:sync": "node scripts/sync-project-metadata.js",
     "dev": "nodemon",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",

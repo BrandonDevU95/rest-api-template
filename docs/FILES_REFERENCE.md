@@ -7,6 +7,7 @@ This document explains the purpose of each file in the repository and what shoul
 ### `docker-compose.yml`
 - Purpose: Orchestrates local services (api, mysql, phpmyadmin).
 - Document when changed: services, ports, volumes, healthchecks, dependencies.
+- Personalization: derives project, container, and network names from `.env` using `PROJECT_SLUG`.
 - Risks: startup order issues, incorrect hostnames, missing volume persistence.
 
 ### `Dockerfile`
@@ -17,7 +18,13 @@ This document explains the purpose of each file in the repository and what shoul
 ### `package.json`
 - Purpose: project metadata, dependencies, scripts.
 - Document when changed: scripts contract (`dev`, `build`, `start`, `db:*`, `test:*`), dependency upgrades.
+- Personalization: `name` and `description` are generated from `PROJECT_SLUG` via `npm run naming:sync`.
 - Risks: broken developer workflow, incompatible package versions.
+
+### `scripts/sync-project-metadata.js`
+- Purpose: synchronizes package metadata (`package.json`, `package-lock.json`) from `.env` `PROJECT_SLUG`.
+- Document when changed: slug parsing rules, generated description format, updated files.
+- Risks: mismatch between env naming and package metadata if not executed after slug changes.
 
 ### `tsconfig.json`
 - Purpose: TypeScript compiler behavior.
@@ -41,7 +48,7 @@ This document explains the purpose of each file in the repository and what shoul
 
 ### `README.md`
 - Purpose: onboarding and quick operations.
-- Document when changed: startup flow, env variables, docs map.
+- Document when changed: startup flow, env variables, docs map, naming customization instructions.
 - Risks: onboarding drift and repeated setup failures.
 
 ### `LICENSE`
@@ -60,6 +67,11 @@ This document explains the purpose of each file in the repository and what shoul
 - Purpose: environment setup and command execution.
 - Document when changed: docker-first workflow, local workflow, migration/seed process.
 - Risks: incomplete setup, failing boot sequence.
+
+### `docs/PROJECT_CUSTOMIZATION.md`
+- Purpose: short rename checklist for the template, Docker services, and project metadata.
+- Document when changed: naming variables, user-facing setup steps.
+- Risks: outdated rename instructions.
 
 ### `docs/FILES_REFERENCE.md`
 - Purpose: file-by-file ownership and documentation checklist.
@@ -119,11 +131,13 @@ This document explains the purpose of each file in the repository and what shoul
 #### `src/config/environment.ts`
 - Purpose: env loading and Joi validation.
 - Document when changed: required variables, defaults, schema constraints.
+- Personalization: validates `PROJECT_SLUG` and derives app metadata from it.
 - Risks: runtime crashes due to config drift.
 
 #### `src/config/swagger.ts`
 - Purpose: OpenAPI generation setup.
 - Document when changed: scanned route files, base metadata, docs endpoint behavior.
+- Personalization: Swagger title and description derive from `PROJECT_SLUG` via environment config.
 - Risks: API docs not matching runtime.
 
 ### Domain Layer

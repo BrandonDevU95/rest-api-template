@@ -8,13 +8,15 @@
 ## Docker-first Startup (Recommended)
 
 1. Copy `.env.example` to `.env`.
-2. Fill every required variable in `.env`.
-3. Start services: `docker compose up --build`.
-4. Run migrations inside the API container: `docker compose exec api npm run db:migrate`.
-5. Seed admin user inside the API container: `docker compose exec api npm run db:seed`.
-6. API: `http://localhost:3000`.
-7. Swagger: `http://localhost:3000/api-docs`.
-8. phpMyAdmin: `http://localhost:8081`.
+2. Personalize the naming variable in `.env` (`PROJECT_SLUG`).
+3. Fill every other required variable in `.env`.
+4. Sync package metadata: `npm run naming:sync`.
+5. Start services: `docker compose up --build`.
+6. Run migrations inside the API container: `docker compose exec api npm run db:migrate`.
+7. Seed admin user inside the API container: `docker compose exec api npm run db:seed`.
+8. API: `http://localhost:3000`.
+9. Swagger: `http://localhost:3000/api-docs`.
+10. phpMyAdmin: `http://localhost:8081`.
 
 Notes:
 - Use `docker compose up` for daily work after the first successful build.
@@ -45,6 +47,7 @@ Use this mode only if you run MySQL outside Docker and point `.env` to that host
 ## Related Docs
 
 - Project overview and quick start: `README.md`
+- Quick rename guide: `docs/PROJECT_CUSTOMIZATION.md`
 - Architecture and design decisions: `docs/ARCHITECTURE.md`
 - File-by-file guide: `docs/FILES_REFERENCE.md`
 - Request/response execution flow: `docs/REQUEST_FLOWS.md`
