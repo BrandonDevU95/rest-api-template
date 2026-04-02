@@ -107,6 +107,33 @@ Credenciales por defecto del seed admin:
 - Email: `admin@template.local`
 - Contrasena: `Admin123!`
 
+## Baseline De Pruebas (Jest)
+
+Esta plantilla incluye un punto medio entre "sin pruebas" y "probar todo":
+
+- Integracion HTTP para contratos criticos de API (health, auth, permisos y errores).
+- Unitarias para servicios puros y casos de uso (hash, tokens, registro y refresh).
+- Sin dependencia de MySQL real en pruebas de integracion: se mockea el repositorio para mantener estabilidad y velocidad.
+
+Comandos:
+
+- `npm test`: ejecuta toda la suite una vez.
+- `npm run test:watch`: ejecuta en modo watch para desarrollo.
+- `npm run test:coverage`: genera cobertura para revisar huecos.
+
+Cobertura objetivo inicial sugerida para proyectos creados desde esta plantilla:
+
+- 45% a 55% global como red de seguridad inicial.
+- Priorizar endpoints de auth, middlewares de seguridad y contratos de error.
+
+Checklist para extender pruebas en proyectos derivados:
+
+1. Agregar al menos una prueba de flujo feliz y una de fallo por endpoint nuevo.
+2. Verificar siempre codigos HTTP y `code` de error del contrato publico.
+3. Evitar mocks de detalles internos cuando el comportamiento HTTP sea verificable.
+4. Mantener pruebas deterministas: sin red externa y sin dependencias no controladas.
+5. Ejecutar `npm test` en CI junto con lint antes de mergear cambios.
+
 ### Mapa De Documentacion
 
 - `README.md`: onboarding rapido, flujo de desarrollo y variables de entorno requeridas.
