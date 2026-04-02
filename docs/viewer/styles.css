@@ -155,11 +155,13 @@ h1 {
 
 .search-controls {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.4rem;
+  width: 100%;
 }
 
 .search-controls input {
+  min-width: 0;
   border: 1px solid var(--border);
   background: #fff;
   color: var(--ink);
