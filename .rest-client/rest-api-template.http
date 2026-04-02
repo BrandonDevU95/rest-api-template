@@ -1,5 +1,10 @@
-@baseUrl = {{baseUrl}}
-@apiPrefix = {{apiPrefix}}
+@baseUrl = http://localhost:3000
+@apiPrefix = /api/v1
+@adminEmail = admin@template.local
+@adminPassword = Admin123!
+@newUserEmail = user.restclient.local@example.com
+@newUserPassword = User12345!
+@updatedUserEmail = user.restclient.updated@example.com
 
 ### Health check
 GET {{baseUrl}}{{apiPrefix}}/health
@@ -72,12 +77,8 @@ Authorization: Bearer {{loginAdmin.response.body.$.accessToken}}
 DELETE {{baseUrl}}{{apiPrefix}}/users/{{createUser.response.body.$.id}}
 Authorization: Bearer {{loginAdmin.response.body.$.accessToken}}
 
-### Negative test: profile without token (should be 401)
-GET {{baseUrl}}{{apiPrefix}}/auth/profile
-
-### Negative test: list users with user token (should be 403)
-# Run this after registerUser/loginUser block to validate role restrictions.
-# @name loginUser
+### Login user (created with register)
+# @name loginRegisteredUser
 POST {{baseUrl}}{{apiPrefix}}/auth/login
 Content-Type: application/json
 
@@ -86,5 +87,13 @@ Content-Type: application/json
   "password": "{{newUserPassword}}"
 }
 
+### Profile (registered user)
+GET {{baseUrl}}{{apiPrefix}}/auth/profile
+Authorization: Bearer {{loginRegisteredUser.response.body.$.accessToken}}
+
+### Negative test: profile without token (should be 401)
+GET {{baseUrl}}{{apiPrefix}}/auth/profile
+
+### Negative test: list users with user token (should be 403)
 GET {{baseUrl}}{{apiPrefix}}/users
-Authorization: Bearer {{loginUser.response.body.$.accessToken}}
+Authorization: Bearer {{loginRegisteredUser.response.body.$.accessToken}}
