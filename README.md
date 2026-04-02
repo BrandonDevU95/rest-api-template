@@ -113,6 +113,7 @@ Credenciales por defecto del seed admin:
 - `docs/INSTALLATION.md`: instalacion detallada y ejecucion de comandos para Docker y modo local.
 - `docs/ARCHITECTURE.md`: arquitectura por capas, regla de dependencias y estrategia de diseno tecnico.
 - `docs/FILES_REFERENCE.md`: guia archivo por archivo con proposito, expectativas de actualizacion y checklist de documentacion.
+- `docs/LOGGER.md`: guia practica para usar el logger del proyecto, ejemplos de implementacion y trazabilidad con correlation id.
 - `docs/PROJECT_CUSTOMIZATION.md`: guia rapida de renombre para proyecto, contenedores y red de Docker.
 - `docs/REQUEST_FLOWS.md`: pipeline de requests y comportamiento de endpoints por grupo de rutas.
 - `docs/TROUBLESHOOTING.md`: errores comunes de setup/ejecucion y sus soluciones.

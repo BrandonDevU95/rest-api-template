@@ -1,8 +1,10 @@
-import { ConflictError } from '../../../shared/errors/AppError';
 import { RegisterDto, TokenPairDto } from '../../dto/auth.dto';
-import { IUserRepository } from '../../../domain/interfaces/IUserRepository';
+
+import { ConflictError } from '../../../shared/errors/AppError';
 import { HashService } from '../../services/HashService';
+import { IUserRepository } from '../../../domain/interfaces/IUserRepository';
 import { TokenService } from '../../services/TokenService';
+import { logger } from '../../../infrastructure/logger/logger';
 
 /**
  * Orquestacion del flujo de registro.
@@ -21,8 +23,14 @@ export class RegisterUseCase {
   ) {}
 
   async execute(dto: RegisterDto): Promise<TokenPairDto> {
+    const emailDomain = dto.email.includes('@') ? dto.email.split('@')[1] : 'unknown';
     const existing = await this.userRepository.findByEmail(dto.email);
     if (existing) {
+      logger.warn('Register rejected: email already exists', {
+        meta: {
+          emailDomain,
+        },
+      });
       throw new ConflictError('Email already exists');
     }
 
@@ -31,6 +39,14 @@ export class RegisterUseCase {
       email: dto.email,
       passwordHash,
       role: 'user',
+    });
+
+    logger.info('User registered', {
+      meta: {
+        userId: user.id,
+        role: user.role,
+        emailDomain,
+      },
     });
 
     return this.tokenService.createTokenPair({

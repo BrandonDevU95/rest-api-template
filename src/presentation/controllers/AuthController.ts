@@ -1,11 +1,13 @@
 import { Request, Response } from 'express';
-import { TokenService } from '../../application/services/TokenService';
-import { RegisterUseCase } from '../../application/use-cases/auth/RegisterUseCase';
-import { RefreshTokenUseCase } from '../../application/use-cases/auth/RefreshTokenUseCase';
-import { UserRepository } from '../../infrastructure/database/repositories/UserRepository';
+
 import { HashService } from '../../application/services/HashService';
+import { RefreshTokenUseCase } from '../../application/use-cases/auth/RefreshTokenUseCase';
+import { RegisterUseCase } from '../../application/use-cases/auth/RegisterUseCase';
+import { TokenService } from '../../application/services/TokenService';
 import { UnauthorizedError } from '../../shared/errors/AppError';
+import { UserRepository } from '../../infrastructure/database/repositories/UserRepository';
 import { getCurrentUser } from '../middlewares/currentUser.middleware';
+import { logger } from '../../infrastructure/logger/logger';
 
 /**
  * Controlador HTTP para endpoints de autenticacion.
@@ -33,6 +35,13 @@ export class AuthController {
     const user = req.user;
 
     if (!user) {
+      logger.warn('Login rejected: credentials were not validated', {
+        correlationId: req.correlationId,
+        meta: {
+          path: req.originalUrl,
+          method: req.method,
+        },
+      });
       throw new UnauthorizedError('Invalid credentials');
     }
 
@@ -40,6 +49,16 @@ export class AuthController {
       sub: user.id,
       email: user.email,
       role: user.role,
+    });
+
+    logger.info('Login succeeded', {
+      correlationId: req.correlationId,
+      meta: {
+        userId: user.id,
+        role: user.role,
+        path: req.originalUrl,
+        method: req.method,
+      },
     });
 
     res.status(200).json(tokens);

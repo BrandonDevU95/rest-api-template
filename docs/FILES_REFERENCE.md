@@ -73,6 +73,11 @@ Este documento explica el proposito de cada archivo del repositorio y que debe d
 - Documentar al cambiar: variables de naming, pasos de setup orientados al usuario.
 - Riesgos: instrucciones de renombre desactualizadas.
 
+### `docs/LOGGER.md`
+- Proposito: guia de uso del logger, niveles, redaccion de datos sensibles y trazabilidad con correlation id.
+- Documentar al cambiar: nuevos niveles, transports, formatos, ejemplos de uso o politicas de redaccion.
+- Riesgos: uso inconsistente del logger, fuga de secretos o perdida de trazabilidad.
+
 ### `docs/FILES_REFERENCE.md`
 - Proposito: responsabilidad archivo por archivo y checklist de documentacion.
 - Documentar al cambiar: responsabilidades de archivos y expectativas de actualizacion.

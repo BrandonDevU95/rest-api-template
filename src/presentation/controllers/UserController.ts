@@ -1,8 +1,10 @@
-import { Request, Response } from 'express';
-import { UserRepository } from '../../infrastructure/database/repositories/UserRepository';
-import { HashService } from '../../application/services/HashService';
 import { ConflictError, NotFoundError } from '../../shared/errors/AppError';
+import { Request, Response } from 'express';
+
+import { HashService } from '../../application/services/HashService';
+import { UserRepository } from '../../infrastructure/database/repositories/UserRepository';
 import { getCurrentUser } from '../middlewares/currentUser.middleware';
+import { logger } from '../../infrastructure/logger/logger';
 
 const userRepository = new UserRepository();
 const hashService = new HashService();
@@ -16,8 +18,18 @@ const hashService = new HashService();
  */
 export class UserController {
   static async create(req: Request, res: Response): Promise<void> {
+    const currentUser = getCurrentUser(req);
     const existing = await userRepository.findByEmail(req.body.email);
     if (existing) {
+      logger.warn('User creation rejected: email already exists', {
+        correlationId: req.correlationId,
+        meta: {
+          actorUserId: currentUser.id,
+          actorRole: currentUser.role,
+          path: req.originalUrl,
+          method: req.method,
+        },
+      });
       throw new ConflictError('Email already exists');
     }
 
@@ -28,6 +40,18 @@ export class UserController {
       role: req.body.role ?? 'user',
     });
 
+    logger.info('User created', {
+      correlationId: req.correlationId,
+      meta: {
+        actorUserId: currentUser.id,
+        actorRole: currentUser.role,
+        createdUserId: user.id,
+        createdUserRole: user.role,
+        path: req.originalUrl,
+        method: req.method,
+      },
+    });
+
     res.status(201).json({
       id: user.id,
       email: user.email,
@@ -36,8 +60,21 @@ export class UserController {
     });
   }
 
-  static async list(_req: Request, res: Response): Promise<void> {
+  static async list(req: Request, res: Response): Promise<void> {
+    const currentUser = getCurrentUser(req);
     const users = await userRepository.list();
+
+    logger.info('Users listed', {
+      correlationId: req.correlationId,
+      meta: {
+        actorUserId: currentUser.id,
+        actorRole: currentUser.role,
+        totalUsers: users.length,
+        path: req.originalUrl,
+        method: req.method,
+      },
+    });
+
     res.status(200).json(
       users.map((u) => ({
         id: u.id,
@@ -49,12 +86,34 @@ export class UserController {
   }
 
   static async getById(req: Request, res: Response): Promise<void> {
+    const currentUser = getCurrentUser(req);
     const id = String(req.params.id);
     const user = await userRepository.findById(id);
 
     if (!user) {
+      logger.warn('User lookup failed: user not found', {
+        correlationId: req.correlationId,
+        meta: {
+          actorUserId: currentUser.id,
+          actorRole: currentUser.role,
+          targetUserId: id,
+          path: req.originalUrl,
+          method: req.method,
+        },
+      });
       throw new NotFoundError('User not found');
     }
+
+    logger.info('User fetched by id', {
+      correlationId: req.correlationId,
+      meta: {
+        actorUserId: currentUser.id,
+        actorRole: currentUser.role,
+        targetUserId: id,
+        path: req.originalUrl,
+        method: req.method,
+      },
+    });
 
     res.status(200).json({
       id: user.id,
@@ -76,6 +135,16 @@ export class UserController {
     if (req.body.email) {
       const existing = await userRepository.findByEmail(req.body.email);
       if (existing && existing.id !== id) {
+        logger.warn('User update rejected: email already exists', {
+          correlationId: req.correlationId,
+          meta: {
+            actorUserId: currentUser.id,
+            actorRole: currentUser.role,
+            targetUserId: id,
+            path: req.originalUrl,
+            method: req.method,
+          },
+        });
         throw new ConflictError('Email already exists');
       }
     }
@@ -86,8 +155,30 @@ export class UserController {
     });
 
     if (!user) {
+      logger.warn('User update failed: user not found', {
+        correlationId: req.correlationId,
+        meta: {
+          actorUserId: currentUser.id,
+          actorRole: currentUser.role,
+          targetUserId: id,
+          path: req.originalUrl,
+          method: req.method,
+        },
+      });
       throw new NotFoundError('User not found');
     }
+
+    logger.info('User updated', {
+      correlationId: req.correlationId,
+      meta: {
+        actorUserId: currentUser.id,
+        actorRole: currentUser.role,
+        targetUserId: id,
+        updatedRole: user.role,
+        path: req.originalUrl,
+        method: req.method,
+      },
+    });
 
     res.status(200).json({
       id: user.id,
@@ -99,10 +190,32 @@ export class UserController {
 
   static async delete(req: Request, res: Response): Promise<void> {
     const id = String(req.params.id);
+    const currentUser = getCurrentUser(req);
     const deleted = await userRepository.deleteById(id);
     if (!deleted) {
+      logger.warn('User deletion failed: user not found', {
+        correlationId: req.correlationId,
+        meta: {
+          actorUserId: currentUser.id,
+          actorRole: currentUser.role,
+          targetUserId: id,
+          path: req.originalUrl,
+          method: req.method,
+        },
+      });
       throw new NotFoundError('User not found');
     }
+
+    logger.info('User deleted', {
+      correlationId: req.correlationId,
+      meta: {
+        actorUserId: currentUser.id,
+        actorRole: currentUser.role,
+        targetUserId: id,
+        path: req.originalUrl,
+        method: req.method,
+      },
+    });
 
     res.status(204).send();
   }
