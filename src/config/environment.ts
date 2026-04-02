@@ -3,6 +3,12 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+/**
+ * Environment configuration loader.
+ *
+ * Validates all required runtime variables once at startup and exports a
+ * typed config object used across the application.
+ */
 const envSchema = Joi.object({
   NODE_ENV: Joi.string().valid('development', 'test', 'production').required(),
   PORT: Joi.number().required(),

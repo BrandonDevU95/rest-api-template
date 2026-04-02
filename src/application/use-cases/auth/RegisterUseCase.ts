@@ -4,6 +4,15 @@ import { IUserRepository } from '../../../domain/interfaces/IUserRepository';
 import { HashService } from '../../services/HashService';
 import { TokenService } from '../../services/TokenService';
 
+/**
+ * Register flow orchestration.
+ *
+ * Sequence:
+ * 1) reject if email already exists
+ * 2) hash plain password
+ * 3) persist user with default role "user"
+ * 4) return signed access/refresh tokens
+ */
 export class RegisterUseCase {
   constructor(
     private readonly userRepository: IUserRepository,

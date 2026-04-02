@@ -9,6 +9,13 @@ export interface UserProps {
   updatedAt: Date;
 }
 
+/**
+ * Domain user entity.
+ *
+ * Holds core user state and simple domain behavior without framework or ORM
+ * dependencies. Sensitive fields such as passwordHash must never be exposed
+ * outside trusted application boundaries.
+ */
 export class User {
   public readonly id: string;
   public email: string;

@@ -7,6 +7,12 @@ import {
 } from 'sequelize';
 import { sequelize } from '../sequelize';
 
+/**
+ * Sequelize model for the users table.
+ *
+ * Defines ORM-level schema, column names, defaults, and database constraints
+ * for user persistence.
+ */
 export class UserModel extends Model<InferAttributes<UserModel>, InferCreationAttributes<UserModel>> {
   declare id: CreationOptional<string>;
   declare email: string;

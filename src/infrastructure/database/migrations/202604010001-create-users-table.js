@@ -2,6 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
+  // Creates the initial users table and a unique email index.
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('users', {
       id: {
@@ -41,6 +42,7 @@ module.exports = {
     });
   },
 
+  // Reverts the users table creation.
   async down(queryInterface) {
     await queryInterface.dropTable('users');
   },

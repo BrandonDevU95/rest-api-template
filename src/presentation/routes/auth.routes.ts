@@ -7,6 +7,12 @@ import { loginRateLimiter } from '../middlewares/security.middleware';
 import { passport } from '../../infrastructure/auth/passport';
 import { authenticateJwt } from '../middlewares/auth.middleware';
 
+/**
+ * Authentication route registrations.
+ *
+ * Defines middleware chain per endpoint for validation, rate limiting,
+ * authentication strategy, and controller execution.
+ */
 export const authRouter = Router();
 
 authRouter.post('/register', validate({ body: registerSchema }), asyncHandler(AuthController.register));

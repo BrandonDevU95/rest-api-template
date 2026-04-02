@@ -1,5 +1,8 @@
 import { joi } from '../middlewares/validate.middleware';
 
+/**
+ * Joi schemas for user-management endpoints.
+ */
 export const createUserSchema = joi.object({
   email: joi.string().email().required(),
   password: joi.string().min(8).max(64).required(),

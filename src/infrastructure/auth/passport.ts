@@ -5,6 +5,12 @@ import { env } from '../../config/environment';
 import { UserRepository } from '../database/repositories/UserRepository';
 import { HashService } from '../../application/services/HashService';
 
+/**
+ * Passport strategy wiring.
+ *
+ * Local strategy authenticates email/password against the repository and hash
+ * service. JWT strategy resolves the current user from the bearer token.
+ */
 const userRepository = new UserRepository();
 const hashService = new HashService();
 

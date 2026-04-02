@@ -4,6 +4,16 @@ import { logger } from './infrastructure/logger/logger';
 import { sequelize } from './infrastructure/database/sequelize';
 import './infrastructure/database/models/UserModel';
 
+/**
+ * Application bootstrap entrypoint.
+ *
+ * Startup sequence:
+ * 1) authenticate database connection
+ * 2) start HTTP server
+ * 3) log successful startup
+ *
+ * If bootstrap fails, the process exits with code 1.
+ */
 const bootstrap = async (): Promise<void> => {
   await sequelize.authenticate();
 

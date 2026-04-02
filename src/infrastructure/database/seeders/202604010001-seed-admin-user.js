@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 
 /** @type {import('sequelize-cli').Seeder} */
 module.exports = {
+  // Inserts the initial admin user from environment credentials.
   async up(queryInterface) {
     const now = new Date();
     const email = process.env.ADMIN_EMAIL;
@@ -30,6 +31,7 @@ module.exports = {
     ]);
   },
 
+  // Removes seeded admin user by ADMIN_EMAIL.
   async down(queryInterface) {
     const email = process.env.ADMIN_EMAIL;
 

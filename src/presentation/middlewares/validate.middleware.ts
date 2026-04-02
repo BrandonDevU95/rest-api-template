@@ -2,6 +2,13 @@ import { NextFunction, Request, Response } from 'express';
 import Joi, { Schema } from 'joi';
 import { ValidationError } from '../../shared/errors/AppError';
 
+/**
+ * Request validation middleware factory.
+ *
+ * Applies Joi schemas to body/query/params with:
+ * - abortEarly: false (collect all validation errors)
+ * - stripUnknown: true (remove undeclared fields)
+ */
 interface ValidationSchemas {
   body?: Schema;
   query?: Schema;

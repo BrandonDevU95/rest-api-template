@@ -1,5 +1,11 @@
 import { format } from 'winston';
 
+/**
+ * Log formatting helpers.
+ *
+ * redactFormat removes sensitive data before persistence, consoleFormat
+ * keeps local development readable, and jsonFormat produces structured logs.
+ */
 const sensitiveKeys = ['password', 'token', 'authorization', 'cookie', 'creditCard'];
 
 const redactValue = (value: unknown): unknown => {

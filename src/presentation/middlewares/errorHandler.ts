@@ -3,6 +3,13 @@ import { env } from '../../config/environment';
 import { logger } from '../../infrastructure/logger/logger';
 import { AppError } from '../../shared/errors/AppError';
 
+/**
+ * Global HTTP error middlewares.
+ *
+ * - notFoundHandler converts unmatched routes into NOT_FOUND AppError.
+ * - errorHandler normalizes errors, logs with correlationId, and returns
+ *   the public error contract consumed by clients.
+ */
 export const notFoundHandler = (req: Request, _res: Response, next: NextFunction): void => {
   next(new AppError(`Route ${req.originalUrl} not found`, 404, 'NOT_FOUND'));
 };

@@ -31,3 +31,18 @@ Inner layers do not depend on outer layers.
 - Winston handles structured app and error logs.
 - Morgan logs HTTP requests with correlation id.
 - Sensitive fields are redacted before persistence.
+
+## Codebase Navigation
+
+- Entry points: `src/main.ts`, `src/app.ts`.
+- Presentation layer: `src/presentation/*` (routes, controllers, middlewares, validators).
+- Application layer: `src/application/*` (use cases, DTOs, services).
+- Domain layer: `src/domain/*` (entities and repository contracts).
+- Infrastructure layer: `src/infrastructure/*` (database, auth, logging implementations).
+- Shared utilities: `src/shared/*`.
+
+## Related Docs
+
+- File-by-file reference: `docs/FILES_REFERENCE.md`
+- Request pipeline and endpoint flow: `docs/REQUEST_FLOWS.md`
+- Setup/runtime troubleshooting: `docs/TROUBLESHOOTING.md`

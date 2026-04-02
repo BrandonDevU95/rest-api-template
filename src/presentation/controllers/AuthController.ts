@@ -7,6 +7,15 @@ import { HashService } from '../../application/services/HashService';
 import { UnauthorizedError } from '../../shared/errors/AppError';
 import { getCurrentUser } from '../middlewares/currentUser.middleware';
 
+/**
+ * HTTP controller for authentication endpoints.
+ *
+ * Responsibilities:
+ * - register: create user account through RegisterUseCase.
+ * - login: issue token pair after LocalStrategy injects req.user.
+ * - refresh: exchange refresh token for a new token pair.
+ * - profile: return authenticated user identity.
+ */
 const userRepository = new UserRepository();
 const hashService = new HashService();
 const tokenService = new TokenService();

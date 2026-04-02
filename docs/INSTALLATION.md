@@ -46,3 +46,6 @@ Use this mode only if you run MySQL outside Docker and point `.env` to that host
 
 - Project overview and quick start: `README.md`
 - Architecture and design decisions: `docs/ARCHITECTURE.md`
+- File-by-file guide: `docs/FILES_REFERENCE.md`
+- Request/response execution flow: `docs/REQUEST_FLOWS.md`
+- Common failures and fixes: `docs/TROUBLESHOOTING.md`

@@ -2,6 +2,12 @@ import jwt from 'jsonwebtoken';
 import { env } from '../../config/environment';
 import { JwtPayload, TokenPairDto } from '../dto/auth.dto';
 
+/**
+ * JWT token service.
+ *
+ * Encapsulates signing and verification for access/refresh tokens and
+ * provides a single place for payload shape and expiry policy.
+ */
 export class TokenService {
   signAccessToken(payload: JwtPayload): string {
     return jwt.sign(payload, env.jwt.accessSecret, {

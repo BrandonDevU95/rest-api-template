@@ -1,5 +1,11 @@
 import { User } from '../entities/User';
 
+/**
+ * User repository contract.
+ *
+ * Infrastructure must implement this interface so application use-cases can
+ * remain persistence-agnostic.
+ */
 export interface CreateUserInput {
   email: string;
   passwordHash: string;

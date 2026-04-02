@@ -7,6 +7,13 @@ import { getCurrentUser } from '../middlewares/currentUser.middleware';
 const userRepository = new UserRepository();
 const hashService = new HashService();
 
+/**
+ * HTTP controller for user CRUD endpoints.
+ *
+ * Route-level middlewares enforce authentication and coarse-grained RBAC.
+ * This controller enforces data-level checks such as email uniqueness and
+ * role escalation restrictions for non-admin users.
+ */
 export class UserController {
   static async create(req: Request, res: Response): Promise<void> {
     const existing = await userRepository.findByEmail(req.body.email);

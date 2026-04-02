@@ -1,6 +1,12 @@
 import { TokenService } from '../../services/TokenService';
 import { TokenPairDto } from '../../dto/auth.dto';
 
+/**
+ * Refresh-token flow orchestration.
+ *
+ * Verifies the provided refresh token and reissues a new token pair
+ * using the verified payload.
+ */
 export class RefreshTokenUseCase {
   constructor(private readonly tokenService: TokenService) {}
 

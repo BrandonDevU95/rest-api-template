@@ -13,6 +13,12 @@ import {
 	updateUserSchema,
 } from '../validators/user.validators';
 
+/**
+ * User route registrations.
+ *
+ * Applies JWT auth for all endpoints and combines role-based checks with
+ * request validation before delegating to UserController.
+ */
 export const usersRouter = Router();
 
 /**

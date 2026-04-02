@@ -97,3 +97,23 @@ Default admin seed credentials:
 - `README.md`: quick onboarding, development flow, and required environment variables.
 - `docs/INSTALLATION.md`: detailed installation and command execution for Docker and local modes.
 - `docs/ARCHITECTURE.md`: layered architecture, dependency rule, and technical design strategy.
+- `docs/FILES_REFERENCE.md`: file-by-file guide with purpose, update expectations, and documentation checklist.
+- `docs/REQUEST_FLOWS.md`: request pipeline and endpoint behavior by route group.
+- `docs/TROUBLESHOOTING.md`: common setup/runtime failures and remediations.
+
+## Documentation Maintenance
+
+Use this checklist whenever code changes affect behavior, contracts, or operations:
+
+1. Update `docs/FILES_REFERENCE.md` if file purpose or ownership changed.
+2. Update `docs/REQUEST_FLOWS.md` if middleware chain, validation, auth, or response contract changed.
+3. Update `docs/INSTALLATION.md` or `docs/TROUBLESHOOTING.md` if setup/runtime commands or failure modes changed.
+4. Update `docs/ARCHITECTURE.md` if layer responsibilities or dependency direction changed.
+5. Verify `README.md` still links to all current documentation files.
+
+Definition of done for documentation updates:
+
+- Purpose of changed files remains accurate.
+- Inputs/outputs and error behavior are reflected.
+- Security-sensitive behavior (auth, secrets, logging) is documented.
+- Any new recurring issue has a troubleshooting entry.

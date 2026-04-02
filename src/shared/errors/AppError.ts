@@ -3,6 +3,12 @@ export class AppError extends Error {
   public readonly code: string;
   public readonly details?: unknown;
 
+  /**
+   * Base application error.
+   *
+   * Provides an HTTP status code, a machine-readable code, and optional
+   * details for client-facing error handling.
+   */
   constructor(message: string, statusCode = 500, code = 'INTERNAL_ERROR', details?: unknown) {
     super(message);
     this.statusCode = statusCode;

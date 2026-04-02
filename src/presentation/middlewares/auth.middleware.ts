@@ -3,6 +3,13 @@ import { passport } from '../../infrastructure/auth/passport';
 import { ForbiddenError, UnauthorizedError } from '../../shared/errors/AppError';
 import { getCurrentUser } from './currentUser.middleware';
 
+/**
+ * Authentication/authorization middlewares used by protected routes.
+ *
+ * - authenticateJwt: validates bearer token and populates req.user.
+ * - authorizeRoles: allows only explicit roles.
+ * - authorizeAdminOrSelf: allows admins or owner of :id resource.
+ */
 export const authenticateJwt = passport.authenticate('jwt', { session: false });
 
 export const authorizeRoles = (...roles: Array<'admin' | 'user'>) => {
