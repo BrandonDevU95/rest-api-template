@@ -1,7 +1,9 @@
-import request from 'supertest';
+import { User, UserRole } from '../../src/domain/entities/User';
+
 import { HashService } from '../../src/application/services/HashService';
 import { TokenService } from '../../src/application/services/TokenService';
-import { User, UserRole } from '../../src/domain/entities/User';
+import { app } from '../../src/app';
+import request from 'supertest';
 
 const mockUserRepository = {
   findByEmail: jest.fn(),
@@ -16,7 +18,7 @@ jest.mock('../../src/infrastructure/database/repositories/UserRepository', () =>
   UserRepository: jest.fn().mockImplementation(() => mockUserRepository),
 }));
 
-import { app } from '../../src/app';
+
 
 const hashService = new HashService();
 const tokenService = new TokenService();
@@ -237,5 +239,40 @@ describe('API integration baseline', () => {
 
     expect(response.status).toBe(403);
     expect(response.body.code).toBe('FORBIDDEN');
+  });
+
+  test('GET /api/v1/users returns 200 and user list for admin', async () => {
+    const adminId = '12121212-1212-1212-1212-121212121212';
+    const accessToken = tokenService.signAccessToken({
+      sub: adminId,
+      email: 'admin@example.com',
+      role: 'admin',
+    });
+
+    mockUserRepository.findById.mockResolvedValueOnce(
+      buildUser({
+        id: adminId,
+        email: 'admin@example.com',
+        role: 'admin',
+      }),
+    );
+
+    mockUserRepository.list.mockResolvedValueOnce([
+      buildUser({
+        id: '13131313-1313-1313-1313-131313131313',
+        email: 'listed.user@example.com',
+        role: 'user',
+      }),
+    ]);
+
+    const response = await request(app)
+      .get('/api/v1/users')
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true);
+    expect(response.body).toHaveLength(1);
+    expect(response.body[0].email).toBe('listed.user@example.com');
+    expect(response.body[0].role).toBe('user');
   });
 });
