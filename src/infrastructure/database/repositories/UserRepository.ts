@@ -7,14 +7,14 @@ import { User } from '../../../domain/entities/User';
 import { UserModel } from '../models/UserModel';
 
 /**
- * Sequelize-backed implementation of IUserRepository.
+ * Implementacion de IUserRepository respaldada por Sequelize.
  *
- * Mapping rule:
- * - Persistence model (UserModel) is translated to Domain entity (User)
- *   before returning data to upper layers.
+ * Regla de mapeo:
+ * - El modelo de persistencia (UserModel) se traduce a la entidad de dominio (User)
+ *   antes de devolver datos a capas superiores.
  *
- * Null semantics:
- * - findById/findByEmail/updateById return null when the target does not exist.
+ * Semantica de null:
+ * - findById/findByEmail/updateById retornan null cuando el objetivo no existe.
  */
 export class UserRepository implements IUserRepository {
   private mapToDomain(model: UserModel): User {

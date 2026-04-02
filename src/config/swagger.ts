@@ -2,10 +2,10 @@ import { env } from './environment';
 import swaggerJsdoc from 'swagger-jsdoc';
 
 /**
- * OpenAPI specification generated from route annotations.
+ * Especificacion OpenAPI generada desde anotaciones de rutas.
  *
- * The docs are scoped to presentation routes and use the current API prefix
- * so the served Swagger UI matches runtime routing.
+ * La documentacion se limita a rutas de presentation y usa el prefijo API actual
+ * para que el Swagger UI publicado coincida con el enrutamiento en runtime.
  */
 export const swaggerSpec = swaggerJsdoc({
   definition: {

@@ -5,14 +5,14 @@ import { sequelize } from './infrastructure/database/sequelize';
 import './infrastructure/database/models/UserModel';
 
 /**
- * Application bootstrap entrypoint.
+ * Punto de entrada del bootstrap de la aplicacion.
  *
- * Startup sequence:
- * 1) authenticate database connection
- * 2) start HTTP server
- * 3) log successful startup
+ * Secuencia de arranque:
+ * 1) autenticar conexion a base de datos
+ * 2) iniciar servidor HTTP
+ * 3) registrar arranque exitoso
  *
- * If bootstrap fails, the process exits with code 1.
+ * Si el bootstrap falla, el proceso termina con codigo 1.
  */
 const bootstrap = async (): Promise<void> => {
   await sequelize.authenticate();

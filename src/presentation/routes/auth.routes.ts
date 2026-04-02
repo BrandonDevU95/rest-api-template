@@ -8,10 +8,10 @@ import { passport } from '../../infrastructure/auth/passport';
 import { authenticateJwt } from '../middlewares/auth.middleware';
 
 /**
- * Authentication route registrations.
+ * Registro de rutas de autenticacion.
  *
- * Defines middleware chain per endpoint for validation, rate limiting,
- * authentication strategy, and controller execution.
+ * Define la cadena de middlewares por endpoint para validacion, rate limiting,
+ * estrategia de autenticacion y ejecucion del controlador.
  */
 export const authRouter = Router();
 

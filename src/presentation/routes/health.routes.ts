@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 /**
- * Public health-check route used by monitors and orchestration probes.
+ * Ruta publica de health-check usada por monitores y probes de orquestacion.
  */
 export const healthRouter = Router();
 

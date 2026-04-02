@@ -14,10 +14,10 @@ import {
 } from '../validators/user.validators';
 
 /**
- * User route registrations.
+ * Registro de rutas de usuarios.
  *
- * Applies JWT auth for all endpoints and combines role-based checks with
- * request validation before delegating to UserController.
+ * Aplica auth JWT en todos los endpoints y combina validaciones por rol con
+ * validacion de requests antes de delegar en UserController.
  */
 export const usersRouter = Router();
 
@@ -25,7 +25,7 @@ export const usersRouter = Router();
  * @openapi
  * /users:
  *   post:
- *     summary: Create a user (admin)
+ *     summary: Crear un usuario (admin)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -48,29 +48,29 @@ export const usersRouter = Router();
  *                 enum: [admin, user]
  *     responses:
  *       201:
- *         description: Created
+ *         description: Creado
  *       409:
- *         description: Email already exists
+ *         description: El email ya existe
  */
 
 /**
  * @openapi
  * /users:
  *   get:
- *     summary: List users (admin)
+ *     summary: Listar usuarios (admin)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: User list
+ *         description: Lista de usuarios
  */
 
 /**
  * @openapi
  * /users/{id}:
  *   get:
- *     summary: Get user by id (admin or self)
+ *     summary: Obtener usuario por id (admin o propio)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -83,16 +83,16 @@ export const usersRouter = Router();
  *           format: uuid
  *     responses:
  *       200:
- *         description: User found
+ *         description: Usuario encontrado
  *       404:
- *         description: User not found
+ *         description: Usuario no encontrado
  */
 
 /**
  * @openapi
  * /users/{id}:
  *   put:
- *     summary: Update user (admin or self)
+ *     summary: Actualizar usuario (admin o propio)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -118,18 +118,18 @@ export const usersRouter = Router();
  *                 enum: [admin, user]
  *     responses:
  *       200:
- *         description: Updated
+ *         description: Actualizado
  *       404:
- *         description: User not found
+ *         description: Usuario no encontrado
  *       409:
- *         description: Email conflict
+ *         description: Conflicto de email
  */
 
 /**
  * @openapi
  * /users/{id}:
  *   delete:
- *     summary: Delete user (admin)
+ *     summary: Eliminar usuario (admin)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -142,9 +142,9 @@ export const usersRouter = Router();
  *           format: uuid
  *     responses:
  *       204:
- *         description: Deleted
+ *         description: Eliminado
  *       404:
- *         description: User not found
+ *         description: Usuario no encontrado
  */
 usersRouter.use(authenticateJwt);
 usersRouter.post('/', authorizeRoles('admin'), validate({ body: createUserSchema }), asyncHandler(UserController.create));

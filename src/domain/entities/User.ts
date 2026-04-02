@@ -10,11 +10,11 @@ export interface UserProps {
 }
 
 /**
- * Domain user entity.
+ * Entidad de usuario de dominio.
  *
- * Holds core user state and simple domain behavior without framework or ORM
- * dependencies. Sensitive fields such as passwordHash must never be exposed
- * outside trusted application boundaries.
+ * Contiene el estado central del usuario y comportamiento de dominio simple sin framework ni ORM
+ * dependencias. Campos sensibles como passwordHash nunca deben exponerse
+ * fuera de los limites de confianza de la aplicacion.
  */
 export class User {
   public readonly id: string;

@@ -4,11 +4,11 @@ import { ForbiddenError, UnauthorizedError } from '../../shared/errors/AppError'
 import { getCurrentUser } from './currentUser.middleware';
 
 /**
- * Authentication/authorization middlewares used by protected routes.
+ * Middlewares de autenticacion/autorizacion usados por rutas protegidas.
  *
- * - authenticateJwt: validates bearer token and populates req.user.
- * - authorizeRoles: allows only explicit roles.
- * - authorizeAdminOrSelf: allows admins or owner of :id resource.
+ * - authenticateJwt: valida bearer token y popula req.user.
+ * - authorizeRoles: permite solo roles explicitos.
+ * - authorizeAdminOrSelf: permite admins o propietario del recurso :id.
  */
 export const authenticateJwt = passport.authenticate('jwt', { session: false });
 

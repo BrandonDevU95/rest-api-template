@@ -2,10 +2,10 @@ import { Request } from 'express';
 import { UnauthorizedError } from '../../shared/errors/AppError';
 
 /**
- * Extracts authenticated identity from req.user.
+ * Extrae la identidad autenticada desde req.user.
  *
- * Assumes authentication middleware already populated req.user.
- * Throws UnauthorizedError when request is unauthenticated.
+ * Asume que el middleware de autenticacion ya poblo req.user.
+ * Lanza UnauthorizedError cuando la request no esta autenticada.
  */
 export interface AuthenticatedUser {
   id: string;

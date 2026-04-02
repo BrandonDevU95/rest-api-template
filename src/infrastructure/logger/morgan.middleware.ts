@@ -3,10 +3,10 @@ import { env } from '../../config/environment';
 import { logger } from './logger';
 
 /**
- * HTTP request logger middleware.
+ * Middleware de logging de requests HTTP.
  *
- * Bridges Morgan into Winston and appends correlation-id to each log line.
- * In production, health checks are skipped to reduce log noise.
+ * Integra Morgan con Winston y agrega correlation-id a cada linea de log.
+ * En produccion se omiten health checks para reducir ruido en logs.
  */
 morgan.token('correlation-id', (req) => {
   const request = req as unknown as { correlationId?: string };

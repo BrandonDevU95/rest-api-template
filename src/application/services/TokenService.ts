@@ -3,10 +3,10 @@ import { env } from '../../config/environment';
 import { JwtPayload, TokenPairDto } from '../dto/auth.dto';
 
 /**
- * JWT token service.
+ * Servicio de tokens JWT.
  *
- * Encapsulates signing and verification for access/refresh tokens and
- * provides a single place for payload shape and expiry policy.
+ * Encapsula firmado y verificacion de tokens access/refresh y
+ * provee un solo lugar para la forma del payload y la politica de expiracion.
  */
 export class TokenService {
   signAccessToken(payload: JwtPayload): string {

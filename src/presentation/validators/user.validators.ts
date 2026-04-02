@@ -1,7 +1,7 @@
 import { joi } from '../middlewares/validate.middleware';
 
 /**
- * Joi schemas for user-management endpoints.
+ * Schemas Joi para endpoints de gestion de usuarios.
  */
 export const createUserSchema = joi.object({
   email: joi.string().email().required(),

@@ -3,11 +3,11 @@ import Joi, { Schema } from 'joi';
 import { ValidationError } from '../../shared/errors/AppError';
 
 /**
- * Request validation middleware factory.
+ * Fabrica de middlewares de validacion de requests.
  *
- * Applies Joi schemas to body/query/params with:
- * - abortEarly: false (collect all validation errors)
- * - stripUnknown: true (remove undeclared fields)
+ * Aplica schemas Joi a body/query/params con:
+ * - abortEarly: false (recopila todos los errores de validacion)
+ * - stripUnknown: true (elimina campos no declarados)
  */
 interface ValidationSchemas {
   body?: Schema;

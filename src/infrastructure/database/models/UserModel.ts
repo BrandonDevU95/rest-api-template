@@ -8,10 +8,10 @@ import {
 import { sequelize } from '../sequelize';
 
 /**
- * Sequelize model for the users table.
+ * Modelo Sequelize para la tabla de usuarios.
  *
- * Defines ORM-level schema, column names, defaults, and database constraints
- * for user persistence.
+ * Define el schema a nivel ORM, nombres de columnas, valores por defecto y restricciones de base de datos
+ * para la persistencia de usuarios.
  */
 export class UserModel extends Model<InferAttributes<UserModel>, InferCreationAttributes<UserModel>> {
   declare id: CreationOptional<string>;

@@ -1,134 +1,134 @@
-# REST API Template
+# Plantilla REST API
 
-Professional backend template with Clean Architecture using TypeScript, Express, Sequelize, MySQL, Passport-Local, JWT, Joi, Winston/Morgan, and Swagger.
+Plantilla profesional de backend con Clean Architecture usando TypeScript, Express, Sequelize, MySQL, Passport-Local, JWT, Joi, Winston/Morgan y Swagger.
 
-## Quick Start
+## Inicio Rapido
 
-1. Install dependencies
-2. Copy `.env.example` to `.env`
-3. Fill every required variable in `.env` before starting the app; startup now fails if any mandatory value is missing
-4. Sync project metadata from `PROJECT_SLUG`: `npm run naming:sync`
-5. Start with Docker: `docker compose up --build`
-6. Run migrations inside the API container: `docker compose exec api npm run db:migrate`
-7. Seed admin user inside the API container: `docker compose exec api npm run db:seed`
-8. Open Swagger at `http://localhost:3000/api-docs`
+1. Instala dependencias
+2. Copia `.env.example` a `.env`
+3. Completa todas las variables requeridas en `.env` antes de iniciar la app; el arranque falla si falta algun valor obligatorio
+4. Sincroniza los metadatos del proyecto desde `PROJECT_SLUG`: `npm run naming:sync`
+5. Inicia con Docker: `docker compose up --build`
+6. Ejecuta migraciones dentro del contenedor de API: `docker compose exec api npm run db:migrate`
+7. Ejecuta el seeder del usuario admin dentro del contenedor de API: `docker compose exec api npm run db:seed`
+8. Abre Swagger en `http://localhost:3000/api-docs`
 
-The `.env.example` file is only a template. The API, database containers, and Sequelize CLI all read from `.env`, so the file must contain the full configuration before booting the project.
+El archivo `.env.example` es solo una plantilla. La API, los contenedores de base de datos y Sequelize CLI leen desde `.env`, por lo que ese archivo debe contener la configuracion completa antes de levantar el proyecto.
 
-## Project Naming Customization (Centralized)
+## Personalizacion Del Nombre Del Proyecto (Centralizada)
 
-To fully personalize the project name without searching folder-by-folder, update only these files:
+Para personalizar por completo el nombre del proyecto sin buscar carpeta por carpeta, actualiza solo esto:
 
-1. `.env` (single source through `PROJECT_SLUG`)
-2. Run `npm run naming:sync` to update package metadata from `PROJECT_SLUG`
+1. `.env` (fuente unica mediante `PROJECT_SLUG`)
+2. Ejecuta `npm run naming:sync` para actualizar metadatos del paquete desde `PROJECT_SLUG`
 
-Main naming variables in `.env`:
+Variables principales de naming en `.env`:
 
-| Variable | Purpose |
+| Variable | Proposito |
 | --- | --- |
-| `PROJECT_SLUG` | Master variable. Derives Docker project name, container names, network name, app name in logs/Swagger title, and Swagger description. |
+| `PROJECT_SLUG` | Variable maestra. Deriva el nombre del proyecto Docker, nombres de contenedores, nombre de red, nombre de la app en logs/titulo de Swagger y descripcion de Swagger. |
 
-### Development Flow
+### Flujo De Desarrollo
 
-#### First Time Setup
+#### Configuracion Inicial
 
-Use `docker compose up --build` the first time you clone the project or whenever you change `package.json` or `Dockerfile`. The `--build` flag rebuilds the image so Docker can pick up dependency or image-level changes, but it does not mean the app is running in production.
+Usa `docker compose up --build` la primera vez que clonas el proyecto o cada vez que cambies `package.json` o `Dockerfile`. La bandera `--build` reconstruye la imagen para que Docker tome cambios de dependencias o de nivel de imagen, pero eso no significa que la app este en produccion.
 
-#### Daily Development
+#### Desarrollo Diario
 
-For normal day-to-day work, use `docker compose up` after the containers already exist. With the current setup, the API runs in development mode inside the container and reloads through `npm run dev`, so code changes do not require a rebuild.
+Para el trabajo del dia a dia, usa `docker compose up` cuando los contenedores ya existen. Con la configuracion actual, la API corre en modo desarrollo dentro del contenedor y recarga con `npm run dev`, por lo que los cambios de codigo no requieren rebuild.
 
-#### When to Rebuild
+#### Cuando Reconstruir
 
-Use `docker compose up --build` again only when you change:
+Vuelve a usar `docker compose up --build` solo cuando cambies:
 - `package.json`
 - `Dockerfile`
-- dependencies
-- image-level setup
+- dependencias
+- configuracion a nivel de imagen
 
-#### Database Workflow
+#### Flujo De Base De Datos
 
-- Run database commands from inside the `api` container because `.env` uses `DB_HOST=mysql`, which only resolves inside the Docker network.
-- Use `docker compose exec api npm run db:migrate` when you create a new migration or start from a fresh database.
-- Use `docker compose exec api npm run db:seed` when you need to load initial data again, such as after recreating the database or adding a new seed.
-- You do not need to run them on every start; Sequelize tracks applied migrations, and seeds are only for initial or repeatable data loads.
-- If you run `npm run db:migrate` from your host shell with `DB_HOST=mysql`, you will get `getaddrinfo ENOTFOUND mysql`.
+- Ejecuta comandos de base de datos dentro del contenedor `api` porque `.env` usa `DB_HOST=mysql`, que solo resuelve dentro de la red Docker.
+- Usa `docker compose exec api npm run db:migrate` cuando crees una nueva migracion o inicies desde una base de datos vacia.
+- Usa `docker compose exec api npm run db:seed` cuando necesites cargar datos iniciales nuevamente, por ejemplo al recrear la base de datos o agregar un nuevo seed.
+- No necesitas ejecutarlos en cada arranque; Sequelize registra las migraciones aplicadas, y los seeds son para cargas iniciales o repetibles.
+- Si ejecutas `npm run db:migrate` desde tu host con `DB_HOST=mysql`, obtendras `getaddrinfo ENOTFOUND mysql`.
 
-### Required Environment Variables
+### Variables De Entorno Requeridas
 
-#### Application
+#### Aplicacion
 
-| Variable | Purpose |
+| Variable | Proposito |
 | --- | --- |
-| `NODE_ENV` | Defines the runtime mode used by the app and error handling. |
-| `PORT` | Port where the API listens. |
-| `API_PREFIX` | Base path for all API routes. |
-| `PROJECT_SLUG` | Master naming value used to derive app and Docker names. |
-| `JWT_ACCESS_SECRET` | Secret used to sign and verify access tokens. |
-| `JWT_ACCESS_EXPIRES_IN` | Expiration for access tokens. |
-| `JWT_REFRESH_SECRET` | Secret used to sign and verify refresh tokens. |
-| `JWT_REFRESH_EXPIRES_IN` | Expiration for refresh tokens. |
-| `BCRYPT_SALT_ROUNDS` | BCrypt cost factor used for password hashing. |
-| `CORS_ORIGIN` | Allowed origins for browser requests. |
-| `LOG_LEVEL` | Minimum log level for the application logger. |
-| `LOG_DIR` | Directory where log files are written. |
-| `RATE_LIMIT_WINDOW_MS` | Time window for request rate limiting. |
-| `RATE_LIMIT_MAX_REQUESTS` | Maximum requests allowed per window for general traffic. |
-| `RATE_LIMIT_LOGIN_MAX_REQUESTS` | Maximum requests allowed per window for login attempts. |
+| `NODE_ENV` | Define el modo de ejecucion usado por la app y el manejo de errores. |
+| `PORT` | Puerto en el que escucha la API. |
+| `API_PREFIX` | Ruta base para todas las rutas de la API. |
+| `PROJECT_SLUG` | Valor maestro de naming para derivar nombres de app y Docker. |
+| `JWT_ACCESS_SECRET` | Secreto usado para firmar y verificar access tokens. |
+| `JWT_ACCESS_EXPIRES_IN` | Expiracion de access tokens. |
+| `JWT_REFRESH_SECRET` | Secreto usado para firmar y verificar refresh tokens. |
+| `JWT_REFRESH_EXPIRES_IN` | Expiracion de refresh tokens. |
+| `BCRYPT_SALT_ROUNDS` | Factor de costo de BCrypt para hash de contrasenas. |
+| `CORS_ORIGIN` | Origenes permitidos para solicitudes del navegador. |
+| `LOG_LEVEL` | Nivel minimo de logs para el logger de la aplicacion. |
+| `LOG_DIR` | Directorio donde se escriben archivos de log. |
+| `RATE_LIMIT_WINDOW_MS` | Ventana de tiempo para rate limiting. |
+| `RATE_LIMIT_MAX_REQUESTS` | Maximo de solicitudes por ventana para trafico general. |
+| `RATE_LIMIT_LOGIN_MAX_REQUESTS` | Maximo de solicitudes por ventana para intentos de login. |
 
-#### Database and Docker
+#### Base De Datos Y Docker
 
-| Variable | Purpose |
+| Variable | Proposito |
 | --- | --- |
-| `DB_HOST` | MySQL host used by the API and Sequelize CLI. |
-| `DB_PORT` | MySQL port used by the API and Sequelize CLI. |
-| `DB_NAME` | Database name used by the API and Sequelize CLI. |
-| `DB_USER` | Database user used by the API and Sequelize CLI. |
-| `DB_PASSWORD` | Database password used by the API and Sequelize CLI. |
-| `DB_LOGGING` | Enables or disables Sequelize SQL logging. |
-| `MYSQL_ROOT_PASSWORD` | MySQL root password used by the Docker container. |
-| `MYSQL_DATABASE` | Initial MySQL database created by Docker. |
-| `MYSQL_USER` | MySQL user created by Docker. |
-| `MYSQL_PASSWORD` | MySQL password created by Docker. |
-| `PMA_HOST` | phpMyAdmin host when running with Docker. |
-| `PMA_PORT` | phpMyAdmin port when running with Docker. |
-| `PMA_USER` | phpMyAdmin database user when running with Docker. |
-| `PMA_PASSWORD` | phpMyAdmin database password when running with Docker. |
+| `DB_HOST` | Host de MySQL usado por la API y Sequelize CLI. |
+| `DB_PORT` | Puerto de MySQL usado por la API y Sequelize CLI. |
+| `DB_NAME` | Nombre de base de datos usado por la API y Sequelize CLI. |
+| `DB_USER` | Usuario de base de datos usado por la API y Sequelize CLI. |
+| `DB_PASSWORD` | Contrasena de base de datos usada por la API y Sequelize CLI. |
+| `DB_LOGGING` | Habilita o deshabilita logs SQL de Sequelize. |
+| `MYSQL_ROOT_PASSWORD` | Contrasena root de MySQL usada por el contenedor Docker. |
+| `MYSQL_DATABASE` | Base de datos inicial de MySQL creada por Docker. |
+| `MYSQL_USER` | Usuario de MySQL creado por Docker. |
+| `MYSQL_PASSWORD` | Contrasena de MySQL creada por Docker. |
+| `PMA_HOST` | Host de phpMyAdmin al ejecutar con Docker. |
+| `PMA_PORT` | Puerto de phpMyAdmin al ejecutar con Docker. |
+| `PMA_USER` | Usuario de base de datos de phpMyAdmin al ejecutar con Docker. |
+| `PMA_PASSWORD` | Contrasena de base de datos de phpMyAdmin al ejecutar con Docker. |
 
 #### Seeder
 
-| Variable | Purpose |
+| Variable | Proposito |
 | --- | --- |
-| `ADMIN_EMAIL` | Email used by the admin seed script. |
-| `ADMIN_PASSWORD` | Password used by the admin seed script. |
+| `ADMIN_EMAIL` | Email usado por el script de seed del admin. |
+| `ADMIN_PASSWORD` | Contrasena usada por el script de seed del admin. |
 
-Default admin seed credentials:
+Credenciales por defecto del seed admin:
 - Email: `admin@template.local`
-- Password: `Admin123!`
+- Contrasena: `Admin123!`
 
-### Documentation Map
+### Mapa De Documentacion
 
-- `README.md`: quick onboarding, development flow, and required environment variables.
-- `docs/INSTALLATION.md`: detailed installation and command execution for Docker and local modes.
-- `docs/ARCHITECTURE.md`: layered architecture, dependency rule, and technical design strategy.
-- `docs/FILES_REFERENCE.md`: file-by-file guide with purpose, update expectations, and documentation checklist.
-- `docs/PROJECT_CUSTOMIZATION.md`: quick rename guide for project, containers, and Docker network.
-- `docs/REQUEST_FLOWS.md`: request pipeline and endpoint behavior by route group.
-- `docs/TROUBLESHOOTING.md`: common setup/runtime failures and remediations.
+- `README.md`: onboarding rapido, flujo de desarrollo y variables de entorno requeridas.
+- `docs/INSTALLATION.md`: instalacion detallada y ejecucion de comandos para Docker y modo local.
+- `docs/ARCHITECTURE.md`: arquitectura por capas, regla de dependencias y estrategia de diseno tecnico.
+- `docs/FILES_REFERENCE.md`: guia archivo por archivo con proposito, expectativas de actualizacion y checklist de documentacion.
+- `docs/PROJECT_CUSTOMIZATION.md`: guia rapida de renombre para proyecto, contenedores y red de Docker.
+- `docs/REQUEST_FLOWS.md`: pipeline de requests y comportamiento de endpoints por grupo de rutas.
+- `docs/TROUBLESHOOTING.md`: errores comunes de setup/ejecucion y sus soluciones.
 
-## Documentation Maintenance
+## Mantenimiento De Documentacion
 
-Use this checklist whenever code changes affect behavior, contracts, or operations:
+Usa este checklist cuando los cambios de codigo afecten comportamiento, contratos u operacion:
 
-1. Update `docs/FILES_REFERENCE.md` if file purpose or ownership changed.
-2. Update `docs/REQUEST_FLOWS.md` if middleware chain, validation, auth, or response contract changed.
-3. Update `docs/INSTALLATION.md` or `docs/TROUBLESHOOTING.md` if setup/runtime commands or failure modes changed.
-4. Update `docs/ARCHITECTURE.md` if layer responsibilities or dependency direction changed.
-5. Verify `README.md` still links to all current documentation files.
+1. Actualiza `docs/FILES_REFERENCE.md` si cambio el proposito o la responsabilidad de un archivo.
+2. Actualiza `docs/REQUEST_FLOWS.md` si cambio la cadena de middlewares, validacion, auth o contrato de respuesta.
+3. Actualiza `docs/INSTALLATION.md` o `docs/TROUBLESHOOTING.md` si cambiaron comandos de setup/ejecucion o modos de fallo.
+4. Actualiza `docs/ARCHITECTURE.md` si cambiaron responsabilidades por capa o direccion de dependencias.
+5. Verifica que `README.md` siga enlazando todos los archivos de documentacion vigentes.
 
-Definition of done for documentation updates:
+Definicion de terminado para actualizaciones de documentacion:
 
-- Purpose of changed files remains accurate.
-- Inputs/outputs and error behavior are reflected.
-- Security-sensitive behavior (auth, secrets, logging) is documented.
-- Any new recurring issue has a troubleshooting entry.
+- El proposito de los archivos modificados sigue siendo correcto.
+- Se reflejan entradas/salidas y comportamiento de error.
+- Se documenta comportamiento sensible de seguridad (auth, secretos, logging).
+- Cualquier incidencia recurrente nueva tiene entrada en resolucion de problemas.

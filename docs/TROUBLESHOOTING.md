@@ -1,111 +1,111 @@
-# Troubleshooting
+# Resolucion De Problemas
 
-Common setup and runtime issues for this project.
+Problemas comunes de setup y runtime para este proyecto.
 
 ## 1) `getaddrinfo ENOTFOUND mysql`
 
-### Symptom
-Database commands fail from host shell with an error resolving `mysql`.
+### Sintoma
+Los comandos de base de datos fallan desde la consola host con un error al resolver `mysql`.
 
-### Cause
-`.env` uses `DB_HOST=mysql`, which is only resolvable inside the Docker network.
+### Causa
+`.env` usa `DB_HOST=mysql`, que solo se resuelve dentro de la red Docker.
 
-### Fix
-Run database commands inside the API container:
+### Solucion
+Ejecuta comandos de base de datos dentro del contenedor API:
 
 - `docker compose exec api npm run db:migrate`
 - `docker compose exec api npm run db:seed`
 
-If running outside Docker, set `DB_HOST=localhost` and ensure local MySQL is running.
+Si ejecutas fuera de Docker, usa `DB_HOST=localhost` y asegurate de que MySQL local este activo.
 
-## 2) `docker compose up --build` fails
+## 2) `docker compose up --build` falla
 
-### Symptom
-Compose exits with code 1 during build or startup.
+### Sintoma
+Compose termina con codigo 1 durante build o arranque.
 
 ### Checklist
-1. Confirm Docker engine is running.
-2. Confirm `.env` exists and all required variables are set.
-3. Check if required ports are free (`3000`, `3306`, `8081` by default).
-4. Re-run with logs: `docker compose up --build` and inspect the first failing service.
-5. If image cache is stale, rebuild without cache: `docker compose build --no-cache` then `docker compose up`.
+1. Confirma que Docker engine este corriendo.
+2. Confirma que `.env` existe y que todas las variables requeridas estan definidas.
+3. Verifica que los puertos requeridos esten libres (`3000`, `3306`, `8081` por defecto).
+4. Reintenta con logs: `docker compose up --build` e inspecciona el primer servicio que falla.
+5. Si el cache de imagen esta obsoleto, reconstruye sin cache: `docker compose build --no-cache` y luego `docker compose up`.
 
-## 3) API starts but migrations fail
+## 3) La API inicia pero fallan las migraciones
 
-### Symptom
-API container is up, but migration command fails.
+### Sintoma
+El contenedor API esta arriba, pero falla el comando de migracion.
 
-### Cause
-Database is not healthy yet, wrong credentials, or wrong host.
+### Causa
+La base de datos aun no esta saludable, las credenciales son incorrectas o el host es incorrecto.
 
-### Fix
-1. Verify database container health in `docker compose ps`.
-2. Verify DB env values in `.env`.
-3. Run migration from container shell:
+### Solucion
+1. Verifica la salud del contenedor de base de datos en `docker compose ps`.
+2. Verifica valores de entorno DB en `.env`.
+3. Ejecuta migracion desde el contenedor:
    - `docker compose exec api npm run db:migrate`
 
-## 4) Login always returns 401
+## 4) El login siempre retorna 401
 
-### Symptom
-`POST /auth/login` returns unauthorized even with expected credentials.
+### Sintoma
+`POST /auth/login` retorna unauthorized incluso con credenciales esperadas.
 
-### Causes
-- User does not exist.
-- Password hash mismatch.
-- Seeder not executed.
+### Causas
+- El usuario no existe.
+- El hash de contrasena no coincide.
+- El seeder no se ejecuto.
 
-### Fix
-1. Run seed command again if needed.
-2. Verify `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env`.
-3. Check DB row in `users` table.
+### Solucion
+1. Ejecuta nuevamente el comando de seed si hace falta.
+2. Verifica `ADMIN_EMAIL` y `ADMIN_PASSWORD` en `.env`.
+3. Revisa el registro en la tabla `users`.
 
-## 5) Requests blocked by CORS
+## 5) Requests bloqueados por CORS
 
-### Symptom
-Browser requests fail with CORS error.
+### Sintoma
+Las solicitudes desde el navegador fallan con error CORS.
 
-### Cause
-Origin is not allowed by `CORS_ORIGIN` configuration.
+### Causa
+El origen no esta permitido por la configuracion `CORS_ORIGIN`.
 
-### Fix
-Add your frontend origin to `CORS_ORIGIN` in `.env` and restart API.
+### Solucion
+Agrega el origen de tu frontend a `CORS_ORIGIN` en `.env` y reinicia la API.
 
 ## 6) Too many requests (429)
 
-### Symptom
-Responses return 429 for repeated calls.
+### Sintoma
+Las respuestas retornan 429 para llamadas repetidas.
 
-### Cause
-Rate limit settings are active globally and on login route.
+### Causa
+La configuracion de rate limit esta activa de forma global y en la ruta de login.
 
-### Fix
-Adjust rate limit env vars for your environment:
+### Solucion
+Ajusta variables de entorno de rate limit para tu entorno:
 - `RATE_LIMIT_WINDOW_MS`
 - `RATE_LIMIT_MAX_REQUESTS`
 - `RATE_LIMIT_LOGIN_MAX_REQUESTS`
 
-## 7) Swagger not available
+## 7) Swagger no disponible
 
-### Symptom
-`/api-docs` returns 404.
+### Sintoma
+`/api-docs` retorna 404.
 
-### Causes
-- Wrong API prefix in env.
-- Swagger setup not mounted due to startup failure.
+### Causas
+- Prefijo de API incorrecto en env.
+- Setup de Swagger no montado por un fallo de arranque.
 
-### Fix
-1. Confirm API is running without boot errors.
-2. Confirm expected URL combines prefix and docs route.
-3. Check app startup logs for swagger initialization errors.
+### Solucion
+1. Confirma que la API corre sin errores de arranque.
+2. Confirma que la URL esperada combina prefijo y ruta de docs.
+3. Revisa logs de arranque para errores de inicializacion de Swagger.
 
-## 8) Logs missing correlation id
+## 8) Logs sin correlation id
 
-### Symptom
-Hard to trace one request across logs.
+### Sintoma
+Es dificil trazar una request entre logs.
 
-### Cause
-Client did not send `x-correlation-id`, or middleware order changed.
+### Causa
+El cliente no envio `x-correlation-id`, o el orden de middlewares cambio.
 
-### Fix
-1. Keep `requestContextMiddleware` before request logging middleware.
-2. Optionally send `x-correlation-id` from clients.
+### Solucion
+1. Mantener `requestContextMiddleware` antes del middleware de request logging.
+2. Opcionalmente, enviar `x-correlation-id` desde clientes.

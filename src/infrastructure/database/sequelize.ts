@@ -2,10 +2,10 @@ import { Sequelize } from 'sequelize';
 import { env } from '../../config/environment';
 
 /**
- * Shared Sequelize instance.
+ * Instancia compartida de Sequelize.
  *
- * Centralizes MySQL connection settings, pool sizing, and SQL logging so the
- * rest of the codebase uses a single database configuration source.
+ * Centraliza configuracion de conexion MySQL, tamano de pool y logging SQL para que
+ * el resto del codigo use una unica fuente de configuracion de base de datos.
  */
 export const sequelize = new Sequelize(env.db.name, env.db.user, env.db.password, {
   host: env.db.host,

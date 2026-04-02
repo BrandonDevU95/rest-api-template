@@ -8,11 +8,11 @@ const userRepository = new UserRepository();
 const hashService = new HashService();
 
 /**
- * HTTP controller for user CRUD endpoints.
+ * Controlador HTTP para endpoints CRUD de usuarios.
  *
- * Route-level middlewares enforce authentication and coarse-grained RBAC.
- * This controller enforces data-level checks such as email uniqueness and
- * role escalation restrictions for non-admin users.
+ * Los middlewares a nivel de ruta aplican autenticacion y RBAC de grano grueso.
+ * Este controlador aplica validaciones a nivel de datos como unicidad de email y
+ * restricciones de escalamiento de rol para usuarios no admin.
  */
 export class UserController {
   static async create(req: Request, res: Response): Promise<void> {

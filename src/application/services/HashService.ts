@@ -2,10 +2,10 @@ import bcrypt from 'bcrypt';
 import { env } from '../../config/environment';
 
 /**
- * Password hashing abstraction.
+ * Abstraccion para hash de contrasenas.
  *
- * Keeps bcrypt usage centralized so salt-round policy is controlled from
- * environment config and password comparison stays consistent.
+ * Centraliza el uso de bcrypt para que la politica de salt rounds se controle desde
+ * la configuracion de entorno y la comparacion de contrasenas sea consistente.
  */
 export class HashService {
   async hash(plainText: string): Promise<string> {

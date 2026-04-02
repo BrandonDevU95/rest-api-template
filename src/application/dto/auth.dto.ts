@@ -1,29 +1,29 @@
 export interface RegisterDto {
-  /** Plain-text email used during registration. */
+  /** Correo en texto plano usado durante el registro. */
   email: string;
-  /** Plain-text password used only at auth boundaries. */
+  /** Contrasena en texto plano usada solo en los limites de autenticacion. */
   password: string;
 }
 
 export interface LoginDto {
-  /** Plain-text email used during login. */
+  /** Correo en texto plano usado durante el inicio de sesion. */
   email: string;
-  /** Plain-text password used only at auth boundaries. */
+  /** Contrasena en texto plano usada solo en los limites de autenticacion. */
   password: string;
 }
 
 export interface JwtPayload {
-  /** User identifier stored in JWT standard subject claim. */
+  /** Identificador de usuario almacenado en el claim estandar subject de JWT. */
   sub: string;
-  /** Role used by authorization checks. */
+  /** Rol usado por las validaciones de autorizacion. */
   role: 'admin' | 'user';
-  /** Convenience claim for user identity without DB lookup. */
+  /** Claim de conveniencia para identidad de usuario sin consulta a DB. */
   email: string;
 }
 
 export interface TokenPairDto {
-  /** Short-lived access token. */
+  /** Access token de corta duracion. */
   accessToken: string;
-  /** Longer-lived refresh token. */
+  /** Refresh token de mayor duracion. */
   refreshToken: string;
 }

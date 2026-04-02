@@ -1,6 +1,6 @@
 /**
- * Express type augmentation for authenticated user identity and request
- * correlation id propagated by middlewares.
+ * Ampliacion de tipos de Express para identidad de usuario autenticado y
+ * correlation id propagado por middlewares.
  */
 declare global {
   namespace Express {

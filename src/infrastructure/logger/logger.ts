@@ -9,10 +9,10 @@ import { consoleFormat, jsonFormat, redactFormat } from './formats';
 addColors(colors);
 
 /**
- * Application logger.
+ * Logger de la aplicacion.
  *
- * Writes structured logs to rotating files, captures exceptions/rejections,
- * and adds console output during development.
+ * Escribe logs estructurados en archivos rotativos, captura excepciones/rechazos,
+ * y agrega salida por consola durante desarrollo.
  */
 const logDir = path.resolve(process.cwd(), env.log.dir);
 if (!fs.existsSync(logDir)) {

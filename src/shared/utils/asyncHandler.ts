@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 
 /**
- * Wraps async request handlers and forwards rejected promises to the global
- * error middleware.
+ * Envuelve handlers async de request y reenvia promesas rechazadas al middleware global de
+ * errores.
  */
 export type AsyncRequestHandler = (
   req: Request,

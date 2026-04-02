@@ -4,10 +4,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 /**
- * Environment configuration loader.
+ * Cargador de configuracion de entorno.
  *
- * Validates all required runtime variables once at startup and exports a
- * typed config object used across the application.
+ * Valida todas las variables de runtime requeridas al iniciar y exporta un
+ * objeto de configuracion tipado usado en toda la aplicacion.
  */
 const envSchema = Joi.object({
   NODE_ENV: Joi.string().valid('development', 'test', 'production').required(),

@@ -17,13 +17,13 @@ import { apiRouter } from './presentation/routes';
 export const app = express();
 
 /**
- * Express application composition.
+ * Composicion de la aplicacion Express.
  *
- * Middleware order is intentional:
- * - request context and HTTP logging first
- * - security middlewares before body parsing and routing
- * - Passport before protected routes
- * - not-found and error handlers last
+ * El orden de middlewares es intencional:
+ * - primero contexto de request y logging HTTP
+ * - middlewares de seguridad antes del parseo de body y el enrutamiento
+ * - Passport antes de rutas protegidas
+ * - not-found y handlers de error al final
  */
 app.disable('x-powered-by');
 app.use(requestContext);

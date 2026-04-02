@@ -1,7 +1,7 @@
 import { joi } from '../middlewares/validate.middleware';
 
 /**
- * Joi schemas for authentication endpoints.
+ * Schemas Joi para endpoints de autenticacion.
  */
 export const registerSchema = joi.object({
   email: joi.string().email().required(),

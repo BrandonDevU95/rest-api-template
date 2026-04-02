@@ -4,9 +4,9 @@ import { authRouter } from './auth.routes';
 import { usersRouter } from './users.routes';
 
 /**
- * API router composition root.
+ * Raiz de composicion del router API.
  *
- * Mounts all feature routers under the application API prefix.
+ * Monta todos los routers funcionales bajo el prefijo API de la aplicacion.
  */
 export const apiRouter = Router();
 

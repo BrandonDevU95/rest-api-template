@@ -6,10 +6,10 @@ import { UserRepository } from '../database/repositories/UserRepository';
 import { HashService } from '../../application/services/HashService';
 
 /**
- * Passport strategy wiring.
+ * Wiring de estrategias Passport.
  *
- * Local strategy authenticates email/password against the repository and hash
- * service. JWT strategy resolves the current user from the bearer token.
+ * La estrategia local autentica email/contrasena contra el repositorio y el servicio de hash
+ * mientras que la estrategia JWT resuelve el usuario actual desde el bearer token.
  */
 const userRepository = new UserRepository();
 const hashService = new HashService();

@@ -8,13 +8,13 @@ import { UnauthorizedError } from '../../shared/errors/AppError';
 import { getCurrentUser } from '../middlewares/currentUser.middleware';
 
 /**
- * HTTP controller for authentication endpoints.
+ * Controlador HTTP para endpoints de autenticacion.
  *
- * Responsibilities:
- * - register: create user account through RegisterUseCase.
- * - login: issue token pair after LocalStrategy injects req.user.
- * - refresh: exchange refresh token for a new token pair.
- * - profile: return authenticated user identity.
+ * Responsabilidades:
+ * - register: crear cuenta de usuario mediante RegisterUseCase.
+ * - login: emitir par de tokens despues de que LocalStrategy inyecta req.user.
+ * - refresh: intercambiar refresh token por un nuevo par de tokens.
+ * - profile: retornar identidad del usuario autenticado.
  */
 const userRepository = new UserRepository();
 const hashService = new HashService();

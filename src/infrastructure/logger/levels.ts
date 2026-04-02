@@ -1,7 +1,7 @@
 /**
- * Winston level and color configuration.
+ * Configuracion de niveles y colores de Winston.
  *
- * Lower numbers represent higher severity.
+ * Numeros menores representan mayor severidad.
  */
 export const levels = {
   error: 0,

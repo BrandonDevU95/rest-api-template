@@ -1,26 +1,26 @@
-# Project Naming Mini Guide
+# Mini Guia De Naming Del Proyecto
 
-Use this guide to rename the template in a few minutes without searching the codebase.
+Usa esta guia para renombrar la plantilla en pocos minutos sin buscar por todo el codigo.
 
-## What to edit
+## Que Editar
 
 1. `.env`
 
-## Rename checklist
+## Checklist De Renombre
 
-1. Open `.env` and change these values:
+1. Abre `.env` y cambia estos valores:
    - `PROJECT_SLUG`
-2. Update database and seed defaults in `.env` if you want the sample values to match your new project name.
-3. Run `npm run naming:sync` to update `package.json` and `package-lock.json` from `PROJECT_SLUG`.
-4. Run `docker compose up --build`.
-5. If you changed `.env`, restart the containers so Docker picks up the new names.
+2. Actualiza los valores por defecto de base de datos y seed en `.env` si quieres que los datos de ejemplo coincidan con el nuevo nombre del proyecto.
+3. Ejecuta `npm run naming:sync` para actualizar `package.json` y `package-lock.json` desde `PROJECT_SLUG`.
+4. Ejecuta `docker compose up --build`.
+5. Si cambiaste `.env`, reinicia contenedores para que Docker tome los nuevos nombres.
 
-## What each name affects
+## Que Afecta Cada Nombre
 
-| Value | Affects |
+| Valor | Afecta |
 | --- | --- |
-| `PROJECT_SLUG` | Docker Compose project name, API/MySQL/phpMyAdmin container names, shared network name, app name (logs/Swagger title), Swagger description, package name, and package description |
+| `PROJECT_SLUG` | Nombre del proyecto Docker Compose, nombres de contenedores API/MySQL/phpMyAdmin, nombre de red compartida, nombre de app (logs/titulo Swagger), descripcion de Swagger, nombre del paquete y descripcion del paquete |
 
-## Result
+## Resultado
 
-After these changes, the project identity is updated in one place instead of being scattered across folders.
+Despues de estos cambios, la identidad del proyecto se actualiza en un solo lugar en vez de quedar dispersa en varias carpetas.

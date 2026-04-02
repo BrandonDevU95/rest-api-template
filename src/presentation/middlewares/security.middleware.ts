@@ -4,12 +4,12 @@ import rateLimit from 'express-rate-limit';
 import { env } from '../../config/environment';
 
 /**
- * Centralized security middlewares.
+ * Middlewares de seguridad centralizados.
  *
- * Policies are driven by environment config and include:
- * - secure HTTP headers (helmet)
- * - CORS allowlist checks
- * - global and login-specific rate limiting
+ * Las politicas se definen desde la configuracion de entorno e incluyen:
+ * - headers HTTP seguros (helmet)
+ * - validaciones de allowlist CORS
+ * - rate limiting global y especifico de login
  */
 export const helmetMiddleware = helmet();
 

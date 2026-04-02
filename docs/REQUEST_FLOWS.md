@@ -1,10 +1,10 @@
-# Request Flows
+# Flujos De Solicitud
 
-This document describes the runtime request pipeline and endpoint-level behavior.
+Este documento describe el pipeline de requests en runtime y el comportamiento a nivel endpoint.
 
-## Global Pipeline (from `src/app.ts`)
+## Pipeline Global (desde `src/app.ts`)
 
-Order matters:
+El orden importa:
 
 1. `requestContextMiddleware`
 2. `httpLogger`
@@ -17,16 +17,16 @@ Order matters:
 9. `notFoundHandler`
 10. `errorHandler`
 
-## Auth Routes (`/auth`)
+## Rutas Auth (`/auth`)
 
 ### POST `/register`
 - Middlewares:
   1. `validate({ body: registerSchema })`
 - Handler: `AuthController.register`
-- Expected result: token pair for created user.
-- Key errors:
-  - 400 validation error
-  - 409 email already exists
+- Resultado esperado: par de tokens para el usuario creado.
+- Errores clave:
+  - 400 error de validacion
+  - 409 el email ya existe
 
 ### POST `/login`
 - Middlewares:
@@ -34,30 +34,30 @@ Order matters:
   2. `validate({ body: loginSchema })`
   3. `passport.authenticate('local', { session: false })`
 - Handler: `AuthController.login`
-- Expected result: token pair.
-- Key errors:
-  - 400 validation error
-  - 401 invalid credentials
-  - 429 too many attempts
+- Resultado esperado: par de tokens.
+- Errores clave:
+  - 400 error de validacion
+  - 401 credenciales invalidas
+  - 429 demasiados intentos
 
 ### POST `/refresh`
 - Middlewares:
   1. `validate({ body: refreshTokenSchema })`
 - Handler: `AuthController.refresh`
-- Expected result: new token pair.
-- Key errors:
-  - 400 validation error
-  - 401 invalid or expired refresh token
+- Resultado esperado: nuevo par de tokens.
+- Errores clave:
+  - 400 error de validacion
+  - 401 refresh token invalido o expirado
 
 ### GET `/profile`
 - Middlewares:
   1. `authenticateJwt`
 - Handler: `AuthController.profile`
-- Expected result: current user identity payload.
-- Key errors:
-  - 401 missing/invalid token
+- Resultado esperado: payload de identidad del usuario actual.
+- Errores clave:
+  - 401 token faltante/invalido
 
-## User Routes (`/users`)
+## Rutas De Usuario (`/users`)
 
 ### POST `/`
 - Middlewares:
@@ -65,18 +65,18 @@ Order matters:
   2. `authorizeRoles('admin')`
   3. `validate({ body: createUserSchema })`
 - Handler: `UserController.create`
-- Expected result: created user projection.
-- Key errors:
-  - 401 unauthenticated
-  - 403 not admin
-  - 409 email conflict
+- Resultado esperado: proyeccion de usuario creado.
+- Errores clave:
+  - 401 no autenticado
+  - 403 no es admin
+  - 409 conflicto de email
 
 ### GET `/`
 - Middlewares:
   1. `authenticateJwt`
   2. `authorizeRoles('admin')`
 - Handler: `UserController.list`
-- Expected result: array of user projections.
+- Resultado esperado: arreglo de proyecciones de usuario.
 
 ### GET `/:id`
 - Middlewares:
@@ -84,9 +84,9 @@ Order matters:
   2. `validate({ params: idParamSchema })`
   3. `authorizeAdminOrSelf`
 - Handler: `UserController.getById`
-- Expected result: single user projection.
-- Key errors:
-  - 404 user not found
+- Resultado esperado: proyeccion de un solo usuario.
+- Errores clave:
+  - 404 usuario no encontrado
 
 ### PUT `/:id`
 - Middlewares:
@@ -94,10 +94,10 @@ Order matters:
   2. `validate({ params: idParamSchema, body: updateUserSchema })`
   3. `authorizeAdminOrSelf`
 - Handler: `UserController.update`
-- Expected result: updated user projection.
-- Key errors:
-  - 404 user not found
-  - 409 email conflict
+- Resultado esperado: proyeccion de usuario actualizada.
+- Errores clave:
+  - 404 usuario no encontrado
+  - 409 conflicto de email
 
 ### DELETE `/:id`
 - Middlewares:
@@ -105,18 +105,18 @@ Order matters:
   2. `authorizeRoles('admin')`
   3. `validate({ params: idParamSchema })`
 - Handler: `UserController.delete`
-- Expected result: `204 No Content`.
+- Resultado esperado: `204 No Content`.
 
-## Health Route (`/health`)
+## Ruta Health (`/health`)
 
 ### GET `/health`
-- Middlewares: none (public endpoint)
+- Middlewares: ninguno (endpoint publico)
 - Handler: health route handler
-- Expected result: service status payload.
+- Resultado esperado: payload de estado del servicio.
 
-## Error Contract
+## Contrato De Error
 
-Any unhandled error reaches `errorHandler` and returns a normalized shape:
+Cualquier error no manejado llega a `errorHandler` y retorna una estructura normalizada:
 
 - `code`
 - `message`
@@ -124,4 +124,4 @@ Any unhandled error reaches `errorHandler` and returns a normalized shape:
 - `correlationId`
 - `timestamp`
 
-`correlationId` should be used to trace requests across HTTP and application logs.
+`correlationId` debe usarse para trazar requests entre logs HTTP y logs de aplicacion.

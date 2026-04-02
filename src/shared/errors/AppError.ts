@@ -4,10 +4,10 @@ export class AppError extends Error {
   public readonly details?: unknown;
 
   /**
-   * Base application error.
+   * Error base de la aplicacion.
    *
-   * Provides an HTTP status code, a machine-readable code, and optional
-   * details for client-facing error handling.
+   * Provee un codigo de estado HTTP, un codigo legible por maquina y
+   * detalles opcionales para manejo de errores orientado al cliente.
    */
   constructor(message: string, statusCode = 500, code = 'INTERNAL_ERROR', details?: unknown) {
     super(message);

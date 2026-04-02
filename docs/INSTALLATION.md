@@ -1,54 +1,54 @@
-# Installation
+# Instalacion
 
-## Requirements
+## Requisitos
 
 - Node.js 22+
 - Docker + Docker Compose
 
-## Docker-first Startup (Recommended)
+## Arranque Con Docker (Recomendado)
 
-1. Copy `.env.example` to `.env`.
-2. Personalize the naming variable in `.env` (`PROJECT_SLUG`).
-3. Fill every other required variable in `.env`.
-4. Sync package metadata: `npm run naming:sync`.
-5. Start services: `docker compose up --build`.
-6. Run migrations inside the API container: `docker compose exec api npm run db:migrate`.
-7. Seed admin user inside the API container: `docker compose exec api npm run db:seed`.
+1. Copia `.env.example` a `.env`.
+2. Personaliza la variable de naming en `.env` (`PROJECT_SLUG`).
+3. Completa todas las demas variables requeridas en `.env`.
+4. Sincroniza metadatos del paquete: `npm run naming:sync`.
+5. Inicia servicios: `docker compose up --build`.
+6. Ejecuta migraciones dentro del contenedor API: `docker compose exec api npm run db:migrate`.
+7. Ejecuta el seeder del usuario admin dentro del contenedor API: `docker compose exec api npm run db:seed`.
 8. API: `http://localhost:3000`.
 9. Swagger: `http://localhost:3000/api-docs`.
 10. phpMyAdmin: `http://localhost:8081`.
 
-Notes:
-- Use `docker compose up` for daily work after the first successful build.
-- Use `docker compose up --build` again only when `package.json`, `Dockerfile`, or image-level dependencies change.
-- Database commands must run inside the `api` container because `.env` uses `DB_HOST=mysql`, which resolves only inside the Docker network.
+Notas:
+- Usa `docker compose up` para el trabajo diario despues del primer build exitoso.
+- Vuelve a usar `docker compose up --build` solo cuando cambien `package.json`, `Dockerfile` o dependencias a nivel de imagen.
+- Los comandos de base de datos deben ejecutarse dentro del contenedor `api` porque `.env` usa `DB_HOST=mysql`, que solo resuelve dentro de la red Docker.
 
-## Database Commands
+## Comandos De Base De Datos
 
-- Apply migrations: `docker compose exec api npm run db:migrate`
-- Revert one migration: `docker compose exec api npm run db:migrate:undo`
-- Seed initial data: `docker compose exec api npm run db:seed`
+- Aplicar migraciones: `docker compose exec api npm run db:migrate`
+- Revertir una migracion: `docker compose exec api npm run db:migrate:undo`
+- Cargar datos iniciales: `docker compose exec api npm run db:seed`
 
-When to run them:
-- Run migrations when you add a new migration or start from a fresh database.
-- Run seeds when you need initial data again, such as after recreating the database.
-- Do not run them on every start. Sequelize tracks applied migrations.
+Cuando ejecutarlos:
+- Ejecuta migraciones al agregar una migracion nueva o iniciar desde una base de datos vacia.
+- Ejecuta seeds cuando necesites datos iniciales nuevamente, por ejemplo despues de recrear la base de datos.
+- No los ejecutes en cada inicio. Sequelize registra las migraciones aplicadas.
 
-## Node Local Startup (Without Docker)
+## Arranque Local Con Node (Sin Docker)
 
-Use this mode only if you run MySQL outside Docker and point `.env` to that host (for example `DB_HOST=localhost`).
+Usa este modo solo si ejecutas MySQL fuera de Docker y apuntas `.env` a ese host (por ejemplo `DB_HOST=localhost`).
 
-1. Install dependencies: `npm install`.
-2. Configure `.env` for local database access.
-3. Run migrations: `npm run db:migrate`.
-4. Seed admin user: `npm run db:seed`.
-5. Run API: `npm run dev`.
+1. Instala dependencias: `npm install`.
+2. Configura `.env` para acceso local a base de datos.
+3. Ejecuta migraciones: `npm run db:migrate`.
+4. Ejecuta el seeder de admin: `npm run db:seed`.
+5. Inicia la API: `npm run dev`.
 
-## Related Docs
+## Documentacion Relacionada
 
-- Project overview and quick start: `README.md`
-- Quick rename guide: `docs/PROJECT_CUSTOMIZATION.md`
-- Architecture and design decisions: `docs/ARCHITECTURE.md`
-- File-by-file guide: `docs/FILES_REFERENCE.md`
-- Request/response execution flow: `docs/REQUEST_FLOWS.md`
-- Common failures and fixes: `docs/TROUBLESHOOTING.md`
+- Vista general del proyecto e inicio rapido: `README.md`
+- Guia rapida de renombre: `docs/PROJECT_CUSTOMIZATION.md`
+- Arquitectura y decisiones de diseno: `docs/ARCHITECTURE.md`
+- Guia archivo por archivo: `docs/FILES_REFERENCE.md`
+- Flujo de ejecucion request/response: `docs/REQUEST_FLOWS.md`
+- Fallos comunes y soluciones: `docs/TROUBLESHOOTING.md`
