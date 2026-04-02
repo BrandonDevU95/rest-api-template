@@ -1,5 +1,5 @@
-import { env } from './environment';
 import swaggerJsdoc from 'swagger-jsdoc';
+import { env } from './environment';
 
 /**
  * Especificacion OpenAPI generada desde anotaciones de rutas.
@@ -13,7 +13,11 @@ export const swaggerSpec = swaggerJsdoc({
     info: {
       title: env.app.name,
       version: '1.0.0',
-      description: env.app.description,
+      description: `${env.app.description}\n\nCentro de documentacion general: /documentation`,
+    },
+    externalDocs: {
+      description: 'Centro de documentacion (README + docs)',
+      url: `http://localhost:${env.app.port}/documentation`,
     },
     servers: [
       {

@@ -1,17 +1,20 @@
-import express from 'express';
-import passport from 'passport';
-import swaggerUi from 'swagger-ui-express';
-import { env } from './config/environment';
-import { httpLogger } from './infrastructure/logger/morgan.middleware';
-import { requestContext } from './infrastructure/logger/requestContext.middleware';
 import './infrastructure/auth/passport';
-import { swaggerSpec } from './config/swagger';
+
+import { errorHandler, notFoundHandler } from './presentation/middlewares/errorHandler';
 import {
   apiRateLimiter,
   corsMiddleware,
   helmetMiddleware,
 } from './presentation/middlewares/security.middleware';
-import { errorHandler, notFoundHandler } from './presentation/middlewares/errorHandler';
+
+import express from 'express';
+import passport from 'passport';
+import path from 'path';
+import swaggerUi from 'swagger-ui-express';
+import { env } from './config/environment';
+import { swaggerSpec } from './config/swagger';
+import { httpLogger } from './infrastructure/logger/morgan.middleware';
+import { requestContext } from './infrastructure/logger/requestContext.middleware';
 import { apiRouter } from './presentation/routes';
 
 export const app = express();
@@ -35,7 +38,25 @@ app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(apiRateLimiter);
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+const projectRoot = process.cwd();
+const docsViewerDir = path.join(projectRoot, 'docs', 'viewer');
+const docsMarkdownDir = path.join(projectRoot, 'docs');
+const readmePath = path.join(projectRoot, 'README.md');
+
+app.use('/documentation', express.static(docsViewerDir));
+app.use('/documentation/files/docs', express.static(docsMarkdownDir));
+app.get('/documentation/files/README.md', (_req, res) => {
+  res.sendFile(readmePath);
+});
+
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customJs: '/documentation/swagger-topbar.js',
+    customCssUrl: '/documentation/swagger-topbar.css',
+  }),
+);
 
 app.use(env.app.apiPrefix, apiRouter);
 

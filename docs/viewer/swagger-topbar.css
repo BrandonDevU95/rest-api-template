@@ -1,0 +1,41 @@
+.swagger-ui .topbar .topbar-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.swagger-ui .topbar .topbar-wrapper .docs-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.swagger-ui .topbar .topbar-wrapper .docs-nav-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid #0f5f47;
+  background: #0d6b50;
+  color: #f6fffb;
+  font-family: 'Segoe UI', 'Trebuchet MS', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  line-height: 1;
+  transition: background-color 120ms ease;
+}
+
+.swagger-ui .topbar .topbar-wrapper .docs-nav-link:hover {
+  background: #0b5f47;
+}
+
+.swagger-ui .topbar .topbar-wrapper .docs-nav-link.is-active {
+  border-color: #2d2d2d;
+  background: #2f2f2f;
+  color: #ffffff;
+  pointer-events: none;
+}

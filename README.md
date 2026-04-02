@@ -12,6 +12,7 @@ Plantilla profesional de backend con Clean Architecture usando TypeScript, Expre
 6. Ejecuta migraciones dentro del contenedor de API: `docker compose exec api npm run db:migrate`
 7. Ejecuta el seeder del usuario admin dentro del contenedor de API: `docker compose exec api npm run db:seed`
 8. Abre Swagger en `http://localhost:3000/api-docs`
+9. Abre el visor HTML de documentacion en `http://localhost:3000/documentation`
 
 El archivo `.env.example` es solo una plantilla. La API, los contenedores de base de datos y Sequelize CLI leen desde `.env`, por lo que ese archivo debe contener la configuracion completa antes de levantar el proyecto.
 
@@ -24,8 +25,8 @@ Para personalizar por completo el nombre del proyecto sin buscar carpeta por car
 
 Variables principales de naming en `.env`:
 
-| Variable | Proposito |
-| --- | --- |
+| Variable       | Proposito                                                                                                                                                            |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `PROJECT_SLUG` | Variable maestra. Deriva el nombre del proyecto Docker, nombres de contenedores, nombre de red, nombre de la app en logs/titulo de Swagger y descripcion de Swagger. |
 
 ### Flujo De Desarrollo
@@ -41,6 +42,7 @@ Para el trabajo del dia a dia, usa `docker compose up` cuando los contenedores y
 #### Cuando Reconstruir
 
 Vuelve a usar `docker compose up --build` solo cuando cambies:
+
 - `package.json`
 - `Dockerfile`
 - dependencias
@@ -59,51 +61,52 @@ Vuelve a usar `docker compose up --build` solo cuando cambies:
 
 #### Aplicacion
 
-| Variable | Proposito |
-| --- | --- |
-| `NODE_ENV` | Define el modo de ejecucion usado por la app y el manejo de errores. |
-| `PORT` | Puerto en el que escucha la API. |
-| `API_PREFIX` | Ruta base para todas las rutas de la API. |
-| `PROJECT_SLUG` | Valor maestro de naming para derivar nombres de app y Docker. |
-| `JWT_ACCESS_SECRET` | Secreto usado para firmar y verificar access tokens. |
-| `JWT_ACCESS_EXPIRES_IN` | Expiracion de access tokens. |
-| `JWT_REFRESH_SECRET` | Secreto usado para firmar y verificar refresh tokens. |
-| `JWT_REFRESH_EXPIRES_IN` | Expiracion de refresh tokens. |
-| `BCRYPT_SALT_ROUNDS` | Factor de costo de BCrypt para hash de contrasenas. |
-| `CORS_ORIGIN` | Origenes permitidos para solicitudes del navegador. |
-| `LOG_LEVEL` | Nivel minimo de logs para el logger de la aplicacion. |
-| `LOG_DIR` | Directorio donde se escriben archivos de log. |
-| `RATE_LIMIT_WINDOW_MS` | Ventana de tiempo para rate limiting. |
-| `RATE_LIMIT_MAX_REQUESTS` | Maximo de solicitudes por ventana para trafico general. |
-| `RATE_LIMIT_LOGIN_MAX_REQUESTS` | Maximo de solicitudes por ventana para intentos de login. |
+| Variable                        | Proposito                                                            |
+| ------------------------------- | -------------------------------------------------------------------- |
+| `NODE_ENV`                      | Define el modo de ejecucion usado por la app y el manejo de errores. |
+| `PORT`                          | Puerto en el que escucha la API.                                     |
+| `API_PREFIX`                    | Ruta base para todas las rutas de la API.                            |
+| `PROJECT_SLUG`                  | Valor maestro de naming para derivar nombres de app y Docker.        |
+| `JWT_ACCESS_SECRET`             | Secreto usado para firmar y verificar access tokens.                 |
+| `JWT_ACCESS_EXPIRES_IN`         | Expiracion de access tokens.                                         |
+| `JWT_REFRESH_SECRET`            | Secreto usado para firmar y verificar refresh tokens.                |
+| `JWT_REFRESH_EXPIRES_IN`        | Expiracion de refresh tokens.                                        |
+| `BCRYPT_SALT_ROUNDS`            | Factor de costo de BCrypt para hash de contrasenas.                  |
+| `CORS_ORIGIN`                   | Origenes permitidos para solicitudes del navegador.                  |
+| `LOG_LEVEL`                     | Nivel minimo de logs para el logger de la aplicacion.                |
+| `LOG_DIR`                       | Directorio donde se escriben archivos de log.                        |
+| `RATE_LIMIT_WINDOW_MS`          | Ventana de tiempo para rate limiting.                                |
+| `RATE_LIMIT_MAX_REQUESTS`       | Maximo de solicitudes por ventana para trafico general.              |
+| `RATE_LIMIT_LOGIN_MAX_REQUESTS` | Maximo de solicitudes por ventana para intentos de login.            |
 
 #### Base De Datos Y Docker
 
-| Variable | Proposito |
-| --- | --- |
-| `DB_HOST` | Host de MySQL usado por la API y Sequelize CLI. |
-| `DB_PORT` | Puerto de MySQL usado por la API y Sequelize CLI. |
-| `DB_NAME` | Nombre de base de datos usado por la API y Sequelize CLI. |
-| `DB_USER` | Usuario de base de datos usado por la API y Sequelize CLI. |
-| `DB_PASSWORD` | Contrasena de base de datos usada por la API y Sequelize CLI. |
-| `DB_LOGGING` | Habilita o deshabilita logs SQL de Sequelize. |
-| `MYSQL_ROOT_PASSWORD` | Contrasena root de MySQL usada por el contenedor Docker. |
-| `MYSQL_DATABASE` | Base de datos inicial de MySQL creada por Docker. |
-| `MYSQL_USER` | Usuario de MySQL creado por Docker. |
-| `MYSQL_PASSWORD` | Contrasena de MySQL creada por Docker. |
-| `PMA_HOST` | Host de phpMyAdmin al ejecutar con Docker. |
-| `PMA_PORT` | Puerto de phpMyAdmin al ejecutar con Docker. |
-| `PMA_USER` | Usuario de base de datos de phpMyAdmin al ejecutar con Docker. |
-| `PMA_PASSWORD` | Contrasena de base de datos de phpMyAdmin al ejecutar con Docker. |
+| Variable              | Proposito                                                         |
+| --------------------- | ----------------------------------------------------------------- |
+| `DB_HOST`             | Host de MySQL usado por la API y Sequelize CLI.                   |
+| `DB_PORT`             | Puerto de MySQL usado por la API y Sequelize CLI.                 |
+| `DB_NAME`             | Nombre de base de datos usado por la API y Sequelize CLI.         |
+| `DB_USER`             | Usuario de base de datos usado por la API y Sequelize CLI.        |
+| `DB_PASSWORD`         | Contrasena de base de datos usada por la API y Sequelize CLI.     |
+| `DB_LOGGING`          | Habilita o deshabilita logs SQL de Sequelize.                     |
+| `MYSQL_ROOT_PASSWORD` | Contrasena root de MySQL usada por el contenedor Docker.          |
+| `MYSQL_DATABASE`      | Base de datos inicial de MySQL creada por Docker.                 |
+| `MYSQL_USER`          | Usuario de MySQL creado por Docker.                               |
+| `MYSQL_PASSWORD`      | Contrasena de MySQL creada por Docker.                            |
+| `PMA_HOST`            | Host de phpMyAdmin al ejecutar con Docker.                        |
+| `PMA_PORT`            | Puerto de phpMyAdmin al ejecutar con Docker.                      |
+| `PMA_USER`            | Usuario de base de datos de phpMyAdmin al ejecutar con Docker.    |
+| `PMA_PASSWORD`        | Contrasena de base de datos de phpMyAdmin al ejecutar con Docker. |
 
 #### Seeder
 
-| Variable | Proposito |
-| --- | --- |
-| `ADMIN_EMAIL` | Email usado por el script de seed del admin. |
+| Variable         | Proposito                                         |
+| ---------------- | ------------------------------------------------- |
+| `ADMIN_EMAIL`    | Email usado por el script de seed del admin.      |
 | `ADMIN_PASSWORD` | Contrasena usada por el script de seed del admin. |
 
 Credenciales por defecto del seed admin:
+
 - Email: `admin@template.local`
 - Contrasena: `Admin123!`
 
