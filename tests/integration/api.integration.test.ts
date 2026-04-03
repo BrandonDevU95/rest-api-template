@@ -126,6 +126,16 @@ describe('API integration baseline', () => {
     expect(Array.isArray(response.body.details.errors)).toBe(true);
   });
 
+  test('POST /api/v1/auth/register rejects numeric password type to prevent Joi coercion', async () => {
+    const response = await request(app).post('/api/v1/auth/register').send({
+      email: 'typed-password@example.com',
+      password: 12345678,
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe('VALIDATION_ERROR');
+  });
+
   test('POST /api/v1/auth/login returns tokens for valid credentials', async () => {
     const email = 'login@example.com';
     const password = 'Password123!';
