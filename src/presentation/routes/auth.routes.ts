@@ -23,5 +23,5 @@ authRouter.post(
   passport.authenticate('local', { session: false }),
   asyncHandler(AuthController.login),
 );
-authRouter.post('/refresh', validate({ body: refreshSchema }), asyncHandler(AuthController.refresh));
+authRouter.post('/refresh', loginRateLimiter, validate({ body: refreshSchema }), asyncHandler(AuthController.refresh));
 authRouter.get('/profile', authenticateJwt, asyncHandler(AuthController.profile));

@@ -10,6 +10,7 @@ import { HashService } from '../../application/services/HashService';
  *
  * La estrategia local autentica email/contrasena contra el repositorio y el servicio de hash
  * mientras que la estrategia JWT resuelve el usuario actual desde el bearer token.
+ * Se valida que el email del token coincida con el registrado en BD.
  */
 const userRepository = new UserRepository();
 const hashService = new HashService();
@@ -47,7 +48,8 @@ passport.use(
     async (payload, done) => {
       try {
         const user = await userRepository.findById(payload.sub);
-        if (!user) {
+        // Validar que el email en el token coincida con el stored en BD
+        if (!user || user.email !== payload.email) {
           return done(null, false);
         }
 

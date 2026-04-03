@@ -64,7 +64,7 @@ export class AuthController {
     res.status(200).json(tokens);
   }
 
-  static async refresh(req: Request, res: Response): Promise<void> {
+  static refresh(req: Request, res: Response): void {
     const tokens = refreshUseCase.execute(req.body.refreshToken as string);
     res.status(200).json(tokens);
   }
