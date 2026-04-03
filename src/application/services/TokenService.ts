@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 import { env } from '../../config/environment';
 import { JwtPayload, TokenPairDto } from '../dto/auth.dto';
 
@@ -10,25 +11,25 @@ import { JwtPayload, TokenPairDto } from '../dto/auth.dto';
  */
 export class TokenService {
   signAccessToken(payload: JwtPayload): string {
-    return jwt.sign(payload, env.jwt.accessSecret, {
+    return jwt.sign({ ...payload, jti: uuidv4() }, env.jwt.accessSecret, {
       expiresIn: env.jwt.accessExpiresIn as jwt.SignOptions['expiresIn'],
       algorithm: 'HS256',
     });
   }
 
   signRefreshToken(payload: JwtPayload): string {
-    return jwt.sign(payload, env.jwt.refreshSecret, {
+    return jwt.sign({ ...payload, jti: uuidv4() }, env.jwt.refreshSecret, {
       expiresIn: env.jwt.refreshExpiresIn as jwt.SignOptions['expiresIn'],
       algorithm: 'HS256',
     });
   }
 
-  verifyAccessToken(token: string): JwtPayload {
-    return jwt.verify(token, env.jwt.accessSecret) as JwtPayload;
+  verifyAccessToken(token: string): JwtPayload & { jti?: string } {
+    return jwt.verify(token, env.jwt.accessSecret) as JwtPayload & { jti?: string };
   }
 
-  verifyRefreshToken(token: string): JwtPayload {
-    return jwt.verify(token, env.jwt.refreshSecret) as JwtPayload;
+  verifyRefreshToken(token: string): JwtPayload & { jti?: string } {
+    return jwt.verify(token, env.jwt.refreshSecret) as JwtPayload & { jti?: string };
   }
 
   createTokenPair(payload: JwtPayload): TokenPairDto {
