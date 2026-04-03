@@ -79,6 +79,7 @@ Vuelve a usar `docker compose up --build` solo cuando cambies:
 | `RATE_LIMIT_MAX_REQUESTS`       | Maximo de solicitudes por ventana para trafico general.              |
 | `RATE_LIMIT_LOGIN_MAX_REQUESTS` | Maximo de solicitudes por ventana para intentos de login.            |
 | `ALLOW_NON_STANDARD_TLDS`       | Permite correos con dominios internos como `.local` cuando vale `true`. |
+| `TRUST_PROXY_HOPS`              | Numero de proxies confiables delante de la API. Usa `0` si no hay reverse proxy. Usa `1` si hay un solo proxy confiable. |
 | `ENABLE_PUBLIC_DOCS`            | Controla si Swagger y `/documentation` se exponen publicamente. Por defecto: `true` en `development`/`test`, `false` en `production`. |
 
 #### Base De Datos Y Docker
@@ -166,3 +167,4 @@ Definicion de terminado para actualizaciones de documentacion:
 - Se reflejan entradas/salidas y comportamiento de error.
 - Se documenta comportamiento sensible de seguridad (auth, secretos, logging).
 - Cualquier incidencia recurrente nueva tiene entrada en resolucion de problemas.
+

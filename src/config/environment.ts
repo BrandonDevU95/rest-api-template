@@ -37,6 +37,7 @@ const envSchema = Joi.object({
   RATE_LIMIT_WINDOW_MS: Joi.number().required(),
   RATE_LIMIT_MAX_REQUESTS: Joi.number().required(),
   RATE_LIMIT_LOGIN_MAX_REQUESTS: Joi.number().required(),
+  TRUST_PROXY_HOPS: Joi.number().integer().min(0).default(0),
   ALLOW_NON_STANDARD_TLDS: Joi.boolean().default(true),
   ENABLE_PUBLIC_DOCS: Joi.boolean().optional(),
 }).unknown();
@@ -96,6 +97,7 @@ export const env = {
   },
 
   security: {
+    trustProxyHops: value.TRUST_PROXY_HOPS as number,
     bcryptSaltRounds: value.BCRYPT_SALT_ROUNDS as number,
     corsOrigins: (value.CORS_ORIGIN as string).split(',').map((origin) => origin.trim()),
     rateLimitWindowMs: value.RATE_LIMIT_WINDOW_MS as number,
@@ -113,3 +115,4 @@ export const env = {
     enablePublicDocs,
   },
 };
+

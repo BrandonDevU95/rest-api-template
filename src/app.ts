@@ -29,6 +29,7 @@ export const app = express();
  * - not-found y handlers de error al final
  */
 app.disable('x-powered-by');
+app.set('trust proxy', env.security.trustProxyHops);
 app.use(requestContext);
 app.use(httpLogger);
 app.use(helmetMiddleware);
@@ -64,3 +65,4 @@ app.use(env.app.apiPrefix, apiRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
+
