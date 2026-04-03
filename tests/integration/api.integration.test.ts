@@ -171,11 +171,20 @@ describe('API integration baseline', () => {
   });
 
   test('POST /api/v1/auth/refresh returns a new token pair for valid refresh token', async () => {
+    const userId = '55555555-5555-5555-5555-555555555555';
     const tokens = tokenService.createTokenPair({
-      sub: '55555555-5555-5555-5555-555555555555',
+      sub: userId,
       email: 'refresh@example.com',
       role: 'user',
     });
+
+    mockUserRepository.findById.mockResolvedValueOnce(
+      buildUser({
+        id: userId,
+        email: 'refresh@example.com',
+        role: 'user',
+      }),
+    );
 
     const response = await request(app).post('/api/v1/auth/refresh').send({
       refreshToken: tokens.refreshToken,
@@ -184,7 +193,6 @@ describe('API integration baseline', () => {
     expect(response.status).toBe(200);
     expect(typeof response.body.accessToken).toBe('string');
     expect(typeof response.body.refreshToken).toBe('string');
-    console.log('REFRESH DEBUG', response.status, JSON.stringify(response.body));
   });
 
   test('POST /api/v1/auth/refresh returns 401 for invalid refresh token', async () => {
