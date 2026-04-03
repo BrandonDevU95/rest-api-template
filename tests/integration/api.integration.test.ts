@@ -184,6 +184,7 @@ describe('API integration baseline', () => {
     expect(response.status).toBe(200);
     expect(typeof response.body.accessToken).toBe('string');
     expect(typeof response.body.refreshToken).toBe('string');
+    console.log('REFRESH DEBUG', response.status, JSON.stringify(response.body));
   });
 
   test('POST /api/v1/auth/refresh returns 401 for invalid refresh token', async () => {
