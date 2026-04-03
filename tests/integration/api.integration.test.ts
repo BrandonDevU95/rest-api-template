@@ -147,6 +147,16 @@ describe('API integration baseline', () => {
     expect(response.body.code).toBe('VALIDATION_ERROR');
   });
 
+  test('POST /api/v1/auth/register rejects weak low-entropy passwords', async () => {
+    const response = await request(app).post('/api/v1/auth/register').send({
+      email: 'weak-password@example.com',
+      password: 'aaaaaaaaaaaa',
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe('VALIDATION_ERROR');
+  });
+
   test('POST /api/v1/auth/login returns tokens for valid credentials', async () => {
     const email = 'login@example.com';
     const password = 'Password123!';
