@@ -136,6 +136,17 @@ describe('API integration baseline', () => {
     expect(response.body.code).toBe('VALIDATION_ERROR');
   });
 
+  test('POST /api/v1/auth/register rejects unexpected fields instead of silently stripping them', async () => {
+    const response = await request(app).post('/api/v1/auth/register').send({
+      email: 'unknown-fields@example.com',
+      password: 'Password123!',
+      role: 'admin',
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe('VALIDATION_ERROR');
+  });
+
   test('POST /api/v1/auth/login returns tokens for valid credentials', async () => {
     const email = 'login@example.com';
     const password = 'Password123!';

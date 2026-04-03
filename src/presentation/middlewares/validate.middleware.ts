@@ -7,7 +7,7 @@ import { ValidationError } from '../../shared/errors/AppError';
  *
  * Aplica schemas Joi a body/query/params con:
  * - abortEarly: false (recopila todos los errores de validacion)
- * - stripUnknown: true (elimina campos no declarados)
+ * - stripUnknown: false (rechaza campos no declarados)
  * - convert: false (evita coercion implicita de tipos)
  */
 interface ValidationSchemas {
@@ -23,7 +23,7 @@ const validateObject = (schema: Schema | undefined, value: unknown): unknown => 
 
   const result = schema.validate(value, {
     abortEarly: false,
-    stripUnknown: true,
+    stripUnknown: false,
     convert: false,
   });
 
@@ -46,3 +46,4 @@ export const validate = (schemas: ValidationSchemas) => {
 };
 
 export const joi = Joi;
+
