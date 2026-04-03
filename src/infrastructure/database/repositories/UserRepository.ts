@@ -30,6 +30,10 @@ export class UserRepository implements IUserRepository {
     });
   }
 
+  private normalizeEmail(email: string): string {
+    return email.trim().toLowerCase();
+  }
+
   private mapPersistenceError(error: unknown): never {
     if (error instanceof UniqueConstraintError) {
       throw new ConflictError('Email already exists');
@@ -44,18 +48,21 @@ export class UserRepository implements IUserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const user = await UserModel.findOne({ where: { email } });
+    const user = await UserModel.findOne({ where: { email: this.normalizeEmail(email) } });
     return user ? this.mapToDomain(user) : null;
   }
 
   async findByEmailForAuth(email: string): Promise<User | null> {
-    const user = await UserModel.unscoped().findOne({ where: { email } });
+    const user = await UserModel.unscoped().findOne({ where: { email: this.normalizeEmail(email) } });
     return user ? this.mapToDomain(user) : null;
   }
 
   async create(input: CreateUserInput): Promise<User> {
     try {
-      const user = await UserModel.create(input);
+      const user = await UserModel.create({
+        ...input,
+        email: this.normalizeEmail(input.email),
+      });
       return this.mapToDomain(user);
     } catch (error) {
       this.mapPersistenceError(error);
@@ -68,8 +75,13 @@ export class UserRepository implements IUserRepository {
       return null;
     }
 
+    const normalizedInput: UpdateUserInput = {
+      ...input,
+      email: input.email ? this.normalizeEmail(input.email) : undefined,
+    };
+
     try {
-      await user.update(input);
+      await user.update(normalizedInput);
       return this.mapToDomain(user);
     } catch (error) {
       this.mapPersistenceError(error);
