@@ -1,4 +1,4 @@
-import { User, UserRole } from '../../src/domain/entities/User';
+import { AuthUser, User, UserRole } from '../../src/domain/entities/User';
 
 import { HashService } from '../../src/application/services/HashService';
 import { TokenService } from '../../src/application/services/TokenService';
@@ -29,11 +29,21 @@ const tokenService = new TokenService();
 const buildUser = (overrides?: Partial<{
   id: string;
   email: string;
-  passwordHash: string;
   role: UserRole;
 }>): User => {
   const now = new Date();
   return new User({
+    id: overrides?.id ?? '11111111-1111-1111-1111-111111111111',
+    email: overrides?.email ?? 'user@example.com',
+    role: overrides?.role ?? 'user',
+    createdAt: now,
+    updatedAt: now,
+  });
+};
+
+const buildAuthUser = (overrides?: Partial<{ id: string; email: string; passwordHash: string; role: UserRole }>): AuthUser => {
+  const now = new Date();
+  return new AuthUser({
     id: overrides?.id ?? '11111111-1111-1111-1111-111111111111',
     email: overrides?.email ?? 'user@example.com',
     passwordHash: overrides?.passwordHash ?? '$2b$12$JSE3mkuN8RwdFfQf7rxk8e4QwPwFsEYh3YOEoTP0TO.GfYh3CX6Ka',
@@ -42,7 +52,6 @@ const buildUser = (overrides?: Partial<{
     updatedAt: now,
   });
 };
-
 describe('API integration baseline', () => {
   beforeEach(() => {
     Object.values(mockUserRepository).forEach((fn) => fn.mockReset());
@@ -81,12 +90,10 @@ describe('API integration baseline', () => {
     const password = 'Password123!';
 
     mockUserRepository.findByEmail.mockResolvedValueOnce(null);
-    const passwordHash = await hashService.hash(password);
     mockUserRepository.create.mockResolvedValueOnce(
       buildUser({
         id: '22222222-2222-2222-2222-222222222222',
         email,
-        passwordHash,
         role: 'user',
       }),
     );
@@ -164,7 +171,7 @@ describe('API integration baseline', () => {
     const passwordHash = await hashService.hash(password);
 
     mockUserRepository.findByEmailForAuth.mockResolvedValueOnce(
-      buildUser({
+      buildAuthUser({
         id: '33333333-3333-3333-3333-333333333333',
         email,
         passwordHash,
@@ -187,7 +194,7 @@ describe('API integration baseline', () => {
     const passwordHash = await hashService.hash('AnotherPassword123!');
 
     mockUserRepository.findByEmailForAuth.mockResolvedValueOnce(
-      buildUser({
+      buildAuthUser({
         id: '44444444-4444-4444-4444-444444444444',
         email,
         passwordHash,
@@ -445,5 +452,4 @@ describe('API integration baseline', () => {
     expect(response.body[0].role).toBe('user');
   });
 });
-
 

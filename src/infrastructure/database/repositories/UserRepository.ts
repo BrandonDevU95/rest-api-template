@@ -5,15 +5,15 @@ import {
 } from '../../../domain/interfaces/IUserRepository';
 import { UniqueConstraintError } from 'sequelize';
 import { ConflictError } from '../../../shared/errors/AppError';
-import { User } from '../../../domain/entities/User';
+import { AuthUser, User } from '../../../domain/entities/User';
 import { UserModel } from '../models/UserModel';
 
 /**
  * Implementacion de IUserRepository respaldada por Sequelize.
  *
  * Regla de mapeo:
- * - El modelo de persistencia (UserModel) se traduce a la entidad de dominio (User)
- *   antes de devolver datos a capas superiores.
+ * - El modelo de persistencia (UserModel) se traduce a entidades de dominio
+ *   segun el contexto (User o AuthUser).
  *
  * Semantica de null:
  * - findById/findByEmail/updateById retornan null cuando el objetivo no existe.
@@ -23,7 +23,17 @@ export class UserRepository implements IUserRepository {
     return new User({
       id: model.id,
       email: model.email,
-      passwordHash: model.getDataValue('passwordHash') ?? '',
+      role: model.role,
+      createdAt: model.createdAt,
+      updatedAt: model.updatedAt,
+    });
+  }
+
+  private mapToAuthDomain(model: UserModel): AuthUser {
+    return new AuthUser({
+      id: model.id,
+      email: model.email,
+      passwordHash: model.getDataValue('passwordHash'),
       role: model.role,
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
@@ -52,9 +62,9 @@ export class UserRepository implements IUserRepository {
     return user ? this.mapToDomain(user) : null;
   }
 
-  async findByEmailForAuth(email: string): Promise<User | null> {
+  async findByEmailForAuth(email: string): Promise<AuthUser | null> {
     const user = await UserModel.unscoped().findOne({ where: { email: this.normalizeEmail(email) } });
-    return user ? this.mapToDomain(user) : null;
+    return user ? this.mapToAuthDomain(user) : null;
   }
 
   async create(input: CreateUserInput): Promise<User> {

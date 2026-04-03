@@ -4,7 +4,7 @@ import { RegisterUseCase } from '../../../../src/application/use-cases/auth/Regi
 import { User } from '../../../../src/domain/entities/User';
 import { ConflictError } from '../../../../src/shared/errors/AppError';
 
-const buildUser = (overrides?: Partial<{ id: string; email: string; passwordHash: string; role: 'admin' | 'user' }>): User => {
+const buildUser = (overrides?: Partial<{ id: string; email: string; role: 'admin' | 'user' }>): User => {
   const now = new Date();
   return new User({
     id: overrides?.id ?? '99999999-9999-9999-9999-999999999999',
@@ -34,7 +34,6 @@ describe('RegisterUseCase', () => {
       buildUser({
         id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
         email: input.email,
-        passwordHash: input.passwordHash,
         role: input.role,
       }),
     );
