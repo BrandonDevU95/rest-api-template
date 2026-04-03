@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { joi } from '../middlewares/validate.middleware';
 import { UserController } from '../controllers/UserController';
 import { asyncHandler } from '../../shared/utils/asyncHandler';
 import {
@@ -20,6 +21,8 @@ import {
  * validacion de requests antes de delegar en UserController.
  */
 export const usersRouter = Router();
+
+const noQuerySchema = joi.object({});
 
 /**
  * @openapi
@@ -147,13 +150,14 @@ export const usersRouter = Router();
  *         description: Usuario no encontrado
  */
 usersRouter.use(authenticateJwt);
-usersRouter.post('/', authorizeRoles('admin'), validate({ body: createUserSchema }), asyncHandler(UserController.create));
-usersRouter.get('/', authorizeRoles('admin'), asyncHandler(UserController.list));
-usersRouter.get('/:id', validate({ params: idParamSchema }), authorizeAdminOrSelf, asyncHandler(UserController.getById));
+usersRouter.post('/', authorizeRoles('admin'), validate({ body: createUserSchema, query: noQuerySchema }), asyncHandler(UserController.create));
+usersRouter.get('/', authorizeRoles('admin'), validate({ query: noQuerySchema }), asyncHandler(UserController.list));
+usersRouter.get('/:id', validate({ params: idParamSchema, query: noQuerySchema }), authorizeAdminOrSelf, asyncHandler(UserController.getById));
 usersRouter.put(
 	'/:id',
-	validate({ params: idParamSchema, body: updateUserSchema }),
+	validate({ params: idParamSchema, body: updateUserSchema, query: noQuerySchema }),
 	authorizeAdminOrSelf,
 	asyncHandler(UserController.update),
 );
-usersRouter.delete('/:id', validate({ params: idParamSchema }), authorizeRoles('admin'), asyncHandler(UserController.delete));
+usersRouter.delete('/:id', validate({ params: idParamSchema, query: noQuerySchema }), authorizeRoles('admin'), asyncHandler(UserController.delete));
+

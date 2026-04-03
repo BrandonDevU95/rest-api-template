@@ -302,6 +302,31 @@ describe('API integration baseline', () => {
     expect(response.body.role).toBe('admin');
   });
 
+  test('GET /api/v1/auth/profile rejects unexpected query params', async () => {
+    const userId = '99999999-9999-9999-9999-999999999999';
+    const accessToken = tokenService.signAccessToken({
+      sub: userId,
+      email: 'query@example.com',
+      role: 'user',
+    });
+
+    mockUserRepository.findById.mockResolvedValueOnce(
+      buildUser({
+        id: userId,
+        email: 'query@example.com',
+        role: 'user',
+      }),
+    );
+
+    const response = await request(app)
+      .get('/api/v1/auth/profile')
+      .query({ debug: 'true' })
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe('VALIDATION_ERROR');
+  });
+
   test('GET /api/v1/users returns 403 for authenticated non-admin user', async () => {
     const userId = '77777777-7777-7777-7777-777777777777';
     const accessToken = tokenService.signAccessToken({
@@ -324,6 +349,31 @@ describe('API integration baseline', () => {
 
     expect(response.status).toBe(403);
     expect(response.body.code).toBe('FORBIDDEN');
+  });
+
+  test('GET /api/v1/users rejects unexpected query params', async () => {
+    const adminId = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+    const accessToken = tokenService.signAccessToken({
+      sub: adminId,
+      email: 'admin-query@example.com',
+      role: 'admin',
+    });
+
+    mockUserRepository.findById.mockResolvedValueOnce(
+      buildUser({
+        id: adminId,
+        email: 'admin-query@example.com',
+        role: 'admin',
+      }),
+    );
+
+    const response = await request(app)
+      .get('/api/v1/users')
+      .query({ limit: '10' })
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe('VALIDATION_ERROR');
   });
 
   test('GET /api/v1/users returns 200 and user list for admin', async () => {
