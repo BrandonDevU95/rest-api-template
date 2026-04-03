@@ -1,9 +1,10 @@
-import passport from 'passport';
-import { Strategy as LocalStrategy } from 'passport-local';
-import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import { env } from '../../config/environment';
-import { UserRepository } from '../database/repositories/UserRepository';
+import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
+
 import { HashService } from '../../application/services/HashService';
+import { Strategy as LocalStrategy } from 'passport-local';
+import { UserRepository } from '../database/repositories/UserRepository';
+import { env } from '../../config/environment';
+import passport from 'passport';
 import { tokenBlacklistService } from '../../application/services/TokenBlacklistService';
 
 /**
@@ -19,7 +20,7 @@ const hashService = new HashService();
 passport.use(
   new LocalStrategy({ usernameField: 'email', passwordField: 'password', session: false }, async (email, password, done) => {
     try {
-      const user = await userRepository.findByEmail(email);
+      const user = await userRepository.findByEmailForAuth(email);
       if (!user) {
         return done(null, false, { message: 'Invalid credentials' });
       }

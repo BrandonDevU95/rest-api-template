@@ -23,7 +23,7 @@ export class UserRepository implements IUserRepository {
     return new User({
       id: model.id,
       email: model.email,
-      passwordHash: model.passwordHash,
+      passwordHash: model.getDataValue('passwordHash') ?? '',
       role: model.role,
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
@@ -45,6 +45,11 @@ export class UserRepository implements IUserRepository {
 
   async findByEmail(email: string): Promise<User | null> {
     const user = await UserModel.findOne({ where: { email } });
+    return user ? this.mapToDomain(user) : null;
+  }
+
+  async findByEmailForAuth(email: string): Promise<User | null> {
+    const user = await UserModel.unscoped().findOne({ where: { email } });
     return user ? this.mapToDomain(user) : null;
   }
 

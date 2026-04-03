@@ -6,6 +6,7 @@ import request from 'supertest';
 
 const mockUserRepository = {
   findByEmail: jest.fn(),
+  findByEmailForAuth: jest.fn(),
   create: jest.fn(),
   findById: jest.fn(),
   updateById: jest.fn(),
@@ -162,7 +163,7 @@ describe('API integration baseline', () => {
     const password = 'Password123!';
     const passwordHash = await hashService.hash(password);
 
-    mockUserRepository.findByEmail.mockResolvedValueOnce(
+    mockUserRepository.findByEmailForAuth.mockResolvedValueOnce(
       buildUser({
         id: '33333333-3333-3333-3333-333333333333',
         email,
@@ -185,7 +186,7 @@ describe('API integration baseline', () => {
     const email = 'login@example.com';
     const passwordHash = await hashService.hash('AnotherPassword123!');
 
-    mockUserRepository.findByEmail.mockResolvedValueOnce(
+    mockUserRepository.findByEmailForAuth.mockResolvedValueOnce(
       buildUser({
         id: '44444444-4444-4444-4444-444444444444',
         email,
@@ -444,3 +445,5 @@ describe('API integration baseline', () => {
     expect(response.body[0].role).toBe('user');
   });
 });
+
+
