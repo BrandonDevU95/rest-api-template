@@ -1,6 +1,7 @@
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import { ForbiddenError } from '../../shared/errors/AppError';
 import { env } from '../../config/environment';
 
 /**
@@ -20,7 +21,7 @@ export const corsMiddleware = cors({
       return;
     }
 
-    callback(new Error('Not allowed by CORS'));
+    callback(new ForbiddenError('Origin not allowed by CORS'));
   },
   credentials: true,
 });
@@ -42,3 +43,4 @@ export const loginRateLimiter = rateLimit({
     message: 'Too many login attempts. Please try again later.',
   },
 });
+
