@@ -38,25 +38,27 @@ app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(apiRateLimiter);
 
-const projectRoot = process.cwd();
-const docsViewerDir = path.join(projectRoot, 'docs', 'viewer');
-const docsMarkdownDir = path.join(projectRoot, 'docs');
-const readmePath = path.join(projectRoot, 'README.md');
+if (env.docs.enablePublicDocs) {
+  const projectRoot = process.cwd();
+  const docsViewerDir = path.join(projectRoot, 'docs', 'viewer');
+  const docsMarkdownDir = path.join(projectRoot, 'docs');
+  const readmePath = path.join(projectRoot, 'README.md');
 
-app.use('/documentation', express.static(docsViewerDir));
-app.use('/documentation/files/docs', express.static(docsMarkdownDir));
-app.get('/documentation/files/README.md', (_req, res) => {
-  res.sendFile(readmePath);
-});
+  app.use('/documentation', express.static(docsViewerDir));
+  app.use('/documentation/files/docs', express.static(docsMarkdownDir));
+  app.get('/documentation/files/README.md', (_req, res) => {
+    res.sendFile(readmePath);
+  });
 
-app.use(
-  '/api-docs',
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    customJs: '/documentation/swagger-topbar.js',
-    customCssUrl: '/documentation/swagger-topbar.css',
-  }),
-);
+  app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, {
+      customJs: '/documentation/swagger-topbar.js',
+      customCssUrl: '/documentation/swagger-topbar.css',
+    }),
+  );
+}
 
 app.use(env.app.apiPrefix, apiRouter);
 

@@ -38,6 +38,7 @@ const envSchema = Joi.object({
   RATE_LIMIT_MAX_REQUESTS: Joi.number().required(),
   RATE_LIMIT_LOGIN_MAX_REQUESTS: Joi.number().required(),
   ALLOW_NON_STANDARD_TLDS: Joi.boolean().default(true),
+  ENABLE_PUBLIC_DOCS: Joi.boolean().optional(),
 }).unknown();
 
 const { value, error } = envSchema.validate(process.env, {
@@ -60,6 +61,10 @@ const toTitleFromSlug = (slug: string): string =>
 
 const appName = toTitleFromSlug(projectSlug);
 const appDescription = `${appName} API`;
+const enablePublicDocs =
+  value.ENABLE_PUBLIC_DOCS === undefined
+    ? value.NODE_ENV !== 'production'
+    : (value.ENABLE_PUBLIC_DOCS as boolean);
 
 export const env = {
   nodeEnv: value.NODE_ENV as 'development' | 'test' | 'production',
@@ -102,5 +107,9 @@ export const env = {
   log: {
     level: value.LOG_LEVEL as string,
     dir: value.LOG_DIR as string,
+  },
+
+  docs: {
+    enablePublicDocs,
   },
 };
