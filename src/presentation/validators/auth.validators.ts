@@ -3,6 +3,7 @@ import { joi } from '../middlewares/validate.middleware';
 
 const emailOptions = env.security.allowNonStandardTlds ? { tlds: { allow: false } } : undefined;
 const passwordComplexityPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])\S+$/;
+const jwtTokenPattern = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
 
 const registrationPasswordSchema = joi
   .string()
@@ -10,6 +11,8 @@ const registrationPasswordSchema = joi
   .max(64)
   .pattern(passwordComplexityPattern)
   .required();
+
+const jwtTokenSchema = joi.string().max(4096).pattern(jwtTokenPattern);
 
 /**
  * Schemas Joi para endpoints de autenticacion.
@@ -25,6 +28,9 @@ export const loginSchema = joi.object({
 });
 
 export const refreshSchema = joi.object({
-  refreshToken: joi.string().required(),
+  refreshToken: jwtTokenSchema.required(),
 });
 
+export const logoutSchema = joi.object({
+  refreshToken: jwtTokenSchema.optional(),
+});

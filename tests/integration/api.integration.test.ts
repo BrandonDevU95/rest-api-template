@@ -235,6 +235,40 @@ describe('API integration baseline', () => {
     expect(response.body.code).toBe('UNAUTHORIZED');
   });
 
+  test('POST /api/v1/auth/refresh returns 400 for malformed refresh token format', async () => {
+    const response = await request(app).post('/api/v1/auth/refresh').send({
+      refreshToken: 'not-a-jwt',
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe('VALIDATION_ERROR');
+  });
+
+  test('POST /api/v1/auth/logout returns 400 for malformed optional refresh token', async () => {
+    const userId = '88888888-8888-8888-8888-888888888888';
+    const accessToken = tokenService.signAccessToken({
+      sub: userId,
+      email: 'logout@example.com',
+      role: 'user',
+    });
+
+    mockUserRepository.findById.mockResolvedValueOnce(
+      buildUser({
+        id: userId,
+        email: 'logout@example.com',
+        role: 'user',
+      }),
+    );
+
+    const response = await request(app)
+      .post('/api/v1/auth/logout')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ refreshToken: 'not-a-jwt' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe('VALIDATION_ERROR');
+  });
+
   test('GET /api/v1/auth/profile requires authentication', async () => {
     const response = await request(app).get('/api/v1/auth/profile');
 
@@ -327,4 +361,3 @@ describe('API integration baseline', () => {
     expect(response.body[0].role).toBe('user');
   });
 });
-

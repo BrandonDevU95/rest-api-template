@@ -1,9 +1,8 @@
 import { Router } from 'express';
-import Joi from 'joi';
 import { AuthController } from '../controllers/AuthController';
 import { asyncHandler } from '../../shared/utils/asyncHandler';
 import { validate } from '../middlewares/validate.middleware';
-import { loginSchema, refreshSchema, registerSchema } from '../validators/auth.validators';
+import { loginSchema, logoutSchema, refreshSchema, registerSchema } from '../validators/auth.validators';
 import { loginRateLimiter } from '../middlewares/security.middleware';
 import { passport } from '../../infrastructure/auth/passport';
 import { authenticateJwt } from '../middlewares/auth.middleware';
@@ -16,9 +15,6 @@ import { authenticateJwt } from '../middlewares/auth.middleware';
  */
 export const authRouter = Router();
 
-const logoutSchema = Joi.object({
-  refreshToken: Joi.string().optional(),
-});
 
 authRouter.post('/register', validate({ body: registerSchema }), asyncHandler(AuthController.register));
 authRouter.post(
