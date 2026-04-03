@@ -31,6 +31,12 @@ Variables principales de naming en `.env`:
 
 ### Flujo De Desarrollo
 
+### Hardening De Runtime
+
+- En `production`, `JWT_ACCESS_SECRET` y `JWT_REFRESH_SECRET` deben tener al menos 32 caracteres y no pueden usar placeholders (`change_this`, `example`, `default`, `template`).
+- En `docker-compose.yml`, los puertos de `api`, `mysql` y `phpmyadmin` se enlazan a `127.0.0.1` por defecto para reducir exposicion externa accidental.
+- Si necesitas acceso remoto en desarrollo, cambia deliberadamente el bind de puertos en `docker-compose.yml`.
+
 #### Configuracion Inicial
 
 Usa `docker compose up --build` la primera vez que clonas el proyecto o cada vez que cambies `package.json` o `Dockerfile`. La bandera `--build` reconstruye la imagen para que Docker tome cambios de dependencias o de nivel de imagen, pero eso no significa que la app este en produccion.
@@ -168,3 +174,4 @@ Definicion de terminado para actualizaciones de documentacion:
 - Se reflejan entradas/salidas y comportamiento de error.
 - Se documenta comportamiento sensible de seguridad (auth, secretos, logging).
 - Cualquier incidencia recurrente nueva tiene entrada en resolucion de problemas.
+

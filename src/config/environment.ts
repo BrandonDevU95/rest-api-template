@@ -53,6 +53,23 @@ if (error) {
   throw new Error(`Environment validation error: ${error.message}`);
 }
 
+const assertStrongJwtSecret = (secret: string, variableName: string): void => {
+  if (!value.NODE_ENV || value.NODE_ENV !== 'production') {
+    return;
+  }
+
+  if (secret.length < 32) {
+    throw new Error(`${variableName} must be at least 32 characters in production`);
+  }
+
+  if (/change_this|example|default|template/i.test(secret)) {
+    throw new Error(`${variableName} contains an unsafe placeholder value`);
+  }
+};
+
+assertStrongJwtSecret(value.JWT_ACCESS_SECRET as string, 'JWT_ACCESS_SECRET');
+assertStrongJwtSecret(value.JWT_REFRESH_SECRET as string, 'JWT_REFRESH_SECRET');
+
 const projectSlug = value.PROJECT_SLUG as string;
 const toTitleFromSlug = (slug: string): string =>
   slug

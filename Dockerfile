@@ -1,7 +1,7 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 FROM node:22-alpine AS builder
 WORKDIR /app
@@ -15,8 +15,7 @@ ENV NODE_ENV=production
 RUN addgroup -S nodegroup && adduser -S nodeuser -G nodegroup
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/.env.example ./.env.example
-COPY --from=deps /app/node_modules ./node_modules
+RUN npm ci --omit=dev && npm cache clean --force
 RUN mkdir -p logs && chown -R nodeuser:nodegroup /app
 USER nodeuser
 EXPOSE 3000
