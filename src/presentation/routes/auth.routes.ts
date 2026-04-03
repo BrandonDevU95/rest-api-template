@@ -1,12 +1,12 @@
-import { loginSchema, refreshSchema, registerSchema } from '../validators/auth.validators';
-
-import { AuthController } from '../controllers/AuthController';
 import { Router } from 'express';
+import Joi from 'joi';
+import { AuthController } from '../controllers/AuthController';
 import { asyncHandler } from '../../shared/utils/asyncHandler';
-import { authenticateJwt } from '../middlewares/auth.middleware';
+import { validate } from '../middlewares/validate.middleware';
+import { loginSchema, refreshSchema, registerSchema } from '../validators/auth.validators';
 import { loginRateLimiter } from '../middlewares/security.middleware';
 import { passport } from '../../infrastructure/auth/passport';
-import { validate } from '../middlewares/validate.middleware';
+import { authenticateJwt } from '../middlewares/auth.middleware';
 
 /**
  * Registro de rutas de autenticacion.
@@ -15,6 +15,10 @@ import { validate } from '../middlewares/validate.middleware';
  * estrategia de autenticacion y ejecucion del controlador.
  */
 export const authRouter = Router();
+
+const logoutSchema = Joi.object({
+  refreshToken: Joi.string().optional(),
+});
 
 authRouter.post('/register', validate({ body: registerSchema }), asyncHandler(AuthController.register));
 authRouter.post(
@@ -25,4 +29,5 @@ authRouter.post(
   asyncHandler(AuthController.login),
 );
 authRouter.post('/refresh', loginRateLimiter, validate({ body: refreshSchema }), asyncHandler(AuthController.refresh));
+authRouter.post('/logout', authenticateJwt, validate({ body: logoutSchema }), asyncHandler(AuthController.logout));
 authRouter.get('/profile', authenticateJwt, asyncHandler(AuthController.profile));
