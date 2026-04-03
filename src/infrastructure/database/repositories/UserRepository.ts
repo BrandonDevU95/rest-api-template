@@ -3,6 +3,8 @@ import {
   IUserRepository,
   UpdateUserInput,
 } from '../../../domain/interfaces/IUserRepository';
+import { UniqueConstraintError } from 'sequelize';
+import { ConflictError } from '../../../shared/errors/AppError';
 import { User } from '../../../domain/entities/User';
 import { UserModel } from '../models/UserModel';
 
@@ -28,6 +30,14 @@ export class UserRepository implements IUserRepository {
     });
   }
 
+  private mapPersistenceError(error: unknown): never {
+    if (error instanceof UniqueConstraintError) {
+      throw new ConflictError('Email already exists');
+    }
+
+    throw error;
+  }
+
   async findById(id: string): Promise<User | null> {
     const user = await UserModel.findByPk(id);
     return user ? this.mapToDomain(user) : null;
@@ -39,8 +49,12 @@ export class UserRepository implements IUserRepository {
   }
 
   async create(input: CreateUserInput): Promise<User> {
-    const user = await UserModel.create(input);
-    return this.mapToDomain(user);
+    try {
+      const user = await UserModel.create(input);
+      return this.mapToDomain(user);
+    } catch (error) {
+      this.mapPersistenceError(error);
+    }
   }
 
   async updateById(id: string, input: UpdateUserInput): Promise<User | null> {
@@ -49,8 +63,12 @@ export class UserRepository implements IUserRepository {
       return null;
     }
 
-    await user.update(input);
-    return this.mapToDomain(user);
+    try {
+      await user.update(input);
+      return this.mapToDomain(user);
+    } catch (error) {
+      this.mapPersistenceError(error);
+    }
   }
 
   async list(): Promise<User[]> {
