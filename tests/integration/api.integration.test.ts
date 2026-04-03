@@ -269,6 +269,39 @@ describe('API integration baseline', () => {
     expect(response.body.code).toBe('VALIDATION_ERROR');
   });
 
+  test('POST /api/v1/auth/logout rejects refresh token that belongs to a different user', async () => {
+    const requesterId = '9a9a9a9a-9a9a-9a9a-9a9a-9a9a9a9a9a9a';
+    const victimId = 'b1b1b1b1-b1b1-b1b1-b1b1-b1b1b1b1b1b1';
+
+    const requesterTokens = tokenService.createTokenPair({
+      sub: requesterId,
+      email: 'requester@example.com',
+      role: 'user',
+    });
+
+    const victimTokens = tokenService.createTokenPair({
+      sub: victimId,
+      email: 'victim@example.com',
+      role: 'user',
+    });
+
+    mockUserRepository.findById.mockResolvedValueOnce(
+      buildUser({
+        id: requesterId,
+        email: 'requester@example.com',
+        role: 'user',
+      }),
+    );
+
+    const response = await request(app)
+      .post('/api/v1/auth/logout')
+      .set('Authorization', `Bearer ${requesterTokens.accessToken}`)
+      .send({ refreshToken: victimTokens.refreshToken });
+
+    expect(response.status).toBe(401);
+    expect(response.body.code).toBe('UNAUTHORIZED');
+  });
+
   test('GET /api/v1/auth/profile requires authentication', async () => {
     const response = await request(app).get('/api/v1/auth/profile');
 

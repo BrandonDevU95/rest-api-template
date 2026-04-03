@@ -27,13 +27,19 @@ export class LogoutUseCase {
         try {
           const refreshPayload = this.tokenService.verifyRefreshToken(refreshToken);
           if (refreshPayload.jti) {
+            if (refreshPayload.sub !== accessPayload.sub) {
+              throw new UnauthorizedError('Invalid token for logout');
+            }
             const refreshExpiresAt = refreshPayload.exp
               ? new Date(refreshPayload.exp * 1000)
               : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
             await tokenBlacklistService.addToBlacklist(refreshPayload.jti, 'refresh', refreshExpiresAt);
           }
-        } catch {
+        } catch (error) {
+          if (error instanceof UnauthorizedError) {
+            throw error;
+          }
           // No impedimos logout si el refresh ya expiro o es invalido.
         }
       }
@@ -42,3 +48,5 @@ export class LogoutUseCase {
     }
   }
 }
+
+
