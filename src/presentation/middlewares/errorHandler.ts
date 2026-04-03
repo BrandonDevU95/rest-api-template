@@ -10,8 +10,8 @@ import { AppError } from '../../shared/errors/AppError';
  * - errorHandler normaliza errores, registra con correlationId y retorna
  *   el contrato publico de error consumido por clientes.
  */
-export const notFoundHandler = (req: Request, _res: Response, next: NextFunction): void => {
-  next(new AppError(`Route ${req.originalUrl} not found`, 404, 'NOT_FOUND'));
+export const notFoundHandler = (_req: Request, _res: Response, next: NextFunction): void => {
+  next(new AppError('Route not found', 404, 'NOT_FOUND'));
 };
 
 export const errorHandler = (
@@ -43,10 +43,12 @@ export const errorHandler = (
     },
   });
 
+  const details = env.isProduction && appError.statusCode >= 500 ? undefined : appError.details;
+
   res.status(appError.statusCode).json({
     code: appError.code,
     message: appError.message,
-    details: appError.details,
+    details,
     correlationId: req.correlationId,
     timestamp: new Date().toISOString(),
   });
