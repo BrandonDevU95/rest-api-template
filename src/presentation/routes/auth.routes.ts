@@ -1,11 +1,12 @@
-import { Router } from 'express';
-import { AuthController } from '../controllers/AuthController';
-import { asyncHandler } from '../../shared/utils/asyncHandler';
-import { validate } from '../middlewares/validate.middleware';
 import { loginSchema, refreshSchema, registerSchema } from '../validators/auth.validators';
+
+import { AuthController } from '../controllers/AuthController';
+import { Router } from 'express';
+import { asyncHandler } from '../../shared/utils/asyncHandler';
+import { authenticateJwt } from '../middlewares/auth.middleware';
 import { loginRateLimiter } from '../middlewares/security.middleware';
 import { passport } from '../../infrastructure/auth/passport';
-import { authenticateJwt } from '../middlewares/auth.middleware';
+import { validate } from '../middlewares/validate.middleware';
 
 /**
  * Registro de rutas de autenticacion.
