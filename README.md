@@ -27,7 +27,7 @@ Variables principales de naming en `.env`:
 
 | Variable       | Proposito                                                                                                                                                            |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PROJECT_SLUG` | Variable maestra. Deriva el nombre del proyecto Docker, nombres de contenedores, nombre de red, nombre de la app en logs/titulo de Swagger y descripcion de Swagger. |
+| `PROJECT_SLUG` | Variable maestra. Deriva el nombre del proyecto Docker, nombres de contenedores, nombre de la red, nombre de la app en logs/titulo de Swagger y descripcion de Swagger. |
 
 ### Flujo De Desarrollo
 
@@ -65,7 +65,7 @@ Vuelve a usar `docker compose up --build` solo cuando cambies:
 | ------------------------------- | -------------------------------------------------------------------- |
 | `NODE_ENV`                      | Define el modo de ejecucion usado por la app y el manejo de errores. |
 | `PORT`                          | Puerto en el que escucha la API.                                     |
-| `API_PREFIX`                    | Ruta base para todas las rutas de la API.                            |
+| `API_PREFIX`                   | Ruta base para todas las rutas de la API.                            |
 | `PROJECT_SLUG`                  | Valor maestro de naming para derivar nombres de app y Docker.        |
 | `JWT_ACCESS_SECRET`             | Secreto usado para firmar y verificar access tokens.                 |
 | `JWT_ACCESS_EXPIRES_IN`         | Expiracion de access tokens.                                         |
@@ -78,6 +78,7 @@ Vuelve a usar `docker compose up --build` solo cuando cambies:
 | `RATE_LIMIT_WINDOW_MS`          | Ventana de tiempo para rate limiting.                                |
 | `RATE_LIMIT_MAX_REQUESTS`       | Maximo de solicitudes por ventana para trafico general.              |
 | `RATE_LIMIT_LOGIN_MAX_REQUESTS` | Maximo de solicitudes por ventana para intentos de login.            |
+| `TOKEN_BLACKLIST_CLEANUP_INTERVAL_MS` | Intervalo en milisegundos para limpiar JTIs revocados expirados. |
 | `ALLOW_NON_STANDARD_TLDS`       | Permite correos con dominios internos como `.local` cuando vale `true`. |
 | `TRUST_PROXY_HOPS`              | Numero de proxies confiables delante de la API. Usa `0` si no hay reverse proxy. Usa `1` si hay un solo proxy confiable. |
 | `ENABLE_PUBLIC_DOCS`            | Controla si Swagger y `/documentation` se exponen publicamente. Por defecto: `true` en `development`/`test`, `false` en `production`. |
@@ -167,4 +168,3 @@ Definicion de terminado para actualizaciones de documentacion:
 - Se reflejan entradas/salidas y comportamiento de error.
 - Se documenta comportamiento sensible de seguridad (auth, secretos, logging).
 - Cualquier incidencia recurrente nueva tiene entrada en resolucion de problemas.
-
