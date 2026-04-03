@@ -77,7 +77,7 @@ export class AuthController {
     const accessToken = authHeader?.replace('Bearer ', '') || '';
     const refreshToken = req.body.refreshToken || '';
 
-    logoutUseCase.execute(accessToken, refreshToken);
+    await logoutUseCase.execute(accessToken, refreshToken);
 
     logger.info('User logged out', {
       correlationId: req.correlationId,

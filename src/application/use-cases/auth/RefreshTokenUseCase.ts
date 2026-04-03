@@ -24,7 +24,7 @@ export class RefreshTokenUseCase {
         throw new UnauthorizedError('Invalid refresh token');
       }
 
-      if (tokenBlacklistService.isBlacklisted(payload.jti)) {
+      if (await tokenBlacklistService.isBlacklisted(payload.jti)) {
         throw new UnauthorizedError('Refresh token has been revoked');
       }
 

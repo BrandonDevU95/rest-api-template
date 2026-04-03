@@ -48,8 +48,12 @@ passport.use(
     },
     async (payload, done) => {
       try {
+        if (!payload.jti || await tokenBlacklistService.isBlacklisted(payload.jti)) {
+          return done(null, false);
+        }
+
         const user = await userRepository.findById(payload.sub);
-        if (!user || user.email !== payload.email || !payload.jti || tokenBlacklistService.isBlacklisted(payload.jti)) {
+        if (!user || user.email !== payload.email) {
           return done(null, false);
         }
 

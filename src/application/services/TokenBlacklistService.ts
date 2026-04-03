@@ -1,23 +1,46 @@
-import { TokenService } from './TokenService';
+import { env } from '../../config/environment';
+import { RevokedTokenRepository } from '../../infrastructure/database/repositories/RevokedTokenRepository';
+import { RevokedTokenType } from '../../infrastructure/database/models/RevokedTokenModel';
 
 /**
- * Servicio de blacklist de tokens en memoria.
+ * Servicio de blacklist de tokens.
  *
- * En produccion, esto deberia persistirse en una tabla o cache compartida.
+ * - test: usa memoria para aislar pruebas
+ * - otros entornos: persiste en BD
  */
 export class TokenBlacklistService {
-  private readonly blacklist = new Set<string>();
+  private readonly repository = new RevokedTokenRepository();
+  private readonly inMemory = new Set<string>();
 
-  addToBlacklist(jti: string): void {
-    this.blacklist.add(jti);
+  async addToBlacklist(jti: string, tokenType: RevokedTokenType, expiresAt: Date): Promise<void> {
+    if (env.nodeEnv === 'test') {
+      this.inMemory.add(jti);
+      return;
+    }
+
+    await this.repository.revokeToken(jti, tokenType, expiresAt);
   }
 
-  isBlacklisted(jti: string): boolean {
-    return this.blacklist.has(jti);
+  async isBlacklisted(jti: string): Promise<boolean> {
+    if (env.nodeEnv === 'test') {
+      return this.inMemory.has(jti);
+    }
+
+    return this.repository.isRevoked(jti);
+  }
+
+  async cleanupExpired(now = new Date()): Promise<number> {
+    if (env.nodeEnv === 'test') {
+      const size = this.inMemory.size;
+      this.inMemory.clear();
+      return size;
+    }
+
+    return this.repository.cleanupExpired(now);
   }
 
   clear(): void {
-    this.blacklist.clear();
+    this.inMemory.clear();
   }
 }
 

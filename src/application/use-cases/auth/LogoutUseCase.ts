@@ -10,19 +10,28 @@ import { UnauthorizedError } from '../../../shared/errors/AppError';
 export class LogoutUseCase {
   constructor(private readonly tokenService: TokenService) {}
 
-  execute(accessToken: string, refreshToken?: string): void {
+  async execute(accessToken: string, refreshToken?: string): Promise<void> {
     try {
       const accessPayload = this.tokenService.verifyAccessToken(accessToken);
       if (!accessPayload.jti) {
         throw new UnauthorizedError('Invalid token for logout');
       }
-      tokenBlacklistService.addToBlacklist(accessPayload.jti);
+
+      const accessExpiresAt = accessPayload.exp
+        ? new Date(accessPayload.exp * 1000)
+        : new Date(Date.now() + 15 * 60 * 1000);
+
+      await tokenBlacklistService.addToBlacklist(accessPayload.jti, 'access', accessExpiresAt);
 
       if (refreshToken) {
         try {
           const refreshPayload = this.tokenService.verifyRefreshToken(refreshToken);
           if (refreshPayload.jti) {
-            tokenBlacklistService.addToBlacklist(refreshPayload.jti);
+            const refreshExpiresAt = refreshPayload.exp
+              ? new Date(refreshPayload.exp * 1000)
+              : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+            await tokenBlacklistService.addToBlacklist(refreshPayload.jti, 'refresh', refreshExpiresAt);
           }
         } catch {
           // No impedimos logout si el refresh ya expiro o es invalido.

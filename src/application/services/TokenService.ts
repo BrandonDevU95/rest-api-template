@@ -24,12 +24,12 @@ export class TokenService {
     });
   }
 
-  verifyAccessToken(token: string): JwtPayload & { jti?: string } {
-    return jwt.verify(token, env.jwt.accessSecret) as JwtPayload & { jti?: string };
+  verifyAccessToken(token: string): JwtPayload & { jti?: string; exp?: number } {
+    return jwt.verify(token, env.jwt.accessSecret) as JwtPayload & { jti?: string; exp?: number };
   }
 
-  verifyRefreshToken(token: string): JwtPayload & { jti?: string } {
-    return jwt.verify(token, env.jwt.refreshSecret) as JwtPayload & { jti?: string };
+  verifyRefreshToken(token: string): JwtPayload & { jti?: string; exp?: number } {
+    return jwt.verify(token, env.jwt.refreshSecret) as JwtPayload & { jti?: string; exp?: number };
   }
 
   createTokenPair(payload: JwtPayload): TokenPairDto {
@@ -39,3 +39,4 @@ export class TokenService {
     };
   }
 }
+
