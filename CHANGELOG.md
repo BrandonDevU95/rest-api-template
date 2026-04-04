@@ -2,6 +2,28 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.2.0] - 2026-04-04
+
+### Added
+- Added logout endpoint and token blacklist persistence with revoked token storage.
+- Added refresh token replay protection and rotation tests.
+- Added rate limiting for register and refresh endpoints.
+- Added token blacklist cleanup background job with configurable interval.
+- Added stricter auth and user validation schemas plus extended security-focused unit/integration tests.
+
+### Changed
+- Updated register endpoint behavior to return created user data on success and explicit conflict on duplicate email.
+- Strengthened JWT validation with issuer, audience, token type, and jti handling across token service and passport strategies.
+- Hardened logging and request context handling with sensitive data redaction and correlation ID sanitization.
+- Improved Docker runtime hardening and compose security defaults.
+
+### Fixed
+- Normalized email handling and conflict handling in repository operations.
+- Improved consistency in test request IDs and configuration credentials.
+
+### Security
+- Reduced account takeover and token replay risk with blacklist-based revocation.
+- Reduced abuse risk by enforcing stricter validation and rate limits on authentication flows.
 ## [1.1.0] - 2026-04-02
 
 ### Added
@@ -36,3 +58,4 @@ All notable changes to this project are documented in this file.
 
 ### Added
 - Initial project structure and baseline template.
+
