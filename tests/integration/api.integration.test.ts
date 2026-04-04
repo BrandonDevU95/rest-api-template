@@ -87,7 +87,7 @@ describe('API integration baseline', () => {
     expect(response.body.code).toBe('FORBIDDEN');
   });
 
-  test('POST /api/v1/auth/register creates a user and returns an accepted response', async () => {
+  test('POST /api/v1/auth/register creates a user and returns 201', async () => {
     const email = 'new.user@example.com';
     const password = 'Password123!';
 
@@ -105,13 +105,15 @@ describe('API integration baseline', () => {
       password,
     });
 
-    expect(response.status).toBe(202);
-    expect(response.body.code).toBe('REGISTRATION_ACCEPTED');
-    expect(response.body.message).toBe('If the request is valid, the account has been processed.');
+    expect(response.status).toBe(201);
+    expect(response.body.id).toBe('22222222-2222-2222-2222-222222222222');
+    expect(response.body.email).toBe(email);
+    expect(response.body.role).toBe('user');
+    expect(response.body.createdAt).toBeDefined();
     expect(mockUserRepository.create).toHaveBeenCalledTimes(1);
   });
 
-  test('POST /api/v1/auth/register returns the same accepted response when email already exists', async () => {
+  test('POST /api/v1/auth/register returns 409 when email already exists', async () => {
     mockUserRepository.findByEmail.mockResolvedValueOnce(
       buildUser({ email: 'duplicate@example.com' }),
     );
@@ -121,9 +123,9 @@ describe('API integration baseline', () => {
       password: 'Password123!',
     });
 
-    expect(response.status).toBe(202);
-    expect(response.body.code).toBe('REGISTRATION_ACCEPTED');
-    expect(response.body.message).toBe('If the request is valid, the account has been processed.');
+    expect(response.status).toBe(409);
+    expect(response.body.code).toBe('CONFLICT');
+    expect(response.body.message).toBe('Email already exists');
   });
 
   test('POST /api/v1/auth/register validates payload and returns 400', async () => {

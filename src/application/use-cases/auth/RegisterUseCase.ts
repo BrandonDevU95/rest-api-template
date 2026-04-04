@@ -1,15 +1,16 @@
 import { RegisterDto } from '../../dto/auth.dto';
 
 import { HashService } from '../../services/HashService';
+import { ConflictError } from '../../../shared/errors/AppError';
 import { IUserRepository } from '../../../domain/interfaces/IUserRepository';
 import { logger } from '../../../infrastructure/logger/logger';
+import { User } from '../../../domain/entities/User';
 
 /**
  * Orquestacion del flujo de registro.
  *
- * El registro es ciego hacia el cliente para evitar enumeracion de cuentas.
- * Si el usuario ya existe, se procesa la solicitud de la misma forma a nivel
- * publico, pero no se crea un duplicado.
+ * Si el usuario ya existe, se rechaza la solicitud con conflicto para mantener
+ * consistencia con la creacion administrada de usuarios.
  */
 export class RegisterUseCase {
   constructor(
@@ -17,19 +18,15 @@ export class RegisterUseCase {
     private readonly hashService: HashService,
   ) {}
 
-  async execute(dto: RegisterDto): Promise<void> {
+  async execute(dto: RegisterDto): Promise<User> {
     const emailDomain = dto.email.includes('@') ? dto.email.split('@')[1] : 'unknown';
-    const passwordHash = await this.hashService.hash(dto.password);
     const existing = await this.userRepository.findByEmail(dto.email);
 
     if (existing) {
-      logger.warn('Register request processed for existing email', {
-        meta: {
-          emailDomain,
-        },
-      });
-      return;
+      throw new ConflictError('Email already exists');
     }
+
+    const passwordHash = await this.hashService.hash(dto.password);
 
     const user = await this.userRepository.create({
       email: dto.email,
@@ -44,5 +41,7 @@ export class RegisterUseCase {
         emailDomain,
       },
     });
+
+    return user;
   }
 }

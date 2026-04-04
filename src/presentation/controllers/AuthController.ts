@@ -30,10 +30,13 @@ const logoutUseCase = new LogoutUseCase(tokenService);
 
 export class AuthController {
   static async register(req: Request, res: Response): Promise<void> {
-    await registerUseCase.execute(req.body);
-    res.status(202).json({
-      code: 'REGISTRATION_ACCEPTED',
-      message: 'If the request is valid, the account has been processed.',
+    const user = await registerUseCase.execute(req.body);
+
+    res.status(201).json({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
     });
   }
 
