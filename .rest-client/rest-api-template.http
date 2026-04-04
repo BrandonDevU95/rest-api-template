@@ -59,12 +59,12 @@ GET {{baseUrl}}{{apiPrefix}}/users
 Authorization: Bearer {{loginAdmin.response.body.$.accessToken}}
 
 ### Get user by id (admin)
-GET {{baseUrl}}{{apiPrefix}}/users/{{createUser.response.body.$.id}}
+GET {{baseUrl}}{{apiPrefix}}/users/2551cee0-23ea-42a3-b1c1-0ff6b6c0f567
 Authorization: Bearer {{loginAdmin.response.body.$.accessToken}}
 
 ### Update user by id (admin)
 # @name updateUser
-PUT {{baseUrl}}{{apiPrefix}}/users/{{createUser.response.body.$.id}}
+PUT {{baseUrl}}{{apiPrefix}}/users/2551cee0-23ea-42a3-b1c1-0ff6b6c0f567
 Content-Type: application/json
 Authorization: Bearer {{loginAdmin.response.body.$.accessToken}}
 
@@ -74,7 +74,7 @@ Authorization: Bearer {{loginAdmin.response.body.$.accessToken}}
 }
 
 ### Delete user by id (admin)
-DELETE {{baseUrl}}{{apiPrefix}}/users/{{createUser.response.body.$.id}}
+DELETE {{baseUrl}}{{apiPrefix}}/users/2551cee0-23ea-42a3-b1c1-0ff6b6c0f567
 Authorization: Bearer {{loginAdmin.response.body.$.accessToken}}
 
 ### Login user (created with register)
