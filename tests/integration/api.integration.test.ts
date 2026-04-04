@@ -2,6 +2,7 @@ import { AuthUser, User, UserRole } from '../../src/domain/entities/User';
 
 import { HashService } from '../../src/application/services/HashService';
 import { TokenService } from '../../src/application/services/TokenService';
+import { tokenBlacklistService } from '../../src/application/services/TokenBlacklistService';
 import request from 'supertest';
 
 const mockUserRepository = {
@@ -55,6 +56,7 @@ const buildAuthUser = (overrides?: Partial<{ id: string; email: string; password
 describe('API integration baseline', () => {
   beforeEach(() => {
     Object.values(mockUserRepository).forEach((fn) => fn.mockReset());
+    tokenBlacklistService.clear();
   });
 
   test('GET /api/v1/health responds with service status', async () => {
@@ -252,6 +254,35 @@ describe('API integration baseline', () => {
     expect(response.body.code).toBe('VALIDATION_ERROR');
   });
 
+  test('POST /api/v1/auth/refresh rejects replay of an already used refresh token', async () => {
+    const userId = '5f5f5f5f-5f5f-5f5f-5f5f-5f5f5f5f5f5f';
+    const email = 'refresh-replay@example.com';
+    const tokens = tokenService.createTokenPair({
+      sub: userId,
+      email,
+      role: 'user',
+    });
+
+    mockUserRepository.findById.mockResolvedValue(
+      buildUser({
+        id: userId,
+        email,
+        role: 'user',
+      }),
+    );
+
+    const firstResponse = await request(app).post('/api/v1/auth/refresh').send({
+      refreshToken: tokens.refreshToken,
+    });
+
+    const secondResponse = await request(app).post('/api/v1/auth/refresh').send({
+      refreshToken: tokens.refreshToken,
+    });
+
+    expect(firstResponse.status).toBe(200);
+    expect(secondResponse.status).toBe(401);
+    expect(secondResponse.body.code).toBe('UNAUTHORIZED');
+  });
   test('POST /api/v1/auth/logout returns 400 for malformed optional refresh token', async () => {
     const userId = '88888888-8888-8888-8888-888888888888';
     const accessToken = tokenService.signAccessToken({
@@ -452,4 +483,6 @@ describe('API integration baseline', () => {
     expect(response.body[0].role).toBe('user');
   });
 });
+
+
 

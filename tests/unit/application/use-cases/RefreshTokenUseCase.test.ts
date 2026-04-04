@@ -2,6 +2,7 @@ import { RefreshTokenUseCase } from '../../../../src/application/use-cases/auth/
 import { TokenService } from '../../../../src/application/services/TokenService';
 import { UnauthorizedError } from '../../../../src/shared/errors/AppError';
 import { User } from '../../../../src/domain/entities/User';
+import { tokenBlacklistService } from '../../../../src/application/services/TokenBlacklistService';
 
 const buildUser = (id: string, email: string, role: 'admin' | 'user'): User => {
   const now = new Date();
@@ -17,6 +18,10 @@ const buildUser = (id: string, email: string, role: 'admin' | 'user'): User => {
 
 describe('RefreshTokenUseCase', () => {
   const tokenService = new TokenService();
+
+  beforeEach(() => {
+    tokenBlacklistService.clear();
+  });
 
   test('returns token pair when refresh token is valid', async () => {
     const repository = {
@@ -58,5 +63,28 @@ describe('RefreshTokenUseCase', () => {
     const useCase = new RefreshTokenUseCase(tokenService, repository);
 
     await expect(useCase.execute('invalid.refresh.token')).rejects.toBeInstanceOf(UnauthorizedError);
+  });
+
+  test('revokes used refresh token and rejects replay', async () => {
+    const userId = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
+    const email = 'single.use.refresh@example.com';
+    const repository = {
+      findById: jest.fn().mockResolvedValue(buildUser(userId, email, 'user')),
+      findByEmail: jest.fn(),
+      create: jest.fn(),
+      updateById: jest.fn(),
+      list: jest.fn(),
+      deleteById: jest.fn(),
+    };
+
+    const useCase = new RefreshTokenUseCase(tokenService, repository);
+    const pair = tokenService.createTokenPair({
+      sub: userId,
+      email,
+      role: 'user',
+    });
+
+    await expect(useCase.execute(pair.refreshToken)).resolves.toBeDefined();
+    await expect(useCase.execute(pair.refreshToken)).rejects.toBeInstanceOf(UnauthorizedError);
   });
 });
