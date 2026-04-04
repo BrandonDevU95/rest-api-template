@@ -113,6 +113,8 @@ export const env = {
     accessExpiresIn: value.JWT_ACCESS_EXPIRES_IN as string,
     refreshSecret: value.JWT_REFRESH_SECRET as string,
     refreshExpiresIn: value.JWT_REFRESH_EXPIRES_IN as string,
+    issuer: projectSlug,
+    audience: projectSlug,
   },
 
   security: {
