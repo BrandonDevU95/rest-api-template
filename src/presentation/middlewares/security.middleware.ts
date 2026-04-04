@@ -1,8 +1,8 @@
+import { ForbiddenError } from '../../shared/errors/AppError';
 import cors from 'cors';
+import { env } from '../../config/environment';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { ForbiddenError } from '../../shared/errors/AppError';
-import { env } from '../../config/environment';
 
 /**
  * Middlewares de seguridad centralizados.
@@ -10,7 +10,7 @@ import { env } from '../../config/environment';
  * Las politicas se definen desde la configuracion de entorno e incluyen:
  * - headers HTTP seguros (helmet)
  * - validaciones de allowlist CORS
- * - rate limiting global y especifico de login
+ * - rate limiting global, login y registro
  */
 export const helmetMiddleware = helmet();
 
@@ -33,6 +33,16 @@ export const apiRateLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+export const registerRateLimiter = rateLimit({
+  windowMs: env.security.rateLimitWindowMs,
+  limit: env.security.rateLimitRegisterMaxRequests,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    code: 'TOO_MANY_REGISTRATION_ATTEMPTS',
+    message: 'Too many registration attempts. Please try again later.',
+  },
+});
 export const loginRateLimiter = rateLimit({
   windowMs: env.security.rateLimitWindowMs,
   limit: env.security.rateLimitLoginMaxRequests,

@@ -2,8 +2,8 @@ import { AuthUser, User, UserRole } from '../../src/domain/entities/User';
 
 import { HashService } from '../../src/application/services/HashService';
 import { TokenService } from '../../src/application/services/TokenService';
-import { tokenBlacklistService } from '../../src/application/services/TokenBlacklistService';
 import request from 'supertest';
+import { tokenBlacklistService } from '../../src/application/services/TokenBlacklistService';
 
 const mockUserRepository = {
   findByEmail: jest.fn(),
@@ -166,6 +166,28 @@ describe('API integration baseline', () => {
 
     expect(response.status).toBe(400);
     expect(response.body.code).toBe('VALIDATION_ERROR');
+  });
+
+  test('POST /api/v1/auth/register returns 429 after too many attempts', async () => {
+    mockUserRepository.findByEmail.mockResolvedValue(null);
+    mockUserRepository.create.mockResolvedValue(
+      buildUser({
+        id: '33333333-3333-3333-3333-333333333333',
+        email: 'rate.limit@example.com',
+        role: 'user',
+      }),
+    );
+
+    let lastResponse: any;
+    for (let attempt = 0; attempt < 9; attempt += 1) {
+      lastResponse = await request(app).post('/api/v1/auth/register').send({
+        email: `rate.limit.${attempt}@example.com`,
+        password: 'Password123!',
+      });
+    }
+
+    expect(lastResponse.status).toBe(429);
+    expect(lastResponse.body.code).toBe('TOO_MANY_REGISTRATION_ATTEMPTS');
   });
 
   test('POST /api/v1/auth/login returns tokens for valid credentials', async () => {
@@ -484,7 +506,3 @@ describe('API integration baseline', () => {
     expect(response.body[0].role).toBe('user');
   });
 });
-
-
-
-

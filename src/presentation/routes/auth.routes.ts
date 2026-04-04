@@ -1,12 +1,13 @@
-import { Router } from 'express';
-import { joi } from '../middlewares/validate.middleware';
-import { AuthController } from '../controllers/AuthController';
-import { asyncHandler } from '../../shared/utils/asyncHandler';
-import { validate } from '../middlewares/validate.middleware';
+import { loginRateLimiter, registerRateLimiter } from '../middlewares/security.middleware';
 import { loginSchema, logoutSchema, refreshSchema, registerSchema } from '../validators/auth.validators';
-import { loginRateLimiter } from '../middlewares/security.middleware';
-import { passport } from '../../infrastructure/auth/passport';
+
+import { AuthController } from '../controllers/AuthController';
+import { Router } from 'express';
+import { asyncHandler } from '../../shared/utils/asyncHandler';
 import { authenticateJwt } from '../middlewares/auth.middleware';
+import { joi } from '../middlewares/validate.middleware';
+import { passport } from '../../infrastructure/auth/passport';
+import { validate } from '../middlewares/validate.middleware';
 
 /**
  * Registro de rutas de autenticacion.
@@ -19,7 +20,7 @@ export const authRouter = Router();
 const noQuerySchema = joi.object({});
 
 
-authRouter.post('/register', validate({ body: registerSchema, query: noQuerySchema }), asyncHandler(AuthController.register));
+authRouter.post('/register', registerRateLimiter, validate({ body: registerSchema, query: noQuerySchema }), asyncHandler(AuthController.register));
 authRouter.post(
   '/login',
   loginRateLimiter,

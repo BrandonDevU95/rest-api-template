@@ -84,6 +84,7 @@ Vuelve a usar `docker compose up --build` solo cuando cambies:
 | `RATE_LIMIT_WINDOW_MS`          | Ventana de tiempo para rate limiting.                                |
 | `RATE_LIMIT_MAX_REQUESTS`       | Maximo de solicitudes por ventana para trafico general.              |
 | `RATE_LIMIT_LOGIN_MAX_REQUESTS` | Maximo de solicitudes por ventana para intentos de login.            |
+| `RATE_LIMIT_REGISTER_MAX_REQUESTS` | Maximo de solicitudes por ventana para intentos de registro.        |
 | `TOKEN_BLACKLIST_CLEANUP_INTERVAL_MS` | Intervalo en milisegundos para limpiar JTIs revocados expirados. |
 | `ALLOW_NON_STANDARD_TLDS`       | Permite correos con dominios internos como `.local` cuando vale `true`. |
 | `TRUST_PROXY_HOPS`              | Numero de proxies confiables delante de la API. Usa `0` si no hay reverse proxy. Usa `1` si hay un solo proxy confiable. |
