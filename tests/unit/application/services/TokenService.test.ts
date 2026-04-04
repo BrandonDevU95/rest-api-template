@@ -35,6 +35,7 @@ describe('TokenService', () => {
         sub: '88888888-8888-8888-8888-888888888888',
         email: 'token@example.com',
         role: 'user' as const,
+        tokenType: 'access',
       },
       env.jwt.accessSecret,
       {
@@ -46,6 +47,28 @@ describe('TokenService', () => {
     );
 
     expect(() => service.verifyAccessToken(forgedToken)).toThrow();
+  });
+
+  test('verifyAccessToken rejects refresh tokens even with valid signature', () => {
+    const payload = {
+      sub: '88888888-8888-8888-8888-888888888888',
+      email: 'token@example.com',
+      role: 'user' as const,
+    };
+
+    const refreshToken = service.signRefreshToken(payload);
+    expect(() => service.verifyAccessToken(refreshToken)).toThrow();
+  });
+
+  test('verifyRefreshToken rejects access tokens even with valid signature', () => {
+    const payload = {
+      sub: '88888888-8888-8888-8888-888888888888',
+      email: 'token@example.com',
+      role: 'user' as const,
+    };
+
+    const accessToken = service.signAccessToken(payload);
+    expect(() => service.verifyRefreshToken(accessToken)).toThrow();
   });
 
   test('verifyRefreshToken throws for malformed token', () => {

@@ -47,12 +47,12 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: env.jwt.accessSecret,
       issuer: env.app.slug,
-      audience: env.app.slug,
+      audience: `${env.app.slug}:access`,
       algorithms: ['HS256'],
     },
     async (payload, done) => {
       try {
-        if (!payload.jti || await tokenBlacklistService.isBlacklisted(payload.jti)) {
+        if (payload.tokenType !== 'access' || !payload.jti || await tokenBlacklistService.isBlacklisted(payload.jti)) {
           return done(null, false);
         }
 
