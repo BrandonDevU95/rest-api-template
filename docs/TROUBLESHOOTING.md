@@ -69,7 +69,7 @@ La base de datos aun no esta saludable, las credenciales son incorrectas o el ho
 
 1. Ejecuta nuevamente el comando de seed si hace falta.
 2. Verifica `ADMIN_EMAIL` y `ADMIN_PASSWORD` en `.env`.
-3. En instalaciones nuevas, usa una contrasena de admin de al menos 12 caracteres (valor sugerido en plantilla: `Admin$123456!`).
+3. En instalaciones nuevas, usa una contrasena de admin de al menos 12 caracteres (valor sugerido en plantilla: `Admin#123456!`).
 4. Revisa el registro en la tabla `users`.
 
 ## 5) El login retorna 400 por validacion de email

@@ -1,9 +1,9 @@
 @baseUrl = http://localhost:3000
 @apiPrefix = /api/v1
 @adminEmail = admin@template.local
-@adminPassword = Admin$123456!
+@adminPassword = Admin#123456!
 @newUserEmail = user.restclient.local@example.com
-@newUserPassword = User$123456!
+@newUserPassword = User#123456!
 @updatedUserEmail = user.restclient.updated@example.com
 
 ### Health check

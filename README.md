@@ -119,7 +119,7 @@ Vuelve a usar `docker compose up --build` solo cuando cambies:
 Credenciales por defecto del seed admin:
 
 - Email: `admin@template.local`
-- Contrasena: `Admin$123456!`
+- Contrasena: `Admin#123456!`
 
 ## Baseline De Pruebas (Jest)
 
