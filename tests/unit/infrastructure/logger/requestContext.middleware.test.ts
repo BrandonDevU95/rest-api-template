@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
+
 import { requestContext } from '../../../../src/infrastructure/logger/requestContext.middleware';
+
+type RequestWithCorrelation = Request & { correlationId?: string };
 
 const createReq = (headerValue?: string): Request => {
   return {
@@ -22,7 +25,7 @@ const createRes = () => {
 
 describe('requestContext middleware', () => {
   test('accepts valid incoming correlation id', () => {
-    const req = createReq('trace-123:abc_DEF');
+    const req = createReq('trace-123:abc_DEF') as RequestWithCorrelation;
     const { res, setHeader } = createRes();
     const next: NextFunction = jest.fn();
 
@@ -34,13 +37,15 @@ describe('requestContext middleware', () => {
   });
 
   test('replaces invalid incoming correlation id with generated uuid', () => {
-    const req = createReq('bad\nvalue');
+    const req = createReq('bad\nvalue') as RequestWithCorrelation;
     const { res, setHeader } = createRes();
     const next: NextFunction = jest.fn();
 
     requestContext(req, res, next);
 
-    expect(req.correlationId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+    expect(req.correlationId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    );
     expect(setHeader).toHaveBeenCalledWith('x-correlation-id', req.correlationId);
     expect(next).toHaveBeenCalled();
   });

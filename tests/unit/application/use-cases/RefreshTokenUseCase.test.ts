@@ -1,20 +1,43 @@
-import { RefreshTokenUseCase } from '../../../../src/application/use-cases/auth/RefreshTokenUseCase';
-import { TokenService } from '../../../../src/application/services/TokenService';
-import { UnauthorizedError } from '../../../../src/shared/errors/AppError';
-import { User } from '../../../../src/domain/entities/User';
+import { beforeEach, describe, expect, jest, test } from '@jest/globals';
+import {
+  CreateUserInput,
+  UpdateUserInput,
+} from '../../../../src/domain/interfaces/IUserRepository';
+
 import { tokenBlacklistService } from '../../../../src/application/services/TokenBlacklistService';
+import { TokenService } from '../../../../src/application/services/TokenService';
+import { RefreshTokenUseCase } from '../../../../src/application/use-cases/auth/RefreshTokenUseCase';
+import { User } from '../../../../src/domain/entities/User';
+import { UnauthorizedError } from '../../../../src/shared/errors/AppError';
 
 const buildUser = (id: string, email: string, role: 'admin' | 'user'): User => {
   const now = new Date();
   return new User({
     id,
     email,
-    passwordHash: '$2b$12$JSE3mkuN8RwdFfQf7rxk8e4QwPwFsEYh3YOEoTP0TO.GfYh3CX6Ka',
     role,
     createdAt: now,
     updatedAt: now,
   });
 };
+
+type MockRepository = {
+  findById: jest.Mock<(id: string) => Promise<User | null>>;
+  findByEmail: jest.Mock<(email: string) => Promise<User | null>>;
+  create: jest.Mock<(input: CreateUserInput) => Promise<User>>;
+  updateById: jest.Mock<(id: string, input: UpdateUserInput) => Promise<User | null>>;
+  list: jest.Mock<() => Promise<User[]>>;
+  deleteById: jest.Mock<(id: string) => Promise<boolean>>;
+};
+
+const createRepositoryMock = (): MockRepository => ({
+  findById: jest.fn<(id: string) => Promise<User | null>>(),
+  findByEmail: jest.fn<(email: string) => Promise<User | null>>(),
+  create: jest.fn<(input: CreateUserInput) => Promise<User>>(),
+  updateById: jest.fn<(id: string, input: UpdateUserInput) => Promise<User | null>>(),
+  list: jest.fn<() => Promise<User[]>>(),
+  deleteById: jest.fn<(id: string) => Promise<boolean>>(),
+});
 
 describe('RefreshTokenUseCase', () => {
   const tokenService = new TokenService();
@@ -24,16 +47,10 @@ describe('RefreshTokenUseCase', () => {
   });
 
   test('returns token pair when refresh token is valid', async () => {
-    const repository = {
-      findById: jest.fn().mockResolvedValue(
-        buildUser('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'refresh.use.case@example.com', 'admin'),
-      ),
-      findByEmail: jest.fn(),
-      create: jest.fn(),
-      updateById: jest.fn(),
-      list: jest.fn(),
-      deleteById: jest.fn(),
-    };
+    const repository = createRepositoryMock();
+    repository.findById.mockResolvedValue(
+      buildUser('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'refresh.use.case@example.com', 'admin'),
+    );
 
     const useCase = new RefreshTokenUseCase(tokenService, repository);
     const original = tokenService.createTokenPair({
@@ -51,31 +68,20 @@ describe('RefreshTokenUseCase', () => {
   });
 
   test('throws UnauthorizedError for invalid refresh token', async () => {
-    const repository = {
-      findById: jest.fn(),
-      findByEmail: jest.fn(),
-      create: jest.fn(),
-      updateById: jest.fn(),
-      list: jest.fn(),
-      deleteById: jest.fn(),
-    };
+    const repository = createRepositoryMock();
 
     const useCase = new RefreshTokenUseCase(tokenService, repository);
 
-    await expect(useCase.execute('invalid.refresh.token')).rejects.toBeInstanceOf(UnauthorizedError);
+    await expect(useCase.execute('invalid.refresh.token')).rejects.toBeInstanceOf(
+      UnauthorizedError,
+    );
   });
 
   test('revokes used refresh token and rejects replay', async () => {
     const userId = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
     const email = 'single.use.refresh@example.com';
-    const repository = {
-      findById: jest.fn().mockResolvedValue(buildUser(userId, email, 'user')),
-      findByEmail: jest.fn(),
-      create: jest.fn(),
-      updateById: jest.fn(),
-      list: jest.fn(),
-      deleteById: jest.fn(),
-    };
+    const repository = createRepositoryMock();
+    repository.findById.mockResolvedValue(buildUser(userId, email, 'user'));
 
     const useCase = new RefreshTokenUseCase(tokenService, repository);
     const pair = tokenService.createTokenPair({

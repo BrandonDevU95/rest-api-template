@@ -17,10 +17,18 @@ describe('redactFormat', () => {
     });
 
     expect(transformed).toBeDefined();
-    expect((transformed as { meta: Record<string, unknown> }).meta.password).toBe('[REDACTED]');
-    expect((transformed as { meta: Record<string, unknown> }).meta.authorization).toBe('[REDACTED]');
+    expect((transformed as unknown as { meta: Record<string, unknown> }).meta.password).toBe(
+      '[REDACTED]',
+    );
+    expect((transformed as unknown as { meta: Record<string, unknown> }).meta.authorization).toBe(
+      '[REDACTED]',
+    );
 
-    const nested = (transformed as { meta: { nested: { refreshToken: string; array: Array<{ cookie: string }> } } }).meta.nested;
+    const nested = (
+      transformed as unknown as {
+        meta: { nested: { refreshToken: string; array: Array<{ cookie: string }> } };
+      }
+    ).meta.nested;
     expect(nested.refreshToken).toBe('[REDACTED]');
     expect(nested.array[0].cookie).toBe('[REDACTED]');
   });
@@ -35,6 +43,8 @@ describe('redactFormat', () => {
     expect(transformed).toBeDefined();
     expect((transformed as { message: string }).message).toContain('Bearer [REDACTED]');
     expect((transformed as { message: string }).message).toContain('[REDACTED_JWT]');
-    expect((transformed as { message: string }).message).not.toContain('eyJhbGciOiJIUzI1NiJ9.payload.signature');
+    expect((transformed as { message: string }).message).not.toContain(
+      'eyJhbGciOiJIUzI1NiJ9.payload.signature',
+    );
   });
 });

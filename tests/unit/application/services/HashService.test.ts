@@ -1,3 +1,5 @@
+import { describe, expect, test } from '@jest/globals';
+
 import { HashService } from '../../../../src/application/services/HashService';
 
 describe('HashService', () => {

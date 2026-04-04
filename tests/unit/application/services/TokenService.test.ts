@@ -1,6 +1,8 @@
+import { describe, expect, test } from '@jest/globals';
+
 import jwt from 'jsonwebtoken';
-import { env } from '../../../../src/config/environment';
 import { TokenService } from '../../../../src/application/services/TokenService';
+import { env } from '../../../../src/config/environment';
 
 describe('TokenService', () => {
   const service = new TokenService();
