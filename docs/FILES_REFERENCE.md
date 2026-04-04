@@ -123,7 +123,7 @@ Este documento explica el proposito de cada archivo del repositorio y que debe d
 
 #### `src/application/use-cases/auth/RegisterUseCase.ts`
 - Proposito: orquestacion del flujo de registro.
-- Documentar al cambiar: secuencia (verificar usuario existente, hashear contrasena, crear usuario, emitir tokens), posibles conflictos.
+- Documentar al cambiar: secuencia (hashear contrasena, verificar usuario existente, crear usuario solo si aplica, respuesta publica uniforme), posibles conflictos internos sin exponerlos al cliente.
 - Riesgos: emails duplicados y errores en asignacion de roles.
 
 #### `src/application/use-cases/auth/RefreshTokenUseCase.ts`

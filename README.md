@@ -25,11 +25,17 @@ Para personalizar por completo el nombre del proyecto sin buscar carpeta por car
 
 Variables principales de naming en `.env`:
 
-| Variable       | Proposito                                                                                                                                                            |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PROJECT_SLUG` | Variable maestra. Deriva el nombre del proyecto Docker, nombres de contenedores, nombre de red, nombre de la app en logs/titulo de Swagger y descripcion de Swagger. |
+| Variable       | Proposito                                                                                                                                                               |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PROJECT_SLUG` | Variable maestra. Deriva el nombre del proyecto Docker, nombres de contenedores, nombre de la red, nombre de la app en logs/titulo de Swagger y descripcion de Swagger. |
 
 ### Flujo De Desarrollo
+
+### Hardening De Runtime
+
+- En `production`, `JWT_ACCESS_SECRET` y `JWT_REFRESH_SECRET` deben tener al menos 32 caracteres y no pueden usar placeholders (`change_this`, `example`, `default`, `template`).
+- En `docker-compose.yml`, los puertos de `api`, `mysql` y `phpmyadmin` se enlazan a `127.0.0.1` por defecto para reducir exposicion externa accidental.
+- Si necesitas acceso remoto en desarrollo, cambia deliberadamente el bind de puertos en `docker-compose.yml`.
 
 #### Configuracion Inicial
 
@@ -61,24 +67,28 @@ Vuelve a usar `docker compose up --build` solo cuando cambies:
 
 #### Aplicacion
 
-| Variable                        | Proposito                                                            |
-| ------------------------------- | -------------------------------------------------------------------- |
-| `NODE_ENV`                      | Define el modo de ejecucion usado por la app y el manejo de errores. |
-| `PORT`                          | Puerto en el que escucha la API.                                     |
-| `API_PREFIX`                    | Ruta base para todas las rutas de la API.                            |
-| `PROJECT_SLUG`                  | Valor maestro de naming para derivar nombres de app y Docker.        |
-| `JWT_ACCESS_SECRET`             | Secreto usado para firmar y verificar access tokens.                 |
-| `JWT_ACCESS_EXPIRES_IN`         | Expiracion de access tokens.                                         |
-| `JWT_REFRESH_SECRET`            | Secreto usado para firmar y verificar refresh tokens.                |
-| `JWT_REFRESH_EXPIRES_IN`        | Expiracion de refresh tokens.                                        |
-| `BCRYPT_SALT_ROUNDS`            | Factor de costo de BCrypt para hash de contrasenas.                  |
-| `CORS_ORIGIN`                   | Origenes permitidos para solicitudes del navegador.                  |
-| `LOG_LEVEL`                     | Nivel minimo de logs para el logger de la aplicacion.                |
-| `LOG_DIR`                       | Directorio donde se escriben archivos de log.                        |
-| `RATE_LIMIT_WINDOW_MS`          | Ventana de tiempo para rate limiting.                                |
-| `RATE_LIMIT_MAX_REQUESTS`       | Maximo de solicitudes por ventana para trafico general.              |
-| `RATE_LIMIT_LOGIN_MAX_REQUESTS` | Maximo de solicitudes por ventana para intentos de login.            |
-| `ALLOW_NON_STANDARD_TLDS`       | Permite correos con dominios internos como `.local` cuando vale `true`. |
+| Variable                              | Proposito                                                                                                                             |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `NODE_ENV`                            | Define el modo de ejecucion usado por la app y el manejo de errores.                                                                  |
+| `PORT`                                | Puerto en el que escucha la API.                                                                                                      |
+| `API_PREFIX`                          | Ruta base para todas las rutas de la API.                                                                                             |
+| `PROJECT_SLUG`                        | Valor maestro de naming para derivar nombres de app y Docker.                                                                         |
+| `JWT_ACCESS_SECRET`                   | Secreto usado para firmar y verificar access tokens.                                                                                  |
+| `JWT_ACCESS_EXPIRES_IN`               | Expiracion de access tokens.                                                                                                          |
+| `JWT_REFRESH_SECRET`                  | Secreto usado para firmar y verificar refresh tokens.                                                                                 |
+| `JWT_REFRESH_EXPIRES_IN`              | Expiracion de refresh tokens.                                                                                                         |
+| `BCRYPT_SALT_ROUNDS`                  | Factor de costo de BCrypt para hash de contrasenas.                                                                                   |
+| `CORS_ORIGIN`                         | Origenes permitidos para solicitudes del navegador.                                                                                   |
+| `LOG_LEVEL`                           | Nivel minimo de logs para el logger de la aplicacion.                                                                                 |
+| `LOG_DIR`                             | Directorio donde se escriben archivos de log.                                                                                         |
+| `RATE_LIMIT_WINDOW_MS`                | Ventana de tiempo para rate limiting.                                                                                                 |
+| `RATE_LIMIT_MAX_REQUESTS`             | Maximo de solicitudes por ventana para trafico general.                                                                               |
+| `RATE_LIMIT_LOGIN_MAX_REQUESTS`       | Maximo de solicitudes por ventana para intentos de login.                                                                             |
+| `RATE_LIMIT_REGISTER_MAX_REQUESTS`    | Maximo de solicitudes por ventana para intentos de registro.                                                                          |
+| `TOKEN_BLACKLIST_CLEANUP_INTERVAL_MS` | Intervalo en milisegundos para limpiar JTIs revocados expirados.                                                                      |
+| `ALLOW_NON_STANDARD_TLDS`             | Permite correos con dominios internos como `.local` cuando vale `true`.                                                               |
+| `TRUST_PROXY_HOPS`                    | Numero de proxies confiables delante de la API. Usa `0` si no hay reverse proxy. Usa `1` si hay un solo proxy confiable.              |
+| `ENABLE_PUBLIC_DOCS`                  | Controla si Swagger y `/documentation` se exponen publicamente. Por defecto: `true` en `development`/`test`, `false` en `production`. |
 
 #### Base De Datos Y Docker
 
@@ -101,15 +111,15 @@ Vuelve a usar `docker compose up --build` solo cuando cambies:
 
 #### Seeder
 
-| Variable         | Proposito                                         |
-| ---------------- | ------------------------------------------------- |
-| `ADMIN_EMAIL`    | Email usado por el script de seed del admin.      |
-| `ADMIN_PASSWORD` | Contrasena usada por el script de seed del admin. |
+| Variable         | Proposito                                                                |
+| ---------------- | ------------------------------------------------------------------------ |
+| `ADMIN_EMAIL`    | Email usado por el script de seed del admin.                             |
+| `ADMIN_PASSWORD` | Contrasena usada por el script de seed del admin (minimo 12 caracteres). |
 
 Credenciales por defecto del seed admin:
 
 - Email: `admin@template.local`
-- Contrasena: `Admin123!`
+- Contrasena: `Admin#123456!`
 
 ## Baseline De Pruebas (Jest)
 

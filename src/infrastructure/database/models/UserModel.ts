@@ -62,5 +62,10 @@ UserModel.init(
     tableName: 'users',
     timestamps: true,
     underscored: true,
+    defaultScope: {
+      attributes: {
+        exclude: ['passwordHash'],
+      },
+    },
   },
 );

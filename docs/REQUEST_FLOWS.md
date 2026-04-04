@@ -21,12 +21,14 @@ El orden importa:
 
 ### POST `/register`
 - Middlewares:
-  1. `validate({ body: registerSchema })`
+  1. `registerRateLimiter`
+  2. `validate({ body: registerSchema })`
 - Handler: `AuthController.register`
-- Resultado esperado: par de tokens para el usuario creado.
+- Resultado esperado: respuesta aceptada uniforme sin revelar si el correo existia.
 - Errores clave:
   - 400 error de validacion
-  - 409 el email ya existe
+  - 429 demasiados intentos de registro
+  - no revela si el email ya existia
 
 ### POST `/login`
 - Middlewares:

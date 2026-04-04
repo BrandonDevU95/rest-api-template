@@ -4,8 +4,8 @@ import { env } from './environment';
 /**
  * Especificacion OpenAPI generada desde anotaciones de rutas.
  *
- * La documentacion se limita a rutas de presentation y usa el prefijo API actual
- * para que el Swagger UI publicado coincida con el enrutamiento en runtime.
+ * La documentacion se limita a rutas de presentation y usa rutas relativas
+ * para evitar exponer hosts/puertos internos en entornos con proxy.
  */
 export const swaggerSpec = swaggerJsdoc({
   definition: {
@@ -17,11 +17,11 @@ export const swaggerSpec = swaggerJsdoc({
     },
     externalDocs: {
       description: 'Centro de documentacion (README + docs)',
-      url: `http://localhost:${env.app.port}/documentation`,
+      url: '/documentation',
     },
     servers: [
       {
-        url: `http://localhost:${env.app.port}${env.app.apiPrefix}`,
+        url: env.app.apiPrefix,
       },
     ],
     components: {

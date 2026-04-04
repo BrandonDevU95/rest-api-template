@@ -1,3 +1,5 @@
+import jwt from 'jsonwebtoken';
+import { env } from '../../../../src/config/environment';
 import { TokenService } from '../../../../src/application/services/TokenService';
 
 describe('TokenService', () => {
@@ -25,6 +27,87 @@ describe('TokenService', () => {
     expect(refreshPayload.sub).toBe(payload.sub);
     expect(refreshPayload.email).toBe(payload.email);
     expect(refreshPayload.role).toBe(payload.role);
+  });
+
+  test('verifyAccessToken rejects tokens with an unexpected issuer or audience', () => {
+    const forgedToken = jwt.sign(
+      {
+        sub: '88888888-8888-8888-8888-888888888888',
+        email: 'token@example.com',
+        role: 'user' as const,
+        tokenType: 'access',
+      },
+      env.jwt.accessSecret,
+      {
+        expiresIn: env.jwt.accessExpiresIn as jwt.SignOptions['expiresIn'],
+        algorithm: 'HS256',
+        issuer: 'forged-issuer',
+        audience: 'forged-audience',
+      },
+    );
+
+    expect(() => service.verifyAccessToken(forgedToken)).toThrow();
+  });
+
+  test('verifyAccessToken rejects tokens with unexpected algorithm', () => {
+    const forgedToken = jwt.sign(
+      {
+        sub: '88888888-8888-8888-8888-888888888888',
+        email: 'token@example.com',
+        role: 'user' as const,
+        tokenType: 'access',
+      },
+      env.jwt.accessSecret,
+      {
+        expiresIn: env.jwt.accessExpiresIn as jwt.SignOptions['expiresIn'],
+        algorithm: 'HS384',
+        issuer: env.app.slug,
+        audience: `${env.app.slug}:access`,
+      },
+    );
+
+    expect(() => service.verifyAccessToken(forgedToken)).toThrow();
+  });
+
+  test('verifyAccessToken rejects refresh tokens even with valid signature', () => {
+    const payload = {
+      sub: '88888888-8888-8888-8888-888888888888',
+      email: 'token@example.com',
+      role: 'user' as const,
+    };
+
+    const refreshToken = service.signRefreshToken(payload);
+    expect(() => service.verifyAccessToken(refreshToken)).toThrow();
+  });
+
+  test('verifyRefreshToken rejects access tokens even with valid signature', () => {
+    const payload = {
+      sub: '88888888-8888-8888-8888-888888888888',
+      email: 'token@example.com',
+      role: 'user' as const,
+    };
+
+    const accessToken = service.signAccessToken(payload);
+    expect(() => service.verifyRefreshToken(accessToken)).toThrow();
+  });
+
+  test('verifyRefreshToken rejects token without tokenType claim', () => {
+    const tokenWithoutType = jwt.sign(
+      {
+        sub: '88888888-8888-8888-8888-888888888888',
+        email: 'token@example.com',
+        role: 'user' as const,
+      },
+      env.jwt.refreshSecret,
+      {
+        expiresIn: env.jwt.refreshExpiresIn as jwt.SignOptions['expiresIn'],
+        algorithm: 'HS256',
+        issuer: env.app.slug,
+        audience: `${env.app.slug}:refresh`,
+      },
+    );
+
+    expect(() => service.verifyRefreshToken(tokenWithoutType)).toThrow();
   });
 
   test('verifyRefreshToken throws for malformed token', () => {

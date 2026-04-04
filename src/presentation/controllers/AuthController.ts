@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 
 import { HashService } from '../../application/services/HashService';
 import { RefreshTokenUseCase } from '../../application/use-cases/auth/RefreshTokenUseCase';
+import { LogoutUseCase } from '../../application/use-cases/auth/LogoutUseCase';
 import { RegisterUseCase } from '../../application/use-cases/auth/RegisterUseCase';
 import { TokenService } from '../../application/services/TokenService';
 import { UnauthorizedError } from '../../shared/errors/AppError';
@@ -17,18 +18,26 @@ import { logger } from '../../infrastructure/logger/logger';
  * - login: emitir par de tokens despues de que LocalStrategy inyecta req.user.
  * - refresh: intercambiar refresh token por un nuevo par de tokens.
  * - profile: retornar identidad del usuario autenticado.
+ * - logout: revocar tokens activos.
  */
 const userRepository = new UserRepository();
 const hashService = new HashService();
 const tokenService = new TokenService();
 
-const registerUseCase = new RegisterUseCase(userRepository, hashService, tokenService);
-const refreshUseCase = new RefreshTokenUseCase(tokenService);
+const registerUseCase = new RegisterUseCase(userRepository, hashService);
+const refreshUseCase = new RefreshTokenUseCase(tokenService, userRepository);
+const logoutUseCase = new LogoutUseCase(tokenService);
 
 export class AuthController {
   static async register(req: Request, res: Response): Promise<void> {
-    const tokens = await registerUseCase.execute(req.body);
-    res.status(201).json(tokens);
+    const user = await registerUseCase.execute(req.body);
+
+    res.status(201).json({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+    });
   }
 
   static async login(req: Request, res: Response): Promise<void> {
@@ -65,8 +74,22 @@ export class AuthController {
   }
 
   static async refresh(req: Request, res: Response): Promise<void> {
-    const tokens = refreshUseCase.execute(req.body.refreshToken as string);
+    const tokens = await refreshUseCase.execute(req.body.refreshToken as string);
     res.status(200).json(tokens);
+  }
+
+  static async logout(req: Request, res: Response): Promise<void> {
+    const authHeader = req.get('Authorization');
+    const accessToken = authHeader?.replace('Bearer ', '') || '';
+    const refreshToken = req.body.refreshToken || '';
+
+    await logoutUseCase.execute(accessToken, refreshToken);
+
+    logger.info('User logged out', {
+      correlationId: req.correlationId,
+    });
+
+    res.status(204).send();
   }
 
   static async profile(req: Request, res: Response): Promise<void> {

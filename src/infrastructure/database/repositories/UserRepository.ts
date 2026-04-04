@@ -3,15 +3,17 @@ import {
   IUserRepository,
   UpdateUserInput,
 } from '../../../domain/interfaces/IUserRepository';
-import { User } from '../../../domain/entities/User';
+import { UniqueConstraintError } from 'sequelize';
+import { ConflictError } from '../../../shared/errors/AppError';
+import { AuthUser, User } from '../../../domain/entities/User';
 import { UserModel } from '../models/UserModel';
 
 /**
  * Implementacion de IUserRepository respaldada por Sequelize.
  *
  * Regla de mapeo:
- * - El modelo de persistencia (UserModel) se traduce a la entidad de dominio (User)
- *   antes de devolver datos a capas superiores.
+ * - El modelo de persistencia (UserModel) se traduce a entidades de dominio
+ *   segun el contexto (User o AuthUser).
  *
  * Semantica de null:
  * - findById/findByEmail/updateById retornan null cuando el objetivo no existe.
@@ -21,11 +23,33 @@ export class UserRepository implements IUserRepository {
     return new User({
       id: model.id,
       email: model.email,
-      passwordHash: model.passwordHash,
       role: model.role,
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
     });
+  }
+
+  private mapToAuthDomain(model: UserModel): AuthUser {
+    return new AuthUser({
+      id: model.id,
+      email: model.email,
+      passwordHash: model.getDataValue('passwordHash'),
+      role: model.role,
+      createdAt: model.createdAt,
+      updatedAt: model.updatedAt,
+    });
+  }
+
+  private normalizeEmail(email: string): string {
+    return email.trim().toLowerCase();
+  }
+
+  private mapPersistenceError(error: unknown): never {
+    if (error instanceof UniqueConstraintError) {
+      throw new ConflictError('Email already exists');
+    }
+
+    throw error;
   }
 
   async findById(id: string): Promise<User | null> {
@@ -34,13 +58,25 @@ export class UserRepository implements IUserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const user = await UserModel.findOne({ where: { email } });
+    const user = await UserModel.findOne({ where: { email: this.normalizeEmail(email) } });
     return user ? this.mapToDomain(user) : null;
   }
 
+  async findByEmailForAuth(email: string): Promise<AuthUser | null> {
+    const user = await UserModel.unscoped().findOne({ where: { email: this.normalizeEmail(email) } });
+    return user ? this.mapToAuthDomain(user) : null;
+  }
+
   async create(input: CreateUserInput): Promise<User> {
-    const user = await UserModel.create(input);
-    return this.mapToDomain(user);
+    try {
+      const user = await UserModel.create({
+        ...input,
+        email: this.normalizeEmail(input.email),
+      });
+      return this.mapToDomain(user);
+    } catch (error) {
+      this.mapPersistenceError(error);
+    }
   }
 
   async updateById(id: string, input: UpdateUserInput): Promise<User | null> {
@@ -49,8 +85,17 @@ export class UserRepository implements IUserRepository {
       return null;
     }
 
-    await user.update(input);
-    return this.mapToDomain(user);
+    const normalizedInput: UpdateUserInput = {
+      ...input,
+      email: input.email ? this.normalizeEmail(input.email) : undefined,
+    };
+
+    try {
+      await user.update(normalizedInput);
+      return this.mapToDomain(user);
+    } catch (error) {
+      this.mapPersistenceError(error);
+    }
   }
 
   async list(): Promise<User[]> {

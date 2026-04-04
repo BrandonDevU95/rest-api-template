@@ -37,7 +37,11 @@ const envSchema = Joi.object({
   RATE_LIMIT_WINDOW_MS: Joi.number().required(),
   RATE_LIMIT_MAX_REQUESTS: Joi.number().required(),
   RATE_LIMIT_LOGIN_MAX_REQUESTS: Joi.number().required(),
+  RATE_LIMIT_REGISTER_MAX_REQUESTS: Joi.number().default(10),
+  TOKEN_BLACKLIST_CLEANUP_INTERVAL_MS: Joi.number().integer().min(60000).default(3600000),
+  TRUST_PROXY_HOPS: Joi.number().integer().min(0).default(0),
   ALLOW_NON_STANDARD_TLDS: Joi.boolean().default(true),
+  ENABLE_PUBLIC_DOCS: Joi.boolean().optional(),
 }).unknown();
 
 const { value, error } = envSchema.validate(process.env, {
@@ -50,6 +54,23 @@ if (error) {
   throw new Error(`Environment validation error: ${error.message}`);
 }
 
+const assertStrongJwtSecret = (secret: string, variableName: string): void => {
+  if (!value.NODE_ENV || value.NODE_ENV !== 'production') {
+    return;
+  }
+
+  if (secret.length < 32) {
+    throw new Error(`${variableName} must be at least 32 characters in production`);
+  }
+
+  if (/change_this|example|default|template/i.test(secret)) {
+    throw new Error(`${variableName} contains an unsafe placeholder value`);
+  }
+};
+
+assertStrongJwtSecret(value.JWT_ACCESS_SECRET as string, 'JWT_ACCESS_SECRET');
+assertStrongJwtSecret(value.JWT_REFRESH_SECRET as string, 'JWT_REFRESH_SECRET');
+
 const projectSlug = value.PROJECT_SLUG as string;
 const toTitleFromSlug = (slug: string): string =>
   slug
@@ -60,6 +81,10 @@ const toTitleFromSlug = (slug: string): string =>
 
 const appName = toTitleFromSlug(projectSlug);
 const appDescription = `${appName} API`;
+const enablePublicDocs =
+  value.ENABLE_PUBLIC_DOCS === undefined
+    ? value.NODE_ENV !== 'production'
+    : (value.ENABLE_PUBLIC_DOCS as boolean);
 
 export const env = {
   nodeEnv: value.NODE_ENV as 'development' | 'test' | 'production',
@@ -88,19 +113,28 @@ export const env = {
     accessExpiresIn: value.JWT_ACCESS_EXPIRES_IN as string,
     refreshSecret: value.JWT_REFRESH_SECRET as string,
     refreshExpiresIn: value.JWT_REFRESH_EXPIRES_IN as string,
+    issuer: projectSlug,
+    audience: projectSlug,
   },
 
   security: {
+    trustProxyHops: value.TRUST_PROXY_HOPS as number,
     bcryptSaltRounds: value.BCRYPT_SALT_ROUNDS as number,
     corsOrigins: (value.CORS_ORIGIN as string).split(',').map((origin) => origin.trim()),
     rateLimitWindowMs: value.RATE_LIMIT_WINDOW_MS as number,
     rateLimitMaxRequests: value.RATE_LIMIT_MAX_REQUESTS as number,
     rateLimitLoginMaxRequests: value.RATE_LIMIT_LOGIN_MAX_REQUESTS as number,
+    rateLimitRegisterMaxRequests: value.RATE_LIMIT_REGISTER_MAX_REQUESTS as number,
+    tokenBlacklistCleanupIntervalMs: value.TOKEN_BLACKLIST_CLEANUP_INTERVAL_MS as number,
     allowNonStandardTlds: value.ALLOW_NON_STANDARD_TLDS as boolean,
   },
 
   log: {
     level: value.LOG_LEVEL as string,
     dir: value.LOG_DIR as string,
+  },
+
+  docs: {
+    enablePublicDocs,
   },
 };

@@ -6,9 +6,36 @@ import { format } from 'winston';
  * redactFormat elimina datos sensibles antes de persistir, consoleFormat
  * mantiene legible el desarrollo local y jsonFormat produce logs estructurados.
  */
-const sensitiveKeys = ['password', 'token', 'authorization', 'cookie', 'creditCard'];
+const sensitiveKeys = [
+  'password',
+  'passwordhash',
+  'token',
+  'accesstoken',
+  'refreshtoken',
+  'authorization',
+  'cookie',
+  'set-cookie',
+  'secret',
+  'apikey',
+  'api-key',
+  'creditcard',
+  'x-api-key',
+];
+
+const jwtLikePattern = /\b[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g;
+const bearerPattern = /Bearer\s+[A-Za-z0-9._~+\/-]+/gi;
+
+const redactString = (value: string): string => {
+  return value
+    .replace(bearerPattern, 'Bearer [REDACTED]')
+    .replace(jwtLikePattern, '[REDACTED_JWT]');
+};
 
 const redactValue = (value: unknown): unknown => {
+  if (typeof value === 'string') {
+    return redactString(value);
+  }
+
   if (Array.isArray(value)) {
     return value.map(redactValue);
   }
@@ -38,9 +65,7 @@ export const redactFormat = format((info) => {
     cloned.meta = redactValue(cloned.meta);
   }
 
-  if (cloned.message && typeof cloned.message === 'object') {
-    cloned.message = redactValue(cloned.message);
-  }
+  cloned.message = redactValue(cloned.message) as typeof cloned.message;
 
   return cloned;
 });
