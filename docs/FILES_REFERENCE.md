@@ -1,299 +1,391 @@
 # Referencia De Archivos
 
-Este documento explica el proposito de cada archivo del repositorio y que debe documentarse cuando se modifica.
+Este documento describe el proposito de los archivos y carpetas principales del repositorio, y que debe revisarse en documentacion cuando se modifican.
 
 ## Archivos De Raiz
 
 ### `docker-compose.yml`
-- Proposito: Orquesta servicios locales (api, mysql, phpmyadmin).
-- Documentar al cambiar: servicios, puertos, volumenes, healthchecks, dependencias.
-- Personalizacion: deriva nombres de proyecto, contenedores y red desde `.env` usando `PROJECT_SLUG`.
-- Riesgos: problemas de orden de arranque, hostnames incorrectos, falta de persistencia de volumenes.
+
+- Proposito: orquestar servicios locales (`api`, `mysql`, `phpmyadmin`).
+- Documentar al cambiar: puertos, healthchecks, volumenes, dependencias y politica de red.
+- Riesgos: orden de arranque incorrecto, exposicion de puertos no deseada, perdida de persistencia.
 
 ### `Dockerfile`
-- Proposito: Construye y ejecuta la imagen del contenedor API.
-- Documentar al cambiar: etapas de build, usuario de runtime, assets copiados, comando, puerto expuesto.
-- Riesgos: runtime inseguro, imagenes grandes, dependencias de produccion faltantes.
+
+- Proposito: build de imagen y runtime de la API.
+- Documentar al cambiar: etapas, usuario final, assets copiados, comando de arranque y hardening.
+- Riesgos: imagen insegura, dependencias faltantes en produccion.
 
 ### `package.json`
-- Proposito: metadatos del proyecto, dependencias y scripts.
-- Documentar al cambiar: contrato de scripts (`dev`, `build`, `start`, `db:*`, `test:*`), actualizaciones de dependencias.
-- Personalizacion: `name` y `description` se generan desde `PROJECT_SLUG` via `npm run naming:sync`.
-- Riesgos: flujo de desarrollo roto, versiones incompatibles de paquetes.
 
-### `scripts/sync-project-metadata.js`
-- Proposito: sincroniza metadatos de paquete (`package.json`, `package-lock.json`) desde `PROJECT_SLUG` en `.env`.
-- Documentar al cambiar: reglas de parseo del slug, formato de descripcion generada, archivos actualizados.
-- Riesgos: desalineacion entre naming de entorno y metadatos del paquete si no se ejecuta tras cambiar el slug.
-
-### `tsconfig.json`
-- Proposito: comportamiento del compilador TypeScript.
-- Documentar al cambiar: strictness, target/module, includes/excludes de rutas, directorio de salida.
-- Riesgos: incompatibilidades en runtime, regresiones de tipos.
-
-### `jest.config.js`
-- Proposito: configuracion del test runner.
-- Documentar al cambiar: roots, patrones de test, transform, configuracion de cobertura.
-- Riesgos: tests no detectados, cobertura inexacta.
-
-### `nodemon.json`
-- Proposito: configuracion de recarga automatica local para desarrollo.
-- Documentar al cambiar: rutas observadas, rutas ignoradas, comando ejecutado.
-- Riesgos: bucles de recarga costosos o comportamiento de recarga obsoleto.
+- Proposito: scripts, dependencias y metadatos.
+- Documentar al cambiar: contrato de scripts (`dev`, `build`, `start`, `db:*`, `test:*`, `naming:sync`) y librerias criticas.
+- Riesgos: flujo local/CI roto.
 
 ### `sequelize.config.js`
-- Proposito: configuracion de sequelize-cli para migraciones/seeders.
-- Documentar al cambiar: mapeo de entornos, dialecto, fuente de credenciales host/puerto.
-- Riesgos: migraciones ejecutadas contra una base de datos incorrecta.
+
+- Proposito: configuracion de sequelize-cli para migraciones y seeders.
+- Documentar al cambiar: mapeo de entornos y origen de credenciales.
+- Riesgos: ejecutar migraciones en entorno equivocado.
+
+### `jest.config.js`
+
+- Proposito: configuracion global de pruebas.
+- Documentar al cambiar: roots, patrones, transform y cobertura.
+- Riesgos: pruebas no detectadas o cobertura inconsistente.
+
+### `nodemon.json`
+
+- Proposito: configuracion de recarga automatica en desarrollo local.
+- Documentar al cambiar: rutas observadas/ignoradas y comando de ejecucion.
+- Riesgos: recargas excesivas o flujo de desarrollo inestable.
+
+### `tsconfig.json` / `tsconfig.test.json`
+
+- Proposito: configuracion TypeScript para app y test.
+- Documentar al cambiar: target/module, strictness, includes/excludes.
+- Riesgos: incompatibilidad de compilacion o errores de tipos.
 
 ### `README.md`
-- Proposito: onboarding y operaciones rapidas.
-- Documentar al cambiar: flujo de arranque, variables de entorno, mapa de documentacion, instrucciones de personalizacion de nombre.
-- Riesgos: desalineacion en onboarding y fallos repetidos de setup.
+
+- Proposito: onboarding rapido, variables y mapa documental.
+- Documentar al cambiar: pasos de arranque, seguridad de runtime y enlaces a docs.
+- Riesgos: onboarding desalineado con el estado real.
+
+### `CHANGELOG.md`
+
+- Proposito: historial de versiones y cambios.
+- Documentar al cambiar: releases y features relevantes.
+- Riesgos: perdida de trazabilidad entre version y comportamiento.
 
 ### `LICENSE`
-- Proposito: terminos legales de uso.
-- Documentar al cambiar: tipo de licencia e implicaciones.
-- Riesgos: ambiguedad legal.
 
-## Carpeta Docs
+- Proposito: terminos legales de uso y distribucion.
+- Documentar al cambiar: tipo de licencia e implicaciones para proyectos derivados.
+- Riesgos: ambiguedad legal o incumplimientos de distribucion.
+
+### `scripts/sync-project-metadata.js`
+
+- Proposito: sincronizar nombre y descripcion del paquete desde `PROJECT_SLUG`.
+- Documentar al cambiar: reglas de transformacion del slug y archivos afectados.
+- Riesgos: desalineacion entre entorno y metadatos.
+
+## Carpeta `docs/`
 
 ### `docs/ARCHITECTURE.md`
-- Proposito: modelo de clean architecture y reglas de dependencia.
-- Documentar al cambiar: responsabilidades por capa, limites entre capas, estrategia de seguridad/observabilidad.
-- Riesgos: deriva arquitectonica y direccion de dependencias incorrecta.
+
+- Proposito: reglas por capa y direccion de dependencias.
+- Documentar al cambiar: responsabilidades por capa, seguridad y observabilidad.
 
 ### `docs/INSTALLATION.md`
-- Proposito: configuracion de entorno y ejecucion de comandos.
-- Documentar al cambiar: flujo docker-first, flujo local, proceso de migracion/seed.
-- Riesgos: setup incompleto, secuencia de arranque fallida.
 
-### `docs/PROJECT_CUSTOMIZATION.md`
-- Proposito: checklist corto de renombre para la plantilla, servicios Docker y metadatos del proyecto.
-- Documentar al cambiar: variables de naming, pasos de setup orientados al usuario.
-- Riesgos: instrucciones de renombre desactualizadas.
-
-### `docs/LOGGER.md`
-- Proposito: guia de uso del logger, niveles, redaccion de datos sensibles y trazabilidad con correlation id.
-- Documentar al cambiar: nuevos niveles, transports, formatos, ejemplos de uso o politicas de redaccion.
-- Riesgos: uso inconsistente del logger, fuga de secretos o perdida de trazabilidad.
-
-### `docs/FILES_REFERENCE.md`
-- Proposito: responsabilidad archivo por archivo y checklist de documentacion.
-- Documentar al cambiar: responsabilidades de archivos y expectativas de actualizacion.
+- Proposito: instalacion detallada y comandos operativos.
+- Documentar al cambiar: flujo Docker/local y comandos DB.
 
 ### `docs/REQUEST_FLOWS.md`
-- Proposito: flujo request-response por grupo de rutas.
-- Documentar al cambiar: orden de middlewares, comportamiento de validacion/auth, contratos de respuesta.
+
+- Proposito: pipeline HTTP y comportamiento endpoint por endpoint.
+- Documentar al cambiar: orden de middlewares, validacion, auth y respuestas.
+
+### `docs/LOGGER.md`
+
+- Proposito: politica de logging, redaccion y correlation id.
+- Documentar al cambiar: formatos, claves sensibles y puntos de instrumentacion.
 
 ### `docs/TROUBLESHOOTING.md`
-- Proposito: fallos comunes y soluciones rapidas.
-- Documentar al cambiar: problemas recurrentes y remediaciones comprobadas.
 
-## Codigo Fuente
+- Proposito: fallos comunes y soluciones comprobadas.
+- Documentar al cambiar: incidencias nuevas de setup, auth, docs o seguridad.
 
-### Puntos De Entrada
+### `docs/PROJECT_CUSTOMIZATION.md`
+
+- Proposito: renombre y personalizacion de proyecto.
+- Documentar al cambiar: variables y pasos de naming.
+
+### `docs/FILES_REFERENCE.md`
+
+- Proposito: mapa de responsabilidades archivo por archivo y checklist documental.
+- Documentar al cambiar: nuevas rutas, cambios de responsabilidad y criterios de terminado.
+
+### `docs/viewer/*`
+
+- Proposito: visor HTML de documentacion (`/documentation`) y personalizacion visual de Swagger.
+- Documentar al cambiar: rutas estaticas, archivos cargados, comportamiento de busqueda.
+
+## Carpeta `src/`
+
+### Entrypoints
 
 #### `src/main.ts`
-- Proposito: bootstrap del proceso (cargar app, conectar DB, escuchar).
-- Documentar al cambiar: secuencia de arranque, manejo de errores fatales, comportamiento de apagado.
-- Riesgos: la app parece levantada sin disponibilidad real de DB.
+
+- Proposito: bootstrap (DB, servidor HTTP, shutdown y job de mantenimiento).
+- Documentar al cambiar: secuencia de arranque/parada y manejo de errores fatales.
 
 #### `src/app.ts`
-- Proposito: composicion de la app Express.
-- Documentar al cambiar: orden de middlewares, configuraciones globales, puntos de montaje de routers, manejadores de error.
-- Riesgos: bypass de middlewares de seguridad o propagacion de errores rota.
+
+- Proposito: composicion de middlewares, docs publicas y routers.
+- Documentar al cambiar: orden del pipeline, reglas de exposicion de docs y puntos de montaje.
 
 ### Capa Application
 
 #### `src/application/dto/auth.dto.ts`
-- Proposito: contratos de datos de auth entre presentation y application.
-- Documentar al cambiar: campos DTO, forma del payload (`sub`, `email`, `role`), contratos de salida de tokens.
-- Riesgos: desajuste de contrato entre controller y services.
+
+- Proposito: DTOs de auth y payload JWT.
+- Documentar al cambiar: campos y contratos de tokens.
 
 #### `src/application/services/HashService.ts`
-- Proposito: abstraccion de hash/comparacion de contrasenas.
-- Documentar al cambiar: origen de salt rounds, garantias de metodos, comportamiento ante fallos.
-- Riesgos: politica de hash inconsistente.
+
+- Proposito: hash y comparacion de contrasenas.
+- Documentar al cambiar: algoritmo y politica de costo.
 
 #### `src/application/services/TokenService.ts`
-- Proposito: firmado/verificacion JWT y creacion de pares de tokens.
-- Documentar al cambiar: secretos de tokens, expiraciones, comportamiento de verificacion, errores lanzados.
-- Riesgos: supuestos invalidos de auth y mal uso de tokens.
+
+- Proposito: firmado y verificacion JWT (`HS256`) con `issuer`, `audience`, `tokenType` y `jti`.
+- Documentar al cambiar: claims obligatorios, expiraciones y reglas de verificacion.
+
+#### `src/application/services/TokenBlacklistService.ts`
+
+- Proposito: contrato de revocacion de tokens (persistente en DB, en memoria en tests).
+- Documentar al cambiar: semantica de blacklist, limpieza y comportamiento por entorno.
 
 #### `src/application/use-cases/auth/RegisterUseCase.ts`
-- Proposito: orquestacion del flujo de registro.
-- Documentar al cambiar: secuencia (hashear contrasena, verificar usuario existente, crear usuario solo si aplica, respuesta publica uniforme), posibles conflictos internos sin exponerlos al cliente.
-- Riesgos: emails duplicados y errores en asignacion de roles.
+
+- Proposito: registro de usuario con validacion de duplicado y hash.
+- Documentar al cambiar: comportamiento de conflicto (409) y metadatos logueados.
 
 #### `src/application/use-cases/auth/RefreshTokenUseCase.ts`
-- Proposito: orquestacion del flujo de refresh token.
-- Documentar al cambiar: requisitos de verificacion y comportamiento de reemision.
-- Riesgos: mal uso del refresh o escenarios con usuario desactualizado.
+
+- Proposito: rotacion de refresh token con replay protection (revoca el refresh usado).
+- Documentar al cambiar: pasos de verificacion y errores de seguridad.
+
+#### `src/application/use-cases/auth/LogoutUseCase.ts`
+
+- Proposito: logout revocando `jti` de access token y opcionalmente refresh token.
+- Documentar al cambiar: validacion de pertenencia de refresh al mismo usuario y semantica de errores.
 
 ### Capa Config
 
 #### `src/config/environment.ts`
-- Proposito: carga de entorno y validacion Joi.
-- Documentar al cambiar: variables requeridas, defaults, restricciones del schema.
-- Personalizacion: valida `PROJECT_SLUG` y deriva metadatos de la app desde esa variable.
-- Riesgos: caidas en runtime por desalineacion de configuracion.
+
+- Proposito: validacion Joi de entorno y configuracion tipada.
+- Documentar al cambiar: variables requeridas, defaults y validaciones de hardening.
 
 #### `src/config/swagger.ts`
-- Proposito: configuracion de generacion OpenAPI.
-- Documentar al cambiar: archivos de rutas escaneados, metadatos base, comportamiento del endpoint de docs.
-- Personalizacion: titulo y descripcion de Swagger se derivan desde `PROJECT_SLUG` via configuracion de entorno.
-- Riesgos: documentacion API desalineada con runtime.
+
+- Proposito: configuracion OpenAPI/Swagger.
+- Documentar al cambiar: metadata, tags, escaneo de rutas y exposicion.
 
 ### Capa Domain
 
 #### `src/domain/entities/User.ts`
-- Proposito: entidad de usuario y comportamiento de dominio.
-- Documentar al cambiar: invariantes, semantica de roles, campos sensibles.
-- Riesgos: fuga de password hash y reglas de dominio debiles.
+
+- Proposito: entidad de negocio de usuario.
+- Documentar al cambiar: invariantes, campos expuestos y reglas de rol.
 
 #### `src/domain/interfaces/IUserRepository.ts`
-- Proposito: contrato de repositorio para persistencia de usuarios.
-- Documentar al cambiar: garantias de metodos, semantica de null, tipos de entrada.
-- Riesgos: inconsistencias de implementacion.
+
+- Proposito: contrato de persistencia de usuarios.
+- Documentar al cambiar: metodos, retornos nulos y errores esperados.
 
 ### Capa Infrastructure
 
 #### `src/infrastructure/auth/passport.ts`
-- Proposito: wiring de estrategias Passport local y JWT.
-- Documentar al cambiar: ruta de verificacion de credenciales, extraccion de token, forma de usuario adjunto.
-- Riesgos: bypass de autenticacion o fallos inesperados.
+
+- Proposito: estrategias Passport Local + JWT con verificacion de `tokenType`, `jti` revocado y consistencia de email.
+- Documentar al cambiar: reglas de autenticacion y rechazo.
 
 #### `src/infrastructure/database/sequelize.ts`
-- Proposito: instancia Sequelize y opciones de conexion.
-- Documentar al cambiar: opciones de pool, comportamiento de logging, restricciones especificas del dialecto.
-- Riesgos: conexiones inestables bajo carga.
+
+- Proposito: conexion Sequelize y opciones de pool/logging.
+- Documentar al cambiar: configuracion de conexion y errores de arranque.
 
 #### `src/infrastructure/database/models/UserModel.ts`
-- Proposito: schema ORM para la tabla users.
-- Documentar al cambiar: columnas, restricciones, defaults, opciones del modelo.
-- Riesgos: desajuste de schema con migraciones.
+
+- Proposito: modelo ORM de usuarios.
+- Documentar al cambiar: columnas, restricciones y scopes.
+
+#### `src/infrastructure/database/models/RevokedTokenModel.ts`
+
+- Proposito: modelo ORM de JTIs revocados (`revoked_tokens`).
+- Documentar al cambiar: PK, enum de tipo y campos de expiracion.
 
 #### `src/infrastructure/database/repositories/UserRepository.ts`
-- Proposito: implementacion concreta de `IUserRepository`.
-- Documentar al cambiar: mapeo entre ORM y domain, comportamiento metodo por metodo.
-- Riesgos: bugs de persistencia y mal uso de null/error.
+
+- Proposito: implementacion concreta de repositorio de usuarios.
+- Documentar al cambiar: normalizacion de email y mapeo dominio/ORM.
+
+#### `src/infrastructure/database/repositories/RevokedTokenRepository.ts`
+
+- Proposito: persistencia de revocaciones y limpieza de tokens expirados.
+- Documentar al cambiar: estrategia de `upsert`, consulta y limpieza.
 
 #### `src/infrastructure/database/migrations/202604010001-create-users-table.js`
-- Proposito: crear la tabla users.
-- Documentar al cambiar: contrato `up` y `down`, estrategia de indices.
-- Riesgos: operaciones de schema irreversibles.
+
+- Proposito: creacion de tabla `users`.
+- Documentar al cambiar: estructura, indices y rollback.
+
+#### `src/infrastructure/database/migrations/202604030001-create-revoked-tokens-table.js`
+
+- Proposito: creacion de tabla `revoked_tokens` e indice por expiracion.
+- Documentar al cambiar: columnas y estrategia `down`.
 
 #### `src/infrastructure/database/seeders/202604010001-seed-admin-user.js`
-- Proposito: creacion inicial de cuenta admin.
-- Documentar al cambiar: variables de entorno requeridas, supuestos de idempotencia.
-- Riesgos: registros admin duplicados o credenciales sembradas debiles.
+
+- Proposito: siembra de usuario admin inicial.
+- Documentar al cambiar: variables requeridas y password policy.
 
 #### `src/infrastructure/logger/levels.ts`
-- Proposito: mapeo de niveles de log.
-- Documentar al cambiar: orden de niveles y uso esperado.
+
+- Proposito: niveles de severidad de Winston.
+- Documentar al cambiar: jerarquia de niveles.
 
 #### `src/infrastructure/logger/formats.ts`
-- Proposito: formato de logs y redaccion de datos sensibles.
-- Documentar al cambiar: claves redactadas, campos estructurados, formatos console vs json.
-- Riesgos: fuga de secretos en logs.
+
+- Proposito: formatos JSON/consola y redaccion de datos sensibles (claves + patrones JWT/Bearer).
+- Documentar al cambiar: claves redactadas y reglas de sanitizacion.
 
 #### `src/infrastructure/logger/logger.ts`
-- Proposito: instancia de logger Winston y transports.
-- Documentar al cambiar: destinos de salida, rotacion/retencion, manejadores de excepciones.
-- Riesgos: observabilidad incompleta o logs sin limite.
+
+- Proposito: instancia Winston y transports.
+- Documentar al cambiar: destinos, retencion y manejo de excepciones.
 
 #### `src/infrastructure/logger/morgan.middleware.ts`
-- Proposito: adaptador de logging para requests HTTP.
-- Documentar al cambiar: tokens, logica de skip, comportamiento de correlation-id.
+
+- Proposito: logs HTTP con correlation id.
+- Documentar al cambiar: tokens y estructura del mensaje.
 
 #### `src/infrastructure/logger/requestContext.middleware.ts`
-- Proposito: propagacion de correlation-id.
-- Documentar al cambiar: contrato del header y comportamiento de generacion.
-- Riesgos: huecos de trazabilidad entre requests.
+
+- Proposito: generar/sanitizar `x-correlation-id` y propagarlo en request/response.
+- Documentar al cambiar: reglas de sanitizacion y contrato de header.
+
+#### `src/infrastructure/maintenance/tokenBlacklistCleanup.job.ts`
+
+- Proposito: job periodico que limpia tokens revocados expirados.
+- Documentar al cambiar: intervalo, estrategia de ejecucion y logs.
 
 ### Capa Presentation
 
-#### Controllers
+#### `src/presentation/controllers/AuthController.ts`
 
-##### `src/presentation/controllers/AuthController.ts`
-- Proposito: handlers HTTP de auth.
-- Documentar al cambiar: comportamiento de endpoints, codigos de estado en exito/error, dependencias de servicios.
+- Proposito: endpoints auth (`register`, `login`, `refresh`, `logout`, `profile`).
+- Documentar al cambiar: status codes y contratos de salida.
 
-##### `src/presentation/controllers/UserController.ts`
-- Proposito: handlers HTTP CRUD de usuarios.
-- Documentar al cambiar: restricciones de rol, verificaciones de conflicto, forma de proyeccion de respuesta.
+#### `src/presentation/controllers/UserController.ts`
 
-#### Middlewares
+- Proposito: CRUD de usuarios.
+- Documentar al cambiar: permisos, proyecciones y errores de conflicto/no encontrado.
 
-##### `src/presentation/middlewares/auth.middleware.ts`
-- Proposito: utilidades de middleware authN/authZ.
-- Documentar al cambiar: comportamiento de `authenticateJwt`, `authorizeRoles`, `authorizeAdminOrSelf`.
+#### `src/presentation/middlewares/auth.middleware.ts`
 
-##### `src/presentation/middlewares/currentUser.middleware.ts`
-- Proposito: extraer de forma segura el usuario autenticado desde el contexto de request.
-- Documentar al cambiar: supuestos y errores lanzados.
+- Proposito: auth JWT y autorizacion por rol.
+- Documentar al cambiar: reglas de `authenticateJwt`, `authorizeRoles` y `authorizeAdminOrSelf`.
 
-##### `src/presentation/middlewares/errorHandler.ts`
-- Proposito: manejo global de errores y not-found.
-- Documentar al cambiar: schema de respuesta de error y exposicion de detalle dependiente del entorno.
+#### `src/presentation/middlewares/currentUser.middleware.ts`
 
-##### `src/presentation/middlewares/security.middleware.ts`
-- Proposito: politicas de helmet, cors y rate-limit.
-- Documentar al cambiar: origen de politicas (`env`), logica de allowlist, valores de ventana/limite.
+- Proposito: lectura segura de usuario autenticado.
+- Documentar al cambiar: precondiciones y errores.
 
-##### `src/presentation/middlewares/validate.middleware.ts`
-- Proposito: puente de validacion Joi para body/query/params.
-- Documentar al cambiar: opciones de validacion y comportamiento de normalizacion.
+#### `src/presentation/middlewares/errorHandler.ts`
 
-#### Routes
+- Proposito: normalizar errores y responder contrato publico con correlation id.
+- Documentar al cambiar: payload de error y exposicion de detalles segun entorno.
 
-##### `src/presentation/routes/auth.routes.ts`
-- Proposito: registro de rutas de auth.
-- Documentar al cambiar: path de ruta, cadena de middlewares, schema de validacion, metodo del controller.
+#### `src/presentation/middlewares/security.middleware.ts`
 
-##### `src/presentation/routes/health.routes.ts`
-- Proposito: endpoint de health check.
-- Documentar al cambiar: forma de respuesta y expectativa de monitoreo.
+- Proposito: Helmet, CORS, rate limit global y rate limit dedicado para login/registro/refresh.
+- Documentar al cambiar: mensajes 429, limites y origen de configuracion.
 
-##### `src/presentation/routes/index.ts`
-- Proposito: punto de entrada de composicion de routers.
-- Documentar al cambiar: sub-rutas montadas y prefijos.
+#### `src/presentation/middlewares/validate.middleware.ts`
 
-##### `src/presentation/routes/users.routes.ts`
-- Proposito: registro de rutas de usuarios.
-- Documentar al cambiar: autorizacion a nivel de ruta y cadena de validacion.
+- Proposito: validacion Joi estricta (`convert:false`, `stripUnknown:false`).
+- Documentar al cambiar: reglas de rechazo de campos y coercion.
 
-#### Validators
+#### `src/presentation/routes/auth.routes.ts`
 
-##### `src/presentation/validators/auth.validators.ts`
-- Proposito: schemas Joi para requests de auth.
-- Documentar al cambiar: restricciones de campos y justificacion de validacion.
+- Proposito: cadena de middlewares y handlers de auth.
+- Documentar al cambiar: inclusion de `logout`, query estricta vacia y rate limit de refresh.
 
-##### `src/presentation/validators/user.validators.ts`
-- Proposito: schemas Joi para requests de usuario.
-- Documentar al cambiar: diferencias create/update y restricciones de rol.
+#### `src/presentation/routes/users.routes.ts`
+
+- Proposito: rutas CRUD de usuarios con JWT y RBAC.
+- Documentar al cambiar: combinacion de validaciones de body/params/query y orden de middlewares.
+
+#### `src/presentation/routes/health.routes.ts`
+
+- Proposito: health check publico.
+- Documentar al cambiar: payload de estado.
+
+#### `src/presentation/routes/index.ts`
+
+- Proposito: composicion del router API.
+- Documentar al cambiar: subrutas montadas.
+
+#### `src/presentation/validators/auth.validators.ts`
+
+- Proposito: schemas Joi para `register/login/refresh/logout`.
+- Documentar al cambiar: reglas de password, formato JWT y TLDs.
+
+#### `src/presentation/validators/user.validators.ts`
+
+- Proposito: schemas Joi para creacion/actualizacion/listado de usuarios.
+- Documentar al cambiar: restricciones por campo y defaults.
 
 ### Shared
 
 #### `src/shared/errors/AppError.ts`
-- Proposito: errores de aplicacion normalizados.
-- Documentar al cambiar: subclases, mapeo de estados, semantica del `code` legible por maquina.
+
+- Proposito: jerarquia de errores de aplicacion y codigos publicos.
+- Documentar al cambiar: codigos, status y `details`.
 
 #### `src/shared/types/express.d.ts`
-- Proposito: ampliacion de tipos de express.
-- Documentar al cambiar: campos adicionales de request/user y su origen.
+
+- Proposito: tipos extendidos para `req.user` y `req.correlationId`.
+- Documentar al cambiar: forma de los tipos compartidos.
 
 #### `src/shared/utils/asyncHandler.ts`
-- Proposito: envoltorio async para controllers.
-- Documentar al cambiar: contrato de propagacion de rechazo de promesas.
+
+- Proposito: capturar promesas rechazadas en handlers async.
+- Documentar al cambiar: contrato de propagacion a `next`.
+
+## Carpeta `tests/`
+
+### `tests/integration/*`
+
+- Proposito: contratos HTTP end-to-end de auth, usuarios y sistema.
+- Documentar al cambiar: cobertura de endpoints y escenarios de seguridad.
+
+### `tests/integration/support/apiTestContext.ts`
+
+- Proposito: helpers y wiring para pruebas de integracion.
+- Documentar al cambiar: setup reutilizable de request/repositorio.
+
+### `tests/unit/application/*`
+
+- Proposito: pruebas de servicios y casos de uso de capa Application.
+- Documentar al cambiar: casos felices, errores de seguridad y mocks.
+
+### `tests/unit/infrastructure/*`
+
+- Proposito: pruebas de repositorios, logger y jobs de mantenimiento.
+- Documentar al cambiar: sanitizacion de logs, persistencia y cleanup.
+
+### `tests/unit/**/support/*`
+
+- Proposito: fixtures y mocks compartidos de pruebas.
+- Documentar al cambiar: contratos de fixtures y consistencia de datos.
+
+### `tests/jest-globals.d.ts`
+
+- Proposito: tipos globales de Jest para el proyecto.
+- Documentar al cambiar: alcance de tipado para suites.
 
 ## Definicion De Terminado Para Cambios De Documentacion
 
-Cuando modifiques cualquier archivo anterior, actualiza la documentacion hasta cumplir todos estos puntos:
+Cuando cambies archivos de este repositorio, la documentacion queda terminada solo si:
 
-1. El proposito sigue siendo correcto.
-2. Entradas/salidas quedan reflejadas.
-3. El comportamiento sensible de seguridad esta documentado (si aplica).
-4. El comportamiento de errores esta documentado (si aplica).
-5. Los enlaces a documentacion relacionada siguen siendo validos.
+1. El proposito del archivo/carpeta sigue siendo correcto.
+2. Se reflejan entradas, salidas y errores relevantes.
+3. Se actualizan implicaciones de seguridad y observabilidad cuando apliquen.
+4. Los cambios de rutas/middlewares se reflejan en `docs/REQUEST_FLOWS.md`.
+5. Los enlaces entre documentos siguen vigentes.

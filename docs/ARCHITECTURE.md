@@ -22,15 +22,18 @@ Las capas internas no dependen de capas externas.
 ## Estrategia De Seguridad
 
 - Passport Local valida credenciales en login.
-- JWT protege rutas privadas mediante bearer token.
+- JWT protege rutas privadas mediante bearer token y valida `issuer`, `audience`, `algorithm` y `tokenType`.
+- Se usa revocacion por `jti` para access/refresh tokens (logout y rotacion de refresh token).
 - Middleware RBAC aplica acceso basado en roles.
-- Joi valida contratos de request.
+- Joi valida contratos de request en modo estricto (sin coercion y sin campos extra).
+- Rate limiting aplica control global y limites especificos para login/registro/refresh.
 
 ## Estrategia De Observabilidad
 
 - Winston maneja logs estructurados de app y errores.
 - Morgan registra requests HTTP con correlation id.
 - Los campos sensibles se redactan antes de persistir.
+- Un job de mantenimiento limpia tokens revocados expirados y reporta metricas de limpieza.
 
 ## Navegacion Del Codigo
 
@@ -40,6 +43,11 @@ Las capas internas no dependen de capas externas.
 - Capa Domain: `src/domain/*` (entities y repository contracts).
 - Capa Infrastructure: `src/infrastructure/*` (implementaciones de database, auth y logging).
 - Utilidades compartidas: `src/shared/*`.
+
+## Notas Operativas De Arquitectura
+
+- La exposicion de `/api-docs` y `/documentation` se controla por configuracion (`ENABLE_PUBLIC_DOCS`).
+- `main.ts` centraliza bootstrap y apagado graceful, incluyendo el ciclo de vida del job de limpieza de blacklist.
 
 ## Documentacion Relacionada
 

@@ -25,13 +25,13 @@ El logger vive en `src/infrastructure/logger/` y se compone de:
 
 El proyecto usa estos niveles:
 
-| Nivel | Uso recomendado |
-| --- | --- |
+| Nivel   | Uso recomendado                                       |
+| ------- | ----------------------------------------------------- |
 | `error` | Fallos que afectan una operacion o un flujo completo. |
-| `warn` | Situaciones anormales que no bloquean la ejecucion. |
-| `info` | Eventos relevantes de negocio o arranque. |
-| `http` | Requests HTTP capturados por Morgan. |
-| `debug` | Detalle tecnico para desarrollo y diagnostico. |
+| `warn`  | Situaciones anormales que no bloquean la ejecucion.   |
+| `info`  | Eventos relevantes de negocio o arranque.             |
+| `http`  | Requests HTTP capturados por Morgan.                  |
+| `debug` | Detalle tecnico para desarrollo y diagnostico.        |
 
 El nivel minimo se controla con `LOG_LEVEL`.
 
@@ -59,10 +59,18 @@ Antes de persistir logs, `redactFormat` reemplaza valores sensibles por `[REDACT
 Claves redactadas por defecto:
 
 - `password`
+- `passwordHash`
 - `token`
+- `accessToken`
+- `refreshToken`
 - `authorization`
 - `cookie`
+- `set-cookie`
+- `secret`
+- `apiKey` / `api-key` / `x-api-key`
 - `creditCard`
+
+Tambien se sanitizan patrones de texto que parezcan JWT o cabeceras `Bearer ...` aunque no esten en una clave sensible.
 
 Si agregas metadatos propios, evita escribir secretos en texto plano. La redaccion ayuda, pero no sustituye un buen uso del logger.
 
@@ -191,10 +199,12 @@ Los puntos de uso actuales son:
 
 - `src/main.ts`: registra arranque exitoso y fallos fatales del bootstrap.
 - `src/presentation/controllers/AuthController.ts`: registra login exitoso y rechazos de credenciales con `correlationId`.
+- `src/presentation/controllers/AuthController.ts`: registra logout exitoso con `correlationId`.
 - `src/application/use-cases/auth/RegisterUseCase.ts`: registra conflictos de email y alta de usuario con metadatos de negocio no sensibles.
 - `src/presentation/controllers/UserController.ts`: registra acciones CRUD de usuarios con actor, objetivo y contexto HTTP.
 - `src/presentation/middlewares/errorHandler.ts`: registra errores de negocio y tecnicos con contexto HTTP.
 - `src/infrastructure/logger/morgan.middleware.ts`: registra cada request HTTP.
+- `src/infrastructure/maintenance/tokenBlacklistCleanup.job.ts`: registra resultados de limpieza de revocaciones expiradas y errores del job.
 
 Esos lugares muestran el patron recomendado para el resto del proyecto.
 

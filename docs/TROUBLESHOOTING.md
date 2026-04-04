@@ -110,7 +110,7 @@ Las respuestas retornan 429 para llamadas repetidas.
 
 ### Causa
 
-La configuracion de rate limit esta activa de forma global y en la ruta de login.
+La configuracion de rate limit esta activa de forma global y tambien en rutas sensibles (`/auth/login`, `/auth/register`, `/auth/refresh`).
 
 ### Solucion
 
@@ -119,6 +119,7 @@ Ajusta variables de entorno de rate limit para tu entorno:
 - `RATE_LIMIT_WINDOW_MS`
 - `RATE_LIMIT_MAX_REQUESTS`
 - `RATE_LIMIT_LOGIN_MAX_REQUESTS`
+- `RATE_LIMIT_REGISTER_MAX_REQUESTS`
 
 ## 8) Swagger no disponible
 
@@ -128,7 +129,7 @@ Ajusta variables de entorno de rate limit para tu entorno:
 
 ### Causas
 
-- Prefijo de API incorrecto en env.
+- `ENABLE_PUBLIC_DOCS=false` (comportamiento esperado en produccion si no se habilita explicitamente).
 - Setup de Swagger no montado por un fallo de arranque.
 
 ### Solucion

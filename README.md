@@ -83,7 +83,7 @@ Vuelve a usar `docker compose up --build` solo cuando cambies:
 | `LOG_DIR`                             | Directorio donde se escriben archivos de log.                                                                                         |
 | `RATE_LIMIT_WINDOW_MS`                | Ventana de tiempo para rate limiting.                                                                                                 |
 | `RATE_LIMIT_MAX_REQUESTS`             | Maximo de solicitudes por ventana para trafico general.                                                                               |
-| `RATE_LIMIT_LOGIN_MAX_REQUESTS`       | Maximo de solicitudes por ventana para intentos de login.                                                                             |
+| `RATE_LIMIT_LOGIN_MAX_REQUESTS`       | Maximo de solicitudes por ventana para intentos de login y refresh.                                                                   |
 | `RATE_LIMIT_REGISTER_MAX_REQUESTS`    | Maximo de solicitudes por ventana para intentos de registro.                                                                          |
 | `TOKEN_BLACKLIST_CLEANUP_INTERVAL_MS` | Intervalo en milisegundos para limpiar JTIs revocados expirados.                                                                      |
 | `ALLOW_NON_STANDARD_TLDS`             | Permite correos con dominios internos como `.local` cuando vale `true`.                                                               |
@@ -147,6 +147,13 @@ Checklist para extender pruebas en proyectos derivados:
 3. Evitar mocks de detalles internos cuando el comportamiento HTTP sea verificable.
 4. Mantener pruebas deterministas: sin red externa y sin dependencias no controladas.
 5. Ejecutar `npm test` en CI junto con lint antes de mergear cambios.
+
+## Resumen De Seguridad En Auth
+
+- `POST /auth/login` usa Passport Local para validar credenciales y emite access/refresh tokens.
+- `POST /auth/refresh` rota refresh tokens con revocacion de `jti` para evitar replay.
+- `POST /auth/logout` revoca el access token actual y opcionalmente el refresh token asociado.
+- JWT valida `issuer`, `audience`, `algorithm` y `tokenType`.
 
 ### Mapa De Documentacion
 

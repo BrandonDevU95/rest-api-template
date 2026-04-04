@@ -16,12 +16,15 @@
 7. Ejecuta el seeder del usuario admin dentro del contenedor API: `docker compose exec api npm run db:seed`.
 8. API: `http://localhost:3000`.
 9. Swagger: `http://localhost:3000/api-docs`.
-10. phpMyAdmin: `http://localhost:8081`.
+10. Visor HTML: `http://localhost:3000/documentation`.
+11. phpMyAdmin: `http://localhost:8081`.
 
 Notas:
+
 - Usa `docker compose up` para el trabajo diario despues del primer build exitoso.
 - Vuelve a usar `docker compose up --build` solo cuando cambien `package.json`, `Dockerfile` o dependencias a nivel de imagen.
 - Los comandos de base de datos deben ejecutarse dentro del contenedor `api` porque `.env` usa `DB_HOST=mysql`, que solo resuelve dentro de la red Docker.
+- En `production`, `/api-docs` y `/documentation` dependen de `ENABLE_PUBLIC_DOCS`.
 
 ## Comandos De Base De Datos
 
@@ -30,6 +33,7 @@ Notas:
 - Cargar datos iniciales: `docker compose exec api npm run db:seed`
 
 Cuando ejecutarlos:
+
 - Ejecuta migraciones al agregar una migracion nueva o iniciar desde una base de datos vacia.
 - Ejecuta seeds cuando necesites datos iniciales nuevamente, por ejemplo despues de recrear la base de datos.
 - No los ejecutes en cada inicio. Sequelize registra las migraciones aplicadas.
@@ -54,6 +58,7 @@ Y luego ejecuta migraciones y seed segun corresponda:
 - `docker compose exec api npm run db:seed`
 
 Advertencia:
+
 - `-v` elimina volumenes nombrados del proyecto (por ejemplo el volumen de MySQL), por lo tanto se pierde toda la data persistida.
 
 ## Arranque Local Con Node (Sin Docker)
