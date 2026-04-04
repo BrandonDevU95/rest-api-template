@@ -1,18 +1,14 @@
-import { Router } from 'express';
-import { joi } from '../middlewares/validate.middleware';
-import { UserController } from '../controllers/UserController';
-import { asyncHandler } from '../../shared/utils/asyncHandler';
 import {
-	authenticateJwt,
-	authorizeAdminOrSelf,
-	authorizeRoles,
+  authenticateJwt,
+  authorizeAdminOrSelf,
+  authorizeRoles,
 } from '../middlewares/auth.middleware';
-import { validate } from '../middlewares/validate.middleware';
-import {
-	createUserSchema,
-	idParamSchema,
-	updateUserSchema,
-} from '../validators/user.validators';
+import { createUserSchema, idParamSchema, updateUserSchema } from '../validators/user.validators';
+
+import { Router } from 'express';
+import { asyncHandler } from '../../shared/utils/asyncHandler';
+import { UserController } from '../controllers/UserController';
+import { joi, validate } from '../middlewares/validate.middleware';
 
 /**
  * Registro de rutas de usuarios.
@@ -45,7 +41,9 @@ const noQuerySchema = joi.object({});
  *                 format: email
  *               password:
  *                 type: string
- *                 minLength: 8
+ *                 minLength: 12
+ *                 maxLength: 64
+ *                 pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])\S+$
  *               role:
  *                 type: string
  *                 enum: [admin, user]
@@ -150,14 +148,33 @@ const noQuerySchema = joi.object({});
  *         description: Usuario no encontrado
  */
 usersRouter.use(authenticateJwt);
-usersRouter.post('/', authorizeRoles('admin'), validate({ body: createUserSchema, query: noQuerySchema }), asyncHandler(UserController.create));
-usersRouter.get('/', authorizeRoles('admin'), validate({ query: noQuerySchema }), asyncHandler(UserController.list));
-usersRouter.get('/:id', validate({ params: idParamSchema, query: noQuerySchema }), authorizeAdminOrSelf, asyncHandler(UserController.getById));
-usersRouter.put(
-	'/:id',
-	validate({ params: idParamSchema, body: updateUserSchema, query: noQuerySchema }),
-	authorizeAdminOrSelf,
-	asyncHandler(UserController.update),
+usersRouter.post(
+  '/',
+  authorizeRoles('admin'),
+  validate({ body: createUserSchema, query: noQuerySchema }),
+  asyncHandler(UserController.create),
 );
-usersRouter.delete('/:id', validate({ params: idParamSchema, query: noQuerySchema }), authorizeRoles('admin'), asyncHandler(UserController.delete));
-
+usersRouter.get(
+  '/',
+  authorizeRoles('admin'),
+  validate({ query: noQuerySchema }),
+  asyncHandler(UserController.list),
+);
+usersRouter.get(
+  '/:id',
+  validate({ params: idParamSchema, query: noQuerySchema }),
+  authorizeAdminOrSelf,
+  asyncHandler(UserController.getById),
+);
+usersRouter.put(
+  '/:id',
+  validate({ params: idParamSchema, body: updateUserSchema, query: noQuerySchema }),
+  authorizeAdminOrSelf,
+  asyncHandler(UserController.update),
+);
+usersRouter.delete(
+  '/:id',
+  validate({ params: idParamSchema, query: noQuerySchema }),
+  authorizeRoles('admin'),
+  asyncHandler(UserController.delete),
+);

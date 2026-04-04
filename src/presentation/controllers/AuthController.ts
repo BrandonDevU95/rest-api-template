@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 
 import { HashService } from '../../application/services/HashService';
-import { RefreshTokenUseCase } from '../../application/use-cases/auth/RefreshTokenUseCase';
-import { LogoutUseCase } from '../../application/use-cases/auth/LogoutUseCase';
-import { RegisterUseCase } from '../../application/use-cases/auth/RegisterUseCase';
 import { TokenService } from '../../application/services/TokenService';
-import { UnauthorizedError } from '../../shared/errors/AppError';
+import { LogoutUseCase } from '../../application/use-cases/auth/LogoutUseCase';
+import { RefreshTokenUseCase } from '../../application/use-cases/auth/RefreshTokenUseCase';
+import { RegisterUseCase } from '../../application/use-cases/auth/RegisterUseCase';
 import { UserRepository } from '../../infrastructure/database/repositories/UserRepository';
-import { getCurrentUser } from '../middlewares/currentUser.middleware';
 import { logger } from '../../infrastructure/logger/logger';
+import { UnauthorizedError } from '../../shared/errors/AppError';
+import { getCurrentUser } from '../middlewares/currentUser.middleware';
 
 /**
  * Controlador HTTP para endpoints de autenticacion.
@@ -29,6 +29,11 @@ const refreshUseCase = new RefreshTokenUseCase(tokenService, userRepository);
 const logoutUseCase = new LogoutUseCase(tokenService);
 
 export class AuthController {
+  /**
+   * Registra un usuario nuevo.
+   *
+   * Responde 201 con proyeccion publica del usuario creado.
+   */
   static async register(req: Request, res: Response): Promise<void> {
     const user = await registerUseCase.execute(req.body);
 
@@ -40,6 +45,11 @@ export class AuthController {
     });
   }
 
+  /**
+   * Inicia sesion y emite un par access/refresh.
+   *
+   * Precondicion: LocalStrategy ya valido credenciales y poblo req.user.
+   */
   static async login(req: Request, res: Response): Promise<void> {
     const user = req.user;
 
@@ -73,11 +83,18 @@ export class AuthController {
     res.status(200).json(tokens);
   }
 
+  /**
+   * Intercambia un refresh token valido por un nuevo par de tokens.
+   */
   static async refresh(req: Request, res: Response): Promise<void> {
     const tokens = await refreshUseCase.execute(req.body.refreshToken as string);
     res.status(200).json(tokens);
   }
 
+  /**
+   * Cierra sesion revocando el access token actual y, si se envia,
+   * tambien el refresh token asociado al mismo usuario.
+   */
   static async logout(req: Request, res: Response): Promise<void> {
     const authHeader = req.get('Authorization');
     const accessToken = authHeader?.replace('Bearer ', '') || '';
@@ -92,6 +109,9 @@ export class AuthController {
     res.status(204).send();
   }
 
+  /**
+   * Retorna la identidad del usuario autenticado actual.
+   */
   static async profile(req: Request, res: Response): Promise<void> {
     const user = getCurrentUser(req);
     res.status(200).json({

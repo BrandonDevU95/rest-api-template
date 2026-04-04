@@ -1,10 +1,9 @@
-import { RegisterDto } from '../../dto/auth.dto';
-
-import { HashService } from '../../services/HashService';
-import { ConflictError } from '../../../shared/errors/AppError';
+import { User } from '../../../domain/entities/User';
 import { IUserRepository } from '../../../domain/interfaces/IUserRepository';
 import { logger } from '../../../infrastructure/logger/logger';
-import { User } from '../../../domain/entities/User';
+import { ConflictError } from '../../../shared/errors/AppError';
+import { RegisterDto } from '../../dto/auth.dto';
+import { HashService } from '../../services/HashService';
 
 /**
  * Orquestacion del flujo de registro.
@@ -18,6 +17,11 @@ export class RegisterUseCase {
     private readonly hashService: HashService,
   ) {}
 
+  /**
+   * Registra un usuario con rol "user" y password hasheado.
+   *
+   * Lanza ConflictError cuando el email ya existe.
+   */
   async execute(dto: RegisterDto): Promise<User> {
     const emailDomain = dto.email.includes('@') ? dto.email.split('@')[1] : 'unknown';
     const existing = await this.userRepository.findByEmail(dto.email);

@@ -1,8 +1,8 @@
-import { ForbiddenError } from '../../shared/errors/AppError';
 import cors from 'cors';
-import { env } from '../../config/environment';
-import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import { env } from '../../config/environment';
+import { ForbiddenError } from '../../shared/errors/AppError';
 
 /**
  * Middlewares de seguridad centralizados.
@@ -10,7 +10,7 @@ import rateLimit from 'express-rate-limit';
  * Las politicas se definen desde la configuracion de entorno e incluyen:
  * - headers HTTP seguros (helmet)
  * - validaciones de allowlist CORS
- * - rate limiting global, login y registro
+ * - rate limiting global y especializado para login/refresh y registro
  */
 export const helmetMiddleware = helmet();
 
@@ -53,4 +53,3 @@ export const loginRateLimiter = rateLimit({
     message: 'Too many login attempts. Please try again later.',
   },
 });
-

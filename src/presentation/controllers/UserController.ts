@@ -1,10 +1,10 @@
-import { ConflictError, NotFoundError } from '../../shared/errors/AppError';
 import { Request, Response } from 'express';
+import { ConflictError, NotFoundError } from '../../shared/errors/AppError';
 
 import { HashService } from '../../application/services/HashService';
 import { UserRepository } from '../../infrastructure/database/repositories/UserRepository';
-import { getCurrentUser } from '../middlewares/currentUser.middleware';
 import { logger } from '../../infrastructure/logger/logger';
+import { getCurrentUser } from '../middlewares/currentUser.middleware';
 
 const userRepository = new UserRepository();
 const hashService = new HashService();
@@ -17,6 +17,11 @@ const hashService = new HashService();
  * restricciones de escalamiento de rol para usuarios no admin.
  */
 export class UserController {
+  /**
+   * Crea un usuario nuevo (flujo admin).
+   *
+   * Valida unicidad de email y responde 201 con proyeccion publica.
+   */
   static async create(req: Request, res: Response): Promise<void> {
     const currentUser = getCurrentUser(req);
     const existing = await userRepository.findByEmail(req.body.email);
@@ -60,6 +65,9 @@ export class UserController {
     });
   }
 
+  /**
+   * Lista usuarios en orden descendente por fecha de creacion.
+   */
   static async list(req: Request, res: Response): Promise<void> {
     const currentUser = getCurrentUser(req);
     const users = await userRepository.list();
@@ -85,6 +93,9 @@ export class UserController {
     );
   }
 
+  /**
+   * Obtiene un usuario por id y responde 404 cuando no existe.
+   */
   static async getById(req: Request, res: Response): Promise<void> {
     const currentUser = getCurrentUser(req);
     const id = String(req.params.id);
@@ -124,6 +135,11 @@ export class UserController {
     });
   }
 
+  /**
+   * Actualiza email/rol de un usuario.
+   *
+   * Usuarios no admin no pueden escalar rol; el intento se ignora.
+   */
   static async update(req: Request, res: Response): Promise<void> {
     const id = String(req.params.id);
     const currentUser = getCurrentUser(req);
@@ -188,6 +204,9 @@ export class UserController {
     });
   }
 
+  /**
+   * Elimina un usuario por id y responde 204 cuando se elimina.
+   */
   static async delete(req: Request, res: Response): Promise<void> {
     const id = String(req.params.id);
     const currentUser = getCurrentUser(req);

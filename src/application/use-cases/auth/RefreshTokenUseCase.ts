@@ -1,14 +1,16 @@
 import { IUserRepository } from '../../../domain/interfaces/IUserRepository';
-import { TokenPairDto } from '../../dto/auth.dto';
-import { TokenService } from '../../services/TokenService';
 import { UnauthorizedError } from '../../../shared/errors/AppError';
+import { TokenPairDto } from '../../dto/auth.dto';
 import { tokenBlacklistService } from '../../services/TokenBlacklistService';
+import { TokenService } from '../../services/TokenService';
 
 /**
  * Orquestacion del flujo de refresh token.
  *
- * Verifica el refresh token recibido, revalida el usuario contra BD y emite
- * un nuevo par de tokens con datos frescos.
+ * Verifica el refresh token recibido, valida que no este revocado, revalida
+ * el usuario contra BD y emite un nuevo par de tokens con datos frescos.
+ *
+ * Adicionalmente revoca el jti del refresh usado para mitigar replay.
  */
 export class RefreshTokenUseCase {
   constructor(
@@ -16,6 +18,9 @@ export class RefreshTokenUseCase {
     private readonly userRepository: IUserRepository,
   ) {}
 
+  /**
+   * Ejecuta refresh token rotation con revocacion del token presentado.
+   */
   async execute(refreshToken: string): Promise<TokenPairDto> {
     try {
       const payload = this.tokenService.verifyRefreshToken(refreshToken);

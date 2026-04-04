@@ -1,15 +1,21 @@
+import { UnauthorizedError } from '../../../shared/errors/AppError';
 import { tokenBlacklistService } from '../../services/TokenBlacklistService';
 import { TokenService } from '../../services/TokenService';
-import { UnauthorizedError } from '../../../shared/errors/AppError';
 
 /**
  * Caso de uso de logout.
  *
- * Revoca los tokens agregandolos a la blacklist.
+ * Revoca el access token actual y opcionalmente el refresh token,
+ * agregando sus jti a la blacklist.
+ *
+ * Si llega refresh token, debe pertenecer al mismo usuario del access token.
  */
 export class LogoutUseCase {
   constructor(private readonly tokenService: TokenService) {}
 
+  /**
+   * Ejecuta cierre de sesion con revocacion por jti.
+   */
   async execute(accessToken: string, refreshToken?: string): Promise<void> {
     try {
       const accessPayload = this.tokenService.verifyAccessToken(accessToken);
@@ -34,7 +40,11 @@ export class LogoutUseCase {
               ? new Date(refreshPayload.exp * 1000)
               : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-            await tokenBlacklistService.addToBlacklist(refreshPayload.jti, 'refresh', refreshExpiresAt);
+            await tokenBlacklistService.addToBlacklist(
+              refreshPayload.jti,
+              'refresh',
+              refreshExpiresAt,
+            );
           }
         } catch (error) {
           if (error instanceof UnauthorizedError) {
@@ -48,5 +58,3 @@ export class LogoutUseCase {
     }
   }
 }
-
-

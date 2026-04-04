@@ -1,6 +1,6 @@
 import { env } from '../../config/environment';
-import { RevokedTokenRepository } from '../../infrastructure/database/repositories/RevokedTokenRepository';
 import { RevokedTokenType } from '../../infrastructure/database/models/RevokedTokenModel';
+import { RevokedTokenRepository } from '../../infrastructure/database/repositories/RevokedTokenRepository';
 
 /**
  * Servicio de blacklist de tokens.
@@ -12,6 +12,9 @@ export class TokenBlacklistService {
   private readonly repository = new RevokedTokenRepository();
   private readonly inMemory = new Set<string>();
 
+  /**
+   * Revoca un jti hasta su expiracion.
+   */
   async addToBlacklist(jti: string, tokenType: RevokedTokenType, expiresAt: Date): Promise<void> {
     if (env.nodeEnv === 'test') {
       this.inMemory.add(jti);
@@ -21,6 +24,9 @@ export class TokenBlacklistService {
     await this.repository.revokeToken(jti, tokenType, expiresAt);
   }
 
+  /**
+   * Verifica si el jti ya fue revocado.
+   */
   async isBlacklisted(jti: string): Promise<boolean> {
     if (env.nodeEnv === 'test') {
       return this.inMemory.has(jti);
@@ -29,6 +35,9 @@ export class TokenBlacklistService {
     return this.repository.isRevoked(jti);
   }
 
+  /**
+   * Elimina revocaciones expiradas y retorna cuantas entradas removio.
+   */
   async cleanupExpired(now = new Date()): Promise<number> {
     if (env.nodeEnv === 'test') {
       const size = this.inMemory.size;
@@ -39,6 +48,9 @@ export class TokenBlacklistService {
     return this.repository.cleanupExpired(now);
   }
 
+  /**
+   * Utilidad para limpiar estado en pruebas.
+   */
   clear(): void {
     this.inMemory.clear();
   }
