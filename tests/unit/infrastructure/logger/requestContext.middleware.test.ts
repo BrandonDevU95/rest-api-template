@@ -1,32 +1,16 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction } from 'express';
 
 import { requestContext } from '../../../../src/infrastructure/logger/requestContext.middleware';
-
-type RequestWithCorrelation = Request & { correlationId?: string };
-
-const createReq = (headerValue?: string): Request => {
-  return {
-    header: jest.fn().mockImplementation((name: string) => {
-      if (name.toLowerCase() === 'x-correlation-id') {
-        return headerValue;
-      }
-      return undefined;
-    }),
-  } as unknown as Request;
-};
-
-const createRes = () => {
-  const setHeader = jest.fn();
-  return {
-    res: { setHeader } as unknown as Response,
-    setHeader,
-  };
-};
+import {
+  createRequestWithHeader,
+  createResponseWithSetHeader,
+  RequestWithCorrelation,
+} from '../support/express.mock';
 
 describe('requestContext middleware', () => {
   test('accepts valid incoming correlation id', () => {
-    const req = createReq('trace-123:abc_DEF') as RequestWithCorrelation;
-    const { res, setHeader } = createRes();
+    const req = createRequestWithHeader('trace-123:abc_DEF') as RequestWithCorrelation;
+    const { res, setHeader } = createResponseWithSetHeader();
     const next: NextFunction = jest.fn();
 
     requestContext(req, res, next);
@@ -37,8 +21,8 @@ describe('requestContext middleware', () => {
   });
 
   test('replaces invalid incoming correlation id with generated uuid', () => {
-    const req = createReq('bad\nvalue') as RequestWithCorrelation;
-    const { res, setHeader } = createRes();
+    const req = createRequestWithHeader('bad\nvalue') as RequestWithCorrelation;
+    const { res, setHeader } = createResponseWithSetHeader();
     const next: NextFunction = jest.fn();
 
     requestContext(req, res, next);
