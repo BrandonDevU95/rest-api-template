@@ -305,6 +305,40 @@ describe('API integration baseline', () => {
     expect(secondResponse.status).toBe(401);
     expect(secondResponse.body.code).toBe('UNAUTHORIZED');
   });
+  test('POST /api/v1/auth/refresh rotates token: old token is rejected and new token remains valid', async () => {
+    const userId = '7c7c7c7c-7c7c-7c7c-7c7c-7c7c7c7c7c7c';
+    const email = 'refresh-rotation@example.com';
+    const initialTokens = tokenService.createTokenPair({
+      sub: userId,
+      email,
+      role: 'user',
+    });
+
+    mockUserRepository.findById.mockResolvedValue(
+      buildUser({
+        id: userId,
+        email,
+        role: 'user',
+      }),
+    );
+
+    const firstRefresh = await request(app).post('/api/v1/auth/refresh').send({
+      refreshToken: initialTokens.refreshToken,
+    });
+
+    const replayAttempt = await request(app).post('/api/v1/auth/refresh').send({
+      refreshToken: initialTokens.refreshToken,
+    });
+
+    const secondRefresh = await request(app).post('/api/v1/auth/refresh').send({
+      refreshToken: firstRefresh.body.refreshToken,
+    });
+
+    expect(firstRefresh.status).toBe(200);
+    expect(typeof firstRefresh.body.refreshToken).toBe('string');
+    expect(replayAttempt.status).toBe(401);
+    expect(secondRefresh.status).toBe(200);
+  });
   test('POST /api/v1/auth/logout returns 400 for malformed optional refresh token', async () => {
     const userId = '88888888-8888-8888-8888-888888888888';
     const accessToken = tokenService.signAccessToken({
