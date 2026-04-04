@@ -1,8 +1,6 @@
 import { HashService } from '../../../../src/application/services/HashService';
-import { TokenService } from '../../../../src/application/services/TokenService';
 import { RegisterUseCase } from '../../../../src/application/use-cases/auth/RegisterUseCase';
 import { User } from '../../../../src/domain/entities/User';
-import { ConflictError } from '../../../../src/shared/errors/AppError';
 
 const buildUser = (overrides?: Partial<{ id: string; email: string; role: 'admin' | 'user' }>): User => {
   const now = new Date();
@@ -18,9 +16,8 @@ const buildUser = (overrides?: Partial<{ id: string; email: string; role: 'admin
 
 describe('RegisterUseCase', () => {
   const hashService = new HashService();
-  const tokenService = new TokenService();
 
-  test('creates user with hashed password and returns token pair', async () => {
+  test('creates user with hashed password when email is available', async () => {
     const repository = {
       findByEmail: jest.fn().mockResolvedValue(null),
       create: jest.fn(),
@@ -38,12 +35,14 @@ describe('RegisterUseCase', () => {
       }),
     );
 
-    const useCase = new RegisterUseCase(repository, hashService, tokenService);
+    const useCase = new RegisterUseCase(repository, hashService);
 
-    const tokens = await useCase.execute({
-      email: 'new@example.com',
-      password: 'Password123!',
-    });
+    await expect(
+      useCase.execute({
+        email: 'new@example.com',
+        password: 'Password123!',
+      }),
+    ).resolves.toBeUndefined();
 
     expect(repository.findByEmail).toHaveBeenCalledWith('new@example.com');
     expect(repository.create).toHaveBeenCalledTimes(1);
@@ -52,14 +51,9 @@ describe('RegisterUseCase', () => {
     expect(createdInput.email).toBe('new@example.com');
     expect(createdInput.passwordHash).not.toBe('Password123!');
     expect(createdInput.role).toBe('user');
-
-    const accessPayload = tokenService.verifyAccessToken(tokens.accessToken);
-    expect(accessPayload.sub).toBe('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa');
-    expect(accessPayload.email).toBe('new@example.com');
-    expect(accessPayload.role).toBe('user');
   });
 
-  test('throws ConflictError when email already exists', async () => {
+  test('does not create a duplicate when email already exists', async () => {
     const repository = {
       findByEmail: jest.fn().mockResolvedValue(buildUser({ email: 'duplicate@example.com' })),
       create: jest.fn(),
@@ -69,14 +63,14 @@ describe('RegisterUseCase', () => {
       deleteById: jest.fn(),
     };
 
-    const useCase = new RegisterUseCase(repository, hashService, tokenService);
+    const useCase = new RegisterUseCase(repository, hashService);
 
     await expect(
       useCase.execute({
         email: 'duplicate@example.com',
         password: 'Password123!',
       }),
-    ).rejects.toBeInstanceOf(ConflictError);
+    ).resolves.toBeUndefined();
 
     expect(repository.create).not.toHaveBeenCalled();
   });

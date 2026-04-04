@@ -26,7 +26,7 @@ El orden importa:
 - Resultado esperado: par de tokens para el usuario creado.
 - Errores clave:
   - 400 error de validacion
-  - 409 el email ya existe
+  - no revela si el email ya existia
 
 ### POST `/login`
 - Middlewares:

@@ -24,14 +24,17 @@ const userRepository = new UserRepository();
 const hashService = new HashService();
 const tokenService = new TokenService();
 
-const registerUseCase = new RegisterUseCase(userRepository, hashService, tokenService);
+const registerUseCase = new RegisterUseCase(userRepository, hashService);
 const refreshUseCase = new RefreshTokenUseCase(tokenService, userRepository);
 const logoutUseCase = new LogoutUseCase(tokenService);
 
 export class AuthController {
   static async register(req: Request, res: Response): Promise<void> {
-    const tokens = await registerUseCase.execute(req.body);
-    res.status(201).json(tokens);
+    await registerUseCase.execute(req.body);
+    res.status(202).json({
+      code: 'REGISTRATION_ACCEPTED',
+      message: 'If the request is valid, the account has been processed.',
+    });
   }
 
   static async login(req: Request, res: Response): Promise<void> {

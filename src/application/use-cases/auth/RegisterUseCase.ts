@@ -1,40 +1,36 @@
-import { RegisterDto, TokenPairDto } from '../../dto/auth.dto';
+import { RegisterDto } from '../../dto/auth.dto';
 
-import { ConflictError } from '../../../shared/errors/AppError';
 import { HashService } from '../../services/HashService';
 import { IUserRepository } from '../../../domain/interfaces/IUserRepository';
-import { TokenService } from '../../services/TokenService';
 import { logger } from '../../../infrastructure/logger/logger';
 
 /**
  * Orquestacion del flujo de registro.
  *
- * Secuencia:
- * 1) rechazar si el email ya existe
- * 2) hashear la contrasena en texto plano
- * 3) persistir usuario con rol por defecto "user"
- * 4) retornar access/refresh tokens firmados
+ * El registro es ciego hacia el cliente para evitar enumeracion de cuentas.
+ * Si el usuario ya existe, se procesa la solicitud de la misma forma a nivel
+ * publico, pero no se crea un duplicado.
  */
 export class RegisterUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly hashService: HashService,
-    private readonly tokenService: TokenService,
   ) {}
 
-  async execute(dto: RegisterDto): Promise<TokenPairDto> {
+  async execute(dto: RegisterDto): Promise<void> {
     const emailDomain = dto.email.includes('@') ? dto.email.split('@')[1] : 'unknown';
+    const passwordHash = await this.hashService.hash(dto.password);
     const existing = await this.userRepository.findByEmail(dto.email);
+
     if (existing) {
-      logger.warn('Register rejected: email already exists', {
+      logger.warn('Register request processed for existing email', {
         meta: {
           emailDomain,
         },
       });
-      throw new ConflictError('Email already exists');
+      return;
     }
 
-    const passwordHash = await this.hashService.hash(dto.password);
     const user = await this.userRepository.create({
       email: dto.email,
       passwordHash,
@@ -47,12 +43,6 @@ export class RegisterUseCase {
         role: user.role,
         emailDomain,
       },
-    });
-
-    return this.tokenService.createTokenPair({
-      sub: user.id,
-      email: user.email,
-      role: user.role,
     });
   }
 }
