@@ -3,7 +3,7 @@
 @adminEmail = admin@template.local
 @adminPassword = Admin$123456!
 @newUserEmail = user.restclient.local@example.com
-@newUserPassword = User12345!
+@newUserPassword = User$123456!
 @updatedUserEmail = user.restclient.updated@example.com
 
 ### Health check
