@@ -1,6 +1,6 @@
 # Resolucion De Problemas
 
-Problemas comunes de setup y runtime para este proyecto.
+Problemas comunes de instalacion y ejecucion para este proyecto.
 
 ## 1) `getaddrinfo ENOTFOUND mysql`
 

@@ -1,4 +1,4 @@
-# Mini Guia De Naming Del Proyecto
+# Guia Breve De Naming Del Proyecto
 
 Usa esta guia para renombrar la plantilla en pocos minutos sin buscar por todo el codigo.
 
@@ -17,10 +17,10 @@ Usa esta guia para renombrar la plantilla en pocos minutos sin buscar por todo e
 
 ## Que Afecta Cada Nombre
 
-| Valor | Afecta |
-| --- | --- |
-| `PROJECT_SLUG` | Nombre del proyecto Docker Compose, nombres de contenedores API/MySQL/phpMyAdmin, nombre de red compartida, nombre de app (logs/titulo Swagger), descripcion de Swagger, nombre del paquete y descripcion del paquete |
-| `ALLOW_NON_STANDARD_TLDS` | Controla si Joi acepta correos con dominios internos como `.local`. Cuando vale `true`, el proyecto acepta el seed admin y los correos de pruebas locales. |
+| Valor                     | Afecta                                                                                                                                                                                                                |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PROJECT_SLUG`            | Nombre del proyecto Docker Compose, nombres de contenedores API/MySQL/phpMyAdmin, nombre de red compartida, nombre de app (logs/titulo Swagger), descripcion de Swagger, nombre del paquete y descripcion del paquete |
+| `ALLOW_NON_STANDARD_TLDS` | Controla si Joi acepta correos con dominios internos como `.local`. Cuando vale `true`, el proyecto acepta el seed admin y los correos de pruebas locales.                                                            |
 
 ## Resultado
 

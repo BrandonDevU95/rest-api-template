@@ -29,9 +29,9 @@ Variables principales de naming en `.env`:
 | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `PROJECT_SLUG` | Variable maestra. Deriva el nombre del proyecto Docker, nombres de contenedores, nombre de la red, nombre de la app en logs/titulo de Swagger y descripcion de Swagger. |
 
-### Flujo De Desarrollo
+## Flujo De Desarrollo
 
-### Hardening De Runtime
+### Hardening Del Runtime
 
 - En `production`, `JWT_ACCESS_SECRET` y `JWT_REFRESH_SECRET` deben tener al menos 32 caracteres y no pueden usar placeholders (`change_this`, `example`, `default`, `template`).
 - En `docker-compose.yml`, los puertos de `api`, `mysql` y `phpmyadmin` se enlazan a `127.0.0.1` por defecto para reducir exposicion externa accidental.
@@ -155,7 +155,7 @@ Checklist para extender pruebas en proyectos derivados:
 - `POST /auth/logout` revoca el access token actual y opcionalmente el refresh token asociado.
 - JWT valida `issuer`, `audience`, `algorithm` y `tokenType`.
 
-### Mapa De Documentacion
+## Mapa De Documentacion
 
 - `README.md`: onboarding rapido, flujo de desarrollo y variables de entorno requeridas.
 - `docs/INSTALLATION.md`: instalacion detallada y ejecucion de comandos para Docker y modo local.
@@ -176,7 +176,7 @@ Usa este checklist cuando los cambios de codigo afecten comportamiento, contrato
 4. Actualiza `docs/ARCHITECTURE.md` si cambiaron responsabilidades por capa o direccion de dependencias.
 5. Verifica que `README.md` siga enlazando todos los archivos de documentacion vigentes.
 
-Definicion de terminado para actualizaciones de documentacion:
+Definicion De Terminado Para Actualizaciones De Documentacion:
 
 - El proposito de los archivos modificados sigue siendo correcto.
 - Se reflejan entradas/salidas y comportamiento de error.

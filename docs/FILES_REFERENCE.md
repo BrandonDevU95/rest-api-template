@@ -114,7 +114,7 @@ Este documento describe el proposito de los archivos y carpetas principales del 
 
 ## Carpeta `src/`
 
-### Entrypoints
+### Puntos De Entrada
 
 #### `src/main.ts`
 
